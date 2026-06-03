@@ -1,6 +1,6 @@
 # Join
 
-Ein kollaboratives Kanban-Board als Multi-Page-Application (MPA), entwickelt im Rahmen einer agilen Gruppenarbeit.
+A collaborative Kanban board built as a Multi-Page Application (MPA), developed as part of an agile group project.
 
 ## Tech Stack
 
@@ -9,39 +9,39 @@ Ein kollaboratives Kanban-Board als Multi-Page-Application (MPA), entwickelt im 
 
 ## Features
 
-- Benutzerregistrierung & Login (inkl. Gast-Login)
-- Kanban-Board mit den Spalten: To Do, In Progress, Awaiting Feedback, Done
-- Tasks erstellen, bearbeiten, löschen
-- Subtasks mit Fortschrittsanzeige
-- Drag & Drop zwischen Spalten (Desktop)
-- Echtzeit-Suche nach Tasks
-- Kontaktverwaltung (hinzufügen, bearbeiten, löschen)
-- Responsive Design (ab 320px, mobile-first)
-- Begrüßungsnachricht je nach Tageszeit
-- Dashboard mit Task-Übersicht
+- User registration & login (incl. guest login)
+- Kanban board with columns: To Do, In Progress, Awaiting Feedback, Done
+- Create, edit, and delete tasks
+- Subtasks with progress indicator
+- Drag & drop between columns (desktop)
+- Real-time task search
+- Contact management (add, edit, delete)
+- Responsive design (from 320px, mobile-first)
+- Time-based greeting message
+- Dashboard with task overview
 - Legal Notice & Privacy Policy
 
 ## Setup
 
-1. Repository klonen:
+1. Clone the repository:
    ```bash
-   git clone https://github.com/<euer-repo>/join.git
+   git clone https://github.com/<your-repo>/join.git
    ```
 
-2. Firebase-Projekt anlegen unter [firebase.google.com](https://firebase.google.com)
+2. Create a Firebase project at [firebase.google.com](https://firebase.google.com)
 
-3. Firebase-Config in die App eintragen (z.B. `firebase.js` oder `config.js`) – **niemals in das Repository pushen**, stattdessen z.B. als Umgebungsvariablen oder lokal excluded via `.gitignore`
+3. Add your Firebase config to the app (e.g. `firebase.js` or `config.js`) – **never push this to the repository**, exclude it via `.gitignore` instead
 
-4. `index.html` im Browser öffnen – kein Build-Schritt notwendig
+4. Open `index.html` in your browser – no build step required
 
-## Projektstruktur
+## Project Structure
 
 ```
 join/
-├── index.html          # Startseite / Login
-├── board.html          # Kanban-Board
-├── add-task.html       # Task erstellen
-├── contacts.html       # Kontaktliste
+├── index.html          # Start page / Login
+├── board.html          # Kanban board
+├── add-task.html       # Create task
+├── contacts.html       # Contact list
 ├── summary.html        # Dashboard
 ├── legal-notice.html
 ├── privacy-policy.html
@@ -50,16 +50,16 @@ join/
 └── assets/
 ```
 
-## Hinweise
+## Notes
 
-- Alle Nutzer (inkl. Gast) teilen sich dasselbe Board und dieselben Kontakte
-- Sensible Daten (Firebase-Credentials etc.) gehören **nicht** ins Repository
-- Vor Abgabe: mindestens 5 Tasks und 10 Kontakte anlegen
-- Getestet in: Chrome, Firefox, Safari, Edge (aktuellste Versionen)
+- All users (incl. guest) share the same board and contacts
+- Sensitive data (Firebase credentials etc.) must **not** be pushed to the repository
+- Before submission: add at least 5 tasks and 10 contacts
+- Tested in: Chrome, Firefox, Safari, Edge (latest versions)
 
 ## Team
 
-| Name | Rolle |
+| Name | Role |
 |---|---|
 | Christian M. | Developer |
 | Mahad Yussuf Nur | Developer |
