@@ -1,0 +1,66 @@
+:root {
+  /* Brand */
+  --color-primary: #2a3647;
+  --color-primary-dark: #091931;
+  --color-accent: #29abe2;
+
+  /* Backgrounds */
+  --color-bg: #f6f7f8;
+  --color-white: #ffffff;
+
+  /* Text */
+  --color-text: #000000;
+  --color-text-muted: #a8a8a8;
+
+  /* Navigation */
+  --color-nav-item: #cdcdcd;
+
+  /* Border */
+  --color-border: #d1d1d1;
+
+  /* Links */
+  --color-link: #007cee;
+
+  /* Feedback */
+  --color-error: #e60026;
+
+  /* Priority */
+  --priority-urgent: #ff3d00;
+  --priority-medium: #ffa800;
+  --priority-low: #7ae229;
+
+  /* Task Categories */
+  --category-user-story: #0038ff;
+  --category-technical-task: #1fd7c1;
+
+  /* Progress */
+  --color-progress: #4589ff;
+
+  /* Spacing */
+  --space-xs:  4px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 64px;
+
+  /* Shadow */
+  --shadow-default: 0 4px 8px rgba(0, 0, 0, 0.08);
+
+  /* Typography */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Layout */
+  --sidebar-width: 232px;
+  --header-height: 96px;
+
+  /* Border Radius */
+  --border-radius-sm: 8px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 30px;
+
+  /* Transitions */
+  --transition-fast: 100ms ease-in-out;
+}
