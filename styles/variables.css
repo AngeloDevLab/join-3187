@@ -1,0 +1,19 @@
+:root {
+  --color-primary: #2a3647;
+  --color-accent: #29abe2;
+  --color-background: #f6f7f8;
+  --color-white: #ffffff;
+  --color-text: #000000;
+  --color-muted: #a8a8a8;
+
+  --font-main: "Inter", sans-serif;
+
+  --sidebar-width: 232px;
+  --header-height: 96px;
+
+  --border-radius-small: 8px;
+  --border-radius-medium: 10px;
+  --border-radius-large: 30px;
+
+  --transition-fast: 100ms ease-in-out;
+}
