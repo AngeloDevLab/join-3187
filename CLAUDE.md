@@ -1,43 +1,43 @@
-# Join — Projektmanagement-Tool
+# Join — Project Management Tool
 
-Join ist ein Projektmanagement-Tool zur Visualisierung von Aufgaben-Status und Verantwortlichkeiten. Gruppenproject der Developer Akademie mit dem Ziel, eine umfangreiche Software in agiler Teamarbeit zu entwickeln.
+Join is a project management tool for visualizing task status and responsibilities. Group project at Developer Akademie, built collaboratively in an agile team environment.
 
 ## Tech Stack
 
-- **Frontend:** HTML, CSS, Vanilla JavaScript (kein Build-Tool, kein Framework)
+- **Frontend:** HTML, CSS, Vanilla JavaScript (no build tool, no framework)
 - **Backend:** Firebase (Authentication + Realtime Database)
-- **Architektur:** Multi Page Application (MPA)
+- **Architecture:** Multi Page Application (MPA)
 
-## Projektstruktur
+## Project Structure
 
 ```
 /
 ├── index.html          # Login / Landing Page
-├── pages/              # Alle weiteren HTML-Seiten
+├── pages/              # All other HTML pages
 ├── css/
-│   ├── variables.css   # CSS Custom Properties (Farben, Abstände, Fonts)
-│   ├── global.css      # Globale Styles inkl. Legal Pages (Imprint, Privacy)
-│   └── *.css           # Seitenspezifische Stylesheets
+│   ├── variables.css   # CSS custom properties (colors, spacing, fonts)
+│   ├── global.css      # Global styles incl. legal pages (Imprint, Privacy)
+│   └── *.css           # Page-specific stylesheets
 ├── js/
-│   ├── pages/          # Ein JS-Modul pro Seite
-│   ├── components/     # Wiederverwendbare UI-Komponenten (navbar, toast, task-card)
-│   ├── utils/          # Hilfsfunktionen (auth-guard, helpers)
-│   └── firebase/       # Firebase-Konfiguration und Datenbankzugriffe
+│   ├── pages/          # One JS module per page
+│   ├── components/     # Reusable UI components (navbar, toast, task-card)
+│   ├── utils/          # Utility functions (auth-guard, helpers)
+│   └── firebase/       # Firebase configuration and database access
 └── assets/
     ├── fonts/
     └── icons/
 ```
 
-## Konventionen
+## Conventions
 
-- CSS-Variablen ausschließlich in `css/variables.css` definieren
-- Pro Seite genau eine JS-Datei in `js/pages/`
-- Firebase-Logik bleibt in `js/firebase/` — keine direkten Firebase-Calls in Page-Scripts
-- Imprint- und Privacy-Styles leben in `css/global.css` (kein eigenes Stylesheet nötig)
+- All CSS variables are defined exclusively in `css/variables.css`
+- One JS file per page in `js/pages/`
+- Firebase logic stays in `js/firebase/` — no direct Firebase calls in page scripts
+- Imprint and Privacy styles live in `css/global.css` (no separate stylesheet needed)
 
-## Seiten
+## Pages
 
-| Seite | HTML | CSS | JS |
+| Page | HTML | CSS | JS |
 |---|---|---|---|
 | Login / Register | `index.html` | `css/auth.css` | `js/pages/auth.js` |
 | Summary | `pages/summary.html` | `css/summary.css` | `js/pages/summary.js` |
@@ -49,7 +49,7 @@ Join ist ein Projektmanagement-Tool zur Visualisierung von Aufgaben-Status und V
 
 ## Firebase
 
-- Config liegt in `js/firebase/config.js`
-- Auth-Wrapper in `js/firebase/auth.js`
-- Datenbankzugriffe in `js/firebase/database.js`
-- Route-Schutz (Auth Guard) in `js/utils/auth-guard.js`
+- Config in `js/firebase/config.js`
+- Auth wrapper in `js/firebase/auth.js`
+- Database access in `js/firebase/database.js`
+- Route protection (Auth Guard) in `js/utils/auth-guard.js`
