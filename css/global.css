@@ -7,6 +7,11 @@
     font-display: swap;
 }
 
+body{
+   background-color: #F6F7F8;
+    margin: 0;
+}
+
 @font-face {
     font-family: 'Inter';
     src: url('../assets/fonts/Inter-Bold.woff2') format('woff2'),

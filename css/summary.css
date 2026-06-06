@@ -1,0 +1,155 @@
+.subline{
+    background: linear-gradient(var(--color-accent), var(--color-accent)) no-repeat bottom left;
+    background-size: 18% 2px;
+    padding-bottom: 10px;
+    font-size: 16px;
+    margin: 0px;
+
+}
+
+h2{
+    font-size: 35px;
+    margin-bottom: 8px;
+}
+
+
+.summary-card{
+    background-color: #FFFFFF;
+    border-radius: 20px;
+    padding: clamp(8px, 2vw, 20px);
+    
+    box-shadow: var(--shadow-default);
+}
+
+.summary-card:hover{
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+main{
+    padding: 0 max(calc(50% - 720px), clamp(1rem, 4vw, 4rem));
+}
+
+.border-date{
+  text-align: left !important;
+  border-right: 2px solid var(--color-border);
+  padding-right: 10px;
+}
+
+.summary-board{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+    margin: 20px 0;
+}
+
+.summary-card_flex {
+   display: flex;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+}
+
+.card-number{
+    font-size: 47px;
+    font-weight: bold;
+}
+
+.summary-card_flex > div {
+  display: flex;
+  flex-direction: column; /* <- */
+}
+
+.summary-card p{
+margin: 0;
+text-align: center;
+}
+/* Zeile 1: 2 Karten */
+.summary-card:nth-child(1),
+.summary-card:nth-child(2) { grid-column: span 3; }
+
+/* Zeile 2: 1 Karte über volle Breite */
+.summary-card:nth-child(3) { grid-column: span 6; }
+
+/* Zeile 3: 3 Karten */
+.summary-card:nth-child(4),
+.summary-card:nth-child(5),
+.summary-card:nth-child(6) { grid-column: span 2; }
+
+.edit-icon {
+    width: 20px;
+    height: 20px;
+    background-color: var(--color-primary);
+    padding: 10px;
+    border-radius: 50%;
+}
+.urgent-icon {
+    width: 20px;
+    height: 20px;
+    background-color: var(--priority-urgent);
+    padding: 10px;
+    border-radius: 50%;
+}
+
+@keyframes fadeOut {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.greeting-overlay {
+  position: fixed;
+  inset: 0;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeOut 1.5s ease-in forwards;
+  animation-delay: 1s;
+  z-index: 9999; /* ← */
+}
+
+.greeting-overlay p { /* ← */
+  font-size: 32px;
+  font-weight: 400;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+    .title {
+        display: flex;
+        align-items: center;
+    }
+
+    .subline {
+  background: none;
+    background-size: 18% 2px;
+    padding-bottom: 0px;
+    font-size: 16px;
+    margin: 0px;
+    padding-left: 10px;
+}
+
+h2{
+    margin: inherit;
+    border-right: 2px solid var(--color-accent);
+    padding-right: 10px;
+}
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .greeting-overlay {
+    animation: none;          /* ← */
+    position: static;         /* ← */
+    background: transparent;  /* ← */
+    display: block;           /* ← */
+  }
+
+    .desktop-container {
+        display: flex;
+        align-items: center;
+        gap: 80px;
+    }
+}
