@@ -3,7 +3,7 @@
  * @param {string} password
  * @returns {Promise<void>}
  */
-async function loginUser(email, password) {
+export async function loginUser(email, password) {
   // TODO: implement Firebase signInWithEmailAndPassword
 }
 
@@ -14,7 +14,7 @@ async function loginUser(email, password) {
  * @param {string} password
  * @returns {Promise<void>}
  */
-async function registerUser(name, email, password) {
+export async function registerUser(name, email, password) {
   // TODO: implement Firebase createUserWithEmailAndPassword + write to users/{uid}
 }
 
@@ -23,6 +23,6 @@ async function registerUser(name, email, password) {
  * replays automatically on page load without any extra handling.
  * @returns {Promise<void>}
  */
-async function logoutUser() {
+export async function logoutUser() {
   // TODO: implement Firebase signOut
 }

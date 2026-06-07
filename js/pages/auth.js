@@ -1,3 +1,6 @@
+import { validateField } from '../utils/form-validation.js';
+import { loginUser, registerUser } from '../firebase/auth.js';
+
 const INTRO_DELAY_MS = 400;
 const INTRO_MOVE_MS = 600;
 const INTRO_FADE_MS = 400;

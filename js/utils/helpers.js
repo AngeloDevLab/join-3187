@@ -1,4 +1,4 @@
-const AVATAR_COLORS = [
+export const AVATAR_COLORS = [
   '#FF7A00',
   '#9327FF',
   '#6E52FF',

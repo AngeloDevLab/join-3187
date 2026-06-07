@@ -7,7 +7,7 @@ const errorTimers = new WeakMap();
  * @param {HTMLElement} errorEl
  * @param {string} message
  */
-function setError(wrapper, errorEl, message) {
+export function setError(wrapper, errorEl, message) {
   errorEl.classList.remove('fading-out');
   if (wrapper) wrapper.classList.add('error');
   errorEl.textContent = message;
@@ -22,7 +22,7 @@ function setError(wrapper, errorEl, message) {
  * @param {HTMLElement|null} wrapper
  * @param {HTMLElement} errorEl
  */
-function clearError(wrapper, errorEl) {
+export function clearError(wrapper, errorEl) {
   errorEl.classList.remove('fading-out');
   if (wrapper) wrapper.classList.remove('error');
   errorEl.textContent = '';
@@ -37,7 +37,7 @@ function clearError(wrapper, errorEl) {
  * @param {string} message
  * @returns {boolean}
  */
-function validateField(inputEl, errorEl, condition, message) {
+export function validateField(inputEl, errorEl, condition, message) {
   const wrapper = inputEl.closest('.input-wrapper');
   if (!condition) {
     setError(wrapper, errorEl, message);
