@@ -1,4 +1,4 @@
-import { validateField } from '../utils/form-validation.js';
+import { validateField, setError } from '../utils/form-validation.js';
 import { loginUser, registerUser } from '../firebase/auth.js';
 
 const INTRO_DELAY_MS = 400;
@@ -178,15 +178,19 @@ function updateStrengthIndicator(value, indicator) {
  * @param {SubmitEvent} e
  * @param {{ emailInput: HTMLInputElement, emailError: HTMLElement, passwordInput: HTMLInputElement, passwordError: HTMLElement }} fields
  */
-function handleLoginSubmit(e, fields) {
+async function handleLoginSubmit(e, fields) {
   e.preventDefault();
   const valid = [
     validateField(fields.emailInput, fields.emailError, fields.emailInput.validity.valid, 'Please enter a valid email address.'),
     validateField(fields.passwordInput, fields.passwordError, !!fields.passwordInput.value.trim(), 'Please enter your password.'),
   ].every(Boolean);
   if (!valid) return;
-  // TODO: Call loginUser(fields.emailInput.value, fields.passwordInput.value)
-  exitAndRedirect(document.getElementById('loginCard'), "You're logged in!", 'pages/summary.html');
+  try {
+    await loginUser(fields.emailInput.value);
+    exitAndRedirect(document.getElementById('loginCard'), "You're logged in!", 'pages/summary.html');
+  } catch (err) {
+    setError(fields.emailInput.closest('.input-wrapper'), fields.emailError, err.message);
+  }
 }
 
 function initLoginForm() {
@@ -244,11 +248,15 @@ function validateSignup(fields) {
  * @param {SubmitEvent} e
  * @param {ReturnType<typeof getSignupFields>} fields
  */
-function handleSignupSubmit(e, fields) {
+async function handleSignupSubmit(e, fields) {
   e.preventDefault();
   if (!validateSignup(fields)) return;
-  // TODO: Call registerUser(fields.nameInput.value, fields.emailInput.value, fields.passwordInput.value)
-  exitAndRedirect(document.getElementById('signupCard'), 'Account created!', 'pages/summary.html');
+  try {
+    await registerUser(fields.nameInput.value, fields.emailInput.value);
+    exitAndRedirect(document.getElementById('signupCard'), 'Account created!', 'pages/summary.html');
+  } catch (err) {
+    setError(fields.emailInput.closest('.input-wrapper'), fields.emailError, err.message);
+  }
 }
 
 function initSignupForm() {

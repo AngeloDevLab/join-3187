@@ -1,28 +1,69 @@
-/**
- * @param {string} email
- * @param {string} password
- * @returns {Promise<void>}
- */
-export async function loginUser(email, password) {
-  // TODO: implement Firebase signInWithEmailAndPassword
+import { getAll, create } from './database.js';
+
+/** @returns {string} First letter of each word, max 2 chars — e.g. "Max Mustermann" → "MM" */
+function deriveInitials(name) {
+  return name.trim().split(/\s+/).map(w => w[0].toUpperCase()).join('').slice(0, 2);
+}
+
+/** @param {{ id: string, name: string, initials: string }} user */
+function setSession(user) {
+  sessionStorage.setItem('currentUser', JSON.stringify(user));
+}
+
+/** @returns {{ id: string, name: string, initials: string }|null} */
+export function getCurrentUser() {
+  const raw = sessionStorage.getItem('currentUser');
+  return raw ? JSON.parse(raw) : null;
+}
+
+export function clearSession() {
+  sessionStorage.removeItem('currentUser');
 }
 
 /**
- * Creates a Firebase user and writes name + email to users/{uid}.
+ * @param {string} email
+ * @returns {Promise<{id: string, name: string, email: string, initials: string}|null>}
+ */
+async function findUserByEmail(email) {
+  const users = await getAll('users');
+  if (!users) return null;
+  return Object.entries(users)
+    .map(([id, data]) => ({ id, ...data }))
+    .find(u => u.email === email) ?? null;
+}
+
+/**
+ * Finds the user by email and stores them in the session.
+ * Throws if no account exists for that email.
+ * @param {string} email
+ * @returns {Promise<void>}
+ */
+export async function loginUser(email) {
+  const user = await findUserByEmail(email);
+  if (!user) throw new Error('No account found. Please sign up.');
+  setSession({ id: user.id, name: user.name, initials: user.initials });
+}
+
+/**
+ * Creates a new user entry in the DB and stores them in the session.
+ * Throws if the email is already registered.
  * @param {string} name
  * @param {string} email
- * @param {string} password
  * @returns {Promise<void>}
  */
-export async function registerUser(name, email, password) {
-  // TODO: implement Firebase createUserWithEmailAndPassword + write to users/{uid}
+export async function registerUser(name, email) {
+  const existing = await findUserByEmail(email);
+  if (existing) throw new Error('Already registered. Please log in.');
+  const initials = deriveInitials(name);
+  const id = await create('users', { name, email, initials });
+  setSession({ id, name, initials });
 }
 
 /**
- * Signs out the current user. Caller redirects to index.html — the intro animation
- * replays automatically on page load without any extra handling.
- * @returns {Promise<void>}
+ * Clears the session. Caller handles redirect so the intro animation
+ * replays naturally on index.html load.
+ * @returns {void}
  */
-export async function logoutUser() {
-  // TODO: implement Firebase signOut
+export function logoutUser() {
+  clearSession();
 }
