@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── Toast & Redirect ─────────────────────────────────────
 
+/**
+ * @param {string} message
+ */
 function showToast(message) {
   const toast = document.createElement('div');
   toast.className = 'toast';
@@ -43,6 +46,11 @@ function showToast(message) {
   requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('is-visible')));
 }
 
+/**
+ * @param {HTMLElement} cardEl
+ * @param {string} message
+ * @param {string} href
+ */
 function exitAndRedirect(cardEl, message, href) {
   cardEl.style.transition = 'opacity 300ms ease';
   cardEl.style.opacity = '0';
@@ -55,6 +63,9 @@ function exitAndRedirect(cardEl, message, href) {
 
 // ── Intro ────────────────────────────────────────────────
 
+/**
+ * @param {HTMLElement} intro
+ */
 function playIntro(intro) {
   setTimeout(() => {
     intro.classList.add('intro-animate');
@@ -65,6 +76,7 @@ function playIntro(intro) {
   }, INTRO_DELAY_MS);
 }
 
+/** Plays the intro animation on page load. No-ops if the element is absent. */
 function initIntro() {
   const intro = document.getElementById('intro');
   if (!intro) return;
@@ -74,15 +86,14 @@ function initIntro() {
 
 // ── Auth Switch ──────────────────────────────────────────
 
+/**
+ * @param {'login'|'signup'} view
+ */
 function showAuthCard(view) {
-  const loginView = document.getElementById('loginView');
-  const signupCard = document.getElementById('signupCard');
-  const signupHintHeader = document.getElementById('signupHintHeader');
   const showSignup = view === 'signup';
-
-  loginView.classList.toggle('is-hidden', showSignup);
-  signupCard.classList.toggle('is-hidden', !showSignup);
-  signupHintHeader.classList.toggle('is-hidden', showSignup);
+  document.getElementById('loginView').classList.toggle('is-hidden', showSignup);
+  document.getElementById('signupCard').classList.toggle('is-hidden', !showSignup);
+  document.getElementById('signupHintHeader').classList.toggle('is-hidden', showSignup);
 }
 
 function initAuthSwitch() {
@@ -94,6 +105,11 @@ function initAuthSwitch() {
 
 // ── Password Toggle ──────────────────────────────────────
 
+/**
+ * @param {HTMLInputElement} input
+ * @param {HTMLButtonElement} button
+ * @param {HTMLImageElement} icon
+ */
 function updatePasswordToggle(input, button, icon) {
   if (!input.value) {
     input.type = 'password';
@@ -102,63 +118,40 @@ function updatePasswordToggle(input, button, icon) {
     icon.src = PASSWORD_ICON.static;
     return;
   }
-
   const state = input.type === 'password' ? PASSWORD_ICON.hidden : PASSWORD_ICON.visible;
   button.disabled = false;
   button.setAttribute('aria-label', state.label);
   icon.src = state.src;
 }
 
+/**
+ * @param {HTMLElement} wrapper
+ */
 function initPasswordToggle(wrapper) {
   const input = wrapper.querySelector('input[type="password"]');
   const button = wrapper.querySelector('.input-icon-btn');
   const icon = button?.querySelector('img');
   if (!input || !button || !icon) return;
-
   button.addEventListener('click', () => {
     input.type = input.type === 'password' ? 'text' : 'password';
     updatePasswordToggle(input, button, icon);
   });
-
   input.addEventListener('input', () => updatePasswordToggle(input, button, icon));
 }
 
 function initPasswordToggles() {
   document.querySelectorAll('.input-wrapper').forEach((wrapper) => {
-    if (wrapper.querySelector('input[type="password"]')) {
-      initPasswordToggle(wrapper);
-    }
+    if (wrapper.querySelector('input[type="password"]')) initPasswordToggle(wrapper);
   });
-}
-
-
-// ── Validation Helpers ───────────────────────────────────
-
-const ERROR_AUTO_CLEAR_MS = 5000;
-const ERROR_FADE_MS = 400;
-const errorTimers = new WeakMap();
-
-function setError(wrapper, errorEl, message) {
-  errorEl.classList.remove('fading-out');
-  wrapper.classList.add('error');
-  errorEl.textContent = message;
-
-  clearTimeout(errorTimers.get(errorEl));
-  errorTimers.set(errorEl, setTimeout(() => {
-    errorEl.classList.add('fading-out');
-    setTimeout(() => clearError(wrapper, errorEl), ERROR_FADE_MS);
-  }, ERROR_AUTO_CLEAR_MS));
-}
-
-function clearError(wrapper, errorEl) {
-  errorEl.classList.remove('fading-out');
-  wrapper.classList.remove('error');
-  errorEl.textContent = '';
 }
 
 
 // ── Password Strength ────────────────────────────────────
 
+/**
+ * @param {string} value
+ * @returns {'weak'|'medium'|'strong'}
+ */
 function getStrengthKey(value) {
   const count = PASSWORD_RULES.filter(({ test }) => test(value)).length;
   if (count <= 2) return 'weak';
@@ -166,126 +159,101 @@ function getStrengthKey(value) {
   return 'strong';
 }
 
+/**
+ * @param {string} value
+ * @param {HTMLElement} indicator
+ */
 function updateStrengthIndicator(value, indicator) {
-  if (!value) {
-    delete indicator.dataset.level;
-    return;
-  }
+  if (!value) { delete indicator.dataset.level; return; }
   indicator.dataset.level = STRENGTH_LEVELS[getStrengthKey(value)].dataLevel;
 }
 
 
 // ── Login Form ───────────────────────────────────────────
 
+/**
+ * @param {SubmitEvent} e
+ * @param {{ emailInput: HTMLInputElement, emailError: HTMLElement, passwordInput: HTMLInputElement, passwordError: HTMLElement }} fields
+ */
+function handleLoginSubmit(e, fields) {
+  e.preventDefault();
+  const valid = [
+    validateField(fields.emailInput, fields.emailError, fields.emailInput.validity.valid, 'Please enter a valid email address.'),
+    validateField(fields.passwordInput, fields.passwordError, !!fields.passwordInput.value.trim(), 'Please enter your password.'),
+  ].every(Boolean);
+  if (!valid) return;
+  // TODO: Call loginUser(fields.emailInput.value, fields.passwordInput.value)
+  exitAndRedirect(document.getElementById('loginCard'), "You're logged in!", 'pages/summary.html');
+}
+
 function initLoginForm() {
   const form = document.getElementById('loginForm');
   if (!form) return;
-
-  const emailInput = form.querySelector('input[type="email"]');
-  const emailError = document.getElementById('loginEmailError');
-  const passwordInput = form.querySelector('input[type="password"]');
-  const passwordError = document.getElementById('loginPasswordError');
-
-  document.getElementById('guestLoginBtn').addEventListener('click', () => {
-    exitAndRedirect(document.getElementById('loginCard'), 'Logged in as guest!', 'pages/summary.html');
-  });
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    let valid = true;
-
-    if (!emailInput.validity.valid) {
-      setError(emailInput.closest('.input-wrapper'), emailError, 'Please enter a valid email address.');
-      valid = false;
-    } else {
-      clearError(emailInput.closest('.input-wrapper'), emailError);
-    }
-
-    if (!passwordInput.value.trim()) {
-      setError(passwordInput.closest('.input-wrapper'), passwordError, 'Please enter your password.');
-      valid = false;
-    } else {
-      clearError(passwordInput.closest('.input-wrapper'), passwordError);
-    }
-
-    if (!valid) return;
-
-    // TODO: Call Firebase login here before redirecting
-    exitAndRedirect(form.closest('.auth-card'), "You're logged in!", 'pages/summary.html');
-  });
+  const fields = {
+    emailInput: form.querySelector('input[type="email"]'),
+    emailError: document.getElementById('loginEmailError'),
+    passwordInput: form.querySelector('input[type="password"]'),
+    passwordError: document.getElementById('loginPasswordError'),
+  };
+  document.getElementById('guestLoginBtn').addEventListener('click', () =>
+    exitAndRedirect(document.getElementById('loginCard'), 'Logged in as guest!', 'pages/summary.html'));
+  form.addEventListener('submit', (e) => handleLoginSubmit(e, fields));
 }
 
 
 // ── Signup Form ──────────────────────────────────────────
 
+/**
+ * @param {HTMLFormElement} form
+ * @returns {{ nameInput: HTMLInputElement, nameError: HTMLElement, emailInput: HTMLInputElement, emailError: HTMLElement, passwordInput: HTMLInputElement, passwordError: HTMLElement, confirmInput: HTMLInputElement, confirmError: HTMLElement, checkbox: HTMLInputElement, checkboxError: HTMLElement }}
+ */
+function getSignupFields(form) {
+  return {
+    nameInput: form.querySelector('input[type="text"]'),
+    nameError: document.getElementById('signupNameError'),
+    emailInput: form.querySelector('input[type="email"]'),
+    emailError: document.getElementById('signupEmailError'),
+    passwordInput: document.getElementById('signupPassword'),
+    passwordError: document.getElementById('signupPasswordError'),
+    confirmInput: document.getElementById('signupConfirm'),
+    confirmError: document.getElementById('signupConfirmError'),
+    checkbox: form.querySelector('.checkbox-input'),
+    checkboxError: document.getElementById('signupCheckboxError'),
+  };
+}
+
+/**
+ * @param {ReturnType<typeof getSignupFields>} fields
+ * @returns {boolean}
+ */
+function validateSignup(fields) {
+  const { nameInput, nameError, emailInput, emailError, passwordInput, passwordError, confirmInput, confirmError, checkbox, checkboxError } = fields;
+  return [
+    validateField(nameInput, nameError, !!nameInput.value.trim(), 'Please enter your name.'),
+    validateField(emailInput, emailError, emailInput.validity.valid, 'Please enter a valid email address.'),
+    validateField(passwordInput, passwordError, !!passwordInput.value.trim(), 'Please enter a password.'),
+    validateField(confirmInput, confirmError, confirmInput.value === passwordInput.value, "Your passwords don't match. Please try again."),
+    validateField(checkbox, checkboxError, checkbox.checked, 'Please accept the Privacy Policy to continue.'),
+  ].every(Boolean);
+}
+
+/**
+ * @param {SubmitEvent} e
+ * @param {ReturnType<typeof getSignupFields>} fields
+ */
+function handleSignupSubmit(e, fields) {
+  e.preventDefault();
+  if (!validateSignup(fields)) return;
+  // TODO: Call registerUser(fields.nameInput.value, fields.emailInput.value, fields.passwordInput.value)
+  exitAndRedirect(document.getElementById('signupCard'), 'Account created!', 'pages/summary.html');
+}
+
 function initSignupForm() {
   const form = document.getElementById('signupForm');
   if (!form) return;
-
-  const nameInput = form.querySelector('input[type="text"]');
-  const nameError = document.getElementById('signupNameError');
-  const emailInput = form.querySelector('input[type="email"]');
-  const emailError = document.getElementById('signupEmailError');
-  const passwordInput = document.getElementById('signupPassword');
-  const passwordError = document.getElementById('signupPasswordError');
-  const confirmInput = document.getElementById('signupConfirm');
-  const confirmError = document.getElementById('signupConfirmError');
-  const checkbox = form.querySelector('.checkbox-input');
-  const checkboxError = document.getElementById('signupCheckboxError');
+  const fields = getSignupFields(form);
   const strengthIndicator = document.getElementById('passwordStrength');
-
-  passwordInput.addEventListener('input', () => {
-    updateStrengthIndicator(passwordInput.value, strengthIndicator);
-  });
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    let valid = true;
-
-    if (!nameInput.value.trim()) {
-      setError(nameInput.closest('.input-wrapper'), nameError, 'Please enter your name.');
-      valid = false;
-    } else {
-      clearError(nameInput.closest('.input-wrapper'), nameError);
-    }
-
-    if (!emailInput.validity.valid) {
-      setError(emailInput.closest('.input-wrapper'), emailError, 'Please enter a valid email address.');
-      valid = false;
-    } else {
-      clearError(emailInput.closest('.input-wrapper'), emailError);
-    }
-
-    if (!passwordInput.value.trim()) {
-      setError(passwordInput.closest('.input-wrapper'), passwordError, 'Please enter a password.');
-      valid = false;
-    } else {
-      clearError(passwordInput.closest('.input-wrapper'), passwordError);
-    }
-
-    if (confirmInput.value !== passwordInput.value) {
-      setError(confirmInput.closest('.input-wrapper'), confirmError, "Your passwords don't match. Please try again.");
-      valid = false;
-    } else {
-      clearError(confirmInput.closest('.input-wrapper'), confirmError);
-    }
-
-    if (!checkbox.checked) {
-      checkboxError.classList.remove('fading-out');
-      checkboxError.textContent = 'Please accept the Privacy Policy to continue.';
-      clearTimeout(errorTimers.get(checkboxError));
-      errorTimers.set(checkboxError, setTimeout(() => {
-        checkboxError.classList.add('fading-out');
-        setTimeout(() => { checkboxError.classList.remove('fading-out'); checkboxError.textContent = ''; }, ERROR_FADE_MS);
-      }, ERROR_AUTO_CLEAR_MS));
-      valid = false;
-    } else {
-      checkboxError.textContent = '';
-    }
-
-    if (!valid) return;
-
-    // TODO: Call Firebase signup here before redirecting
-    exitAndRedirect(form.closest('.auth-card'), 'Account created!', 'pages/summary.html');
-  });
+  fields.passwordInput.addEventListener('input', () =>
+    updateStrengthIndicator(fields.passwordInput.value, strengthIndicator));
+  form.addEventListener('submit', (e) => handleSignupSubmit(e, fields));
 }
