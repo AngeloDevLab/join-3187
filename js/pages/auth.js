@@ -1,5 +1,5 @@
 import { validateField, setError } from '../utils/form-validation.js';
-import { loginUser, registerUser } from '../firebase/auth.js';
+import { loginUser, registerUser, loginAsGuest } from '../firebase/auth.js';
 
 const INTRO_DELAY_MS = 400;
 const INTRO_MOVE_MS = 600;
@@ -202,8 +202,10 @@ function initLoginForm() {
     passwordInput: form.querySelector('input[type="password"]'),
     passwordError: document.getElementById('loginPasswordError'),
   };
-  document.getElementById('guestLoginBtn').addEventListener('click', () =>
-    exitAndRedirect(document.getElementById('loginCard'), 'Logged in as guest!', 'pages/summary.html'));
+  document.getElementById('guestLoginBtn').addEventListener('click', () => {
+    loginAsGuest();
+    exitAndRedirect(document.getElementById('loginCard'), 'Logged in as guest!', 'pages/summary.html');
+  });
   form.addEventListener('submit', (e) => handleLoginSubmit(e, fields));
 }
 

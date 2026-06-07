@@ -1,10 +1,5 @@
 {
-    "users": {
-        "guest": {
-            "name": "Guest",
-            "email": ""
-        }
-    },
+    "users": {},
     "tasks": {
         "task1": {
             "title": "Set up project structure",

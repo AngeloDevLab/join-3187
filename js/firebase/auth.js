@@ -59,6 +59,11 @@ export async function registerUser(name, email) {
   setSession({ id, name, initials });
 }
 
+/** Sets a local-only guest session — no DB entry created. */
+export function loginAsGuest() {
+  setSession({ id: 'guest', name: 'Guest', initials: 'G' });
+}
+
 /**
  * Clears the session. Caller handles redirect so the intro animation
  * replays naturally on index.html load.
