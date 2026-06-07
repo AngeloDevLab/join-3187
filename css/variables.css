@@ -44,7 +44,10 @@
   --space-xl: 64px;
 
   /* Shadow */
-  --shadow-default: 0 4px 8px rgba(0, 0, 0, 0.08);
+  --shadow-default: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --shadow-btn-hover: 0 4px 4px rgba(0, 0, 0, 0.3);
+  --shadow-header: 0 4px 4px rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 0 10px 3px rgba(0, 0, 0, 0.04);
 
   /* Typography */
   --font-weight-regular: 400;

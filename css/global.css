@@ -48,8 +48,20 @@ body {
     margin: 0;
 }
 
+p,
 h1 {
     margin: 0;
+}
+
+a {
+    text-decoration: none;
+    color: var(--color-link);
+}
+
+a:hover {
+    text-decoration: underline;
+    color: var(--color-link); 
+    transform: scale(1.03);
 }
 
 .max-content {
@@ -77,6 +89,7 @@ h1 {
 .btn-primary:hover {
     background: var(--color-accent);
     border-color: var(--color-accent);
+    box-shadow: var(--shadow-btn-hover);
 }
 
 .btn-primary:active {
@@ -93,16 +106,24 @@ h1 {
 .btn-secondary:hover {
     border-color: var(--color-accent);
     color: var(--color-accent);
+    box-shadow: var(--shadow-btn-hover);
 }
 
 /* ── Input Component ───────────────────────────────────── */
+
+.input-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    width: 100%;
+    max-width: 420px;
+}
 
 .input-wrapper {
     position: relative;
     display: flex;
     align-items: center;
     width: 100%;
-    max-width: 420px;
 }
 
 .input-wrapper input {
@@ -163,8 +184,17 @@ h1 {
 }
 
 .input-error-msg {
-    margin-top: var(--space-xs);
     font-size: 12px;
     color: var(--color-error);
+    min-height: 1.2em;
+    transition: opacity 400ms ease;
+}
+
+.input-error-msg:empty {
+    visibility: hidden;
+}
+
+.input-error-msg.fading-out {
+    opacity: 0;
 }
 
