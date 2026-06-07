@@ -1,0 +1,119 @@
+{
+    "users": {
+        "guest": {
+            "name": "Guest",
+            "email": ""
+        }
+    },
+    "tasks": {
+        "task1": {
+            "title": "Set up project structure",
+            "description": "Create folder structure and base files",
+            "category": "technicalTask",
+            "priority": "urgent",
+            "column": "done",
+            "assignedTo": [
+                "contact1"
+            ],
+            "dueDate": "2024-01-15",
+            "createdAt": "2024-01-10",
+            "subtasks": {
+                "subtask1": {
+                    "title": "Create index.html",
+                    "done": true
+                },
+                "subtask2": {
+                    "title": "Create style.css",
+                    "done": true
+                }
+            }
+        },
+        "task2": {
+            "title": "Implement login page",
+            "description": "Build login and signup form with validation",
+            "category": "userStory",
+            "priority": "urgent",
+            "column": "inprogress",
+            "assignedTo": [
+                "contact1",
+                "contact2"
+            ],
+            "dueDate": "2024-01-20",
+            "createdAt": "2024-01-10",
+            "subtasks": {
+                "subtask1": {
+                    "title": "Login form",
+                    "done": true
+                },
+                "subtask2": {
+                    "title": "Signup form",
+                    "done": false
+                },
+                "subtask3": {
+                    "title": "Form validation",
+                    "done": false
+                }
+            }
+        },
+        "task3": {
+            "title": "Build board view",
+            "description": "Kanban board with drag and drop",
+            "category": "userStory",
+            "priority": "medium",
+            "column": "todo",
+            "assignedTo": [
+                "contact2"
+            ],
+            "dueDate": "2024-01-28",
+            "createdAt": "2024-01-10",
+            "subtasks": {
+                "subtask1": {
+                    "title": "Column layout",
+                    "done": false
+                },
+                "subtask2": {
+                    "title": "Task cards",
+                    "done": false
+                },
+                "subtask3": {
+                    "title": "Drag and drop",
+                    "done": false
+                }
+            }
+        },
+        "task4": {
+            "title": "Contact list",
+            "description": "Display and manage contacts",
+            "category": "userStory",
+            "priority": "low",
+            "column": "awaitingfeedback",
+            "assignedTo": [
+                "contact1"
+            ],
+            "dueDate": "2024-01-25",
+            "createdAt": "2024-01-10",
+            "subtasks": {
+                "subtask1": {
+                    "title": "Contact overview",
+                    "done": true
+                },
+                "subtask2": {
+                    "title": "Add contact form",
+                    "done": false
+                }
+            }
+        }
+    },
+    "contacts": {
+        "contact1": {
+            "name": "Max Mustermann",
+            "email": "max.mustermann@example.com",
+            "phone": "+49 123 456789"
+        },
+        "contact2": {
+            "name": "Anna Schmidt",
+            "email": "anna.schmidt@example.com",
+            "phone": "+49 987 654321"
+        }
+    }
+}

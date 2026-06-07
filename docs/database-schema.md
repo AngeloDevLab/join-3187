@@ -1,6 +1,6 @@
 # Firebase Database Schema
 
-> Draft — to be finalized in team meeting before implementation.
+> Status: Finalized
 
 ## Structure
 
@@ -9,7 +9,6 @@ users/
   {userId}/
     name: ""
     email: ""
-    createdAt: timestamp
 
 tasks/
   {taskId}/
@@ -18,7 +17,7 @@ tasks/
     category: "userStory"       # userStory | technicalTask
     priority: "medium"          # urgent | medium | low
     column: "todo"              # todo | inprogress | awaitingfeedback | done
-    assignedTo: [userId, ...]   # array — multiple assignees possible
+    assignedTo: [contactId, ...]
     dueDate: timestamp
     createdAt: timestamp
     subtasks/
@@ -33,21 +32,16 @@ contacts/
     phone: ""
 ```
 
-## Open Questions (discuss in meeting)
+## Entscheidungen
 
-- **Contacts ownership** — are contacts shared across all users (global) or per user?
-  - README says "all users share the same board and contacts" → suggests global
-  - If global: remove any userId reference from contacts
-  - If per user: add `createdBy: {userId}` to contacts
-
-- **Guest login** — does a guest get a real user entry in `users/`?
-  - Firebase Anonymous Auth creates a uid, so yes — but name/email would be empty
-  - Or: skip writing guest users to the database entirely
-
-- **Subtasks** — nested under task (Option A) vs. own top-level collection (Option B)
-  - Option A (nested): simpler queries, data lives with the task
-  - Option B (separate): easier to query all subtasks independently, more flexible
-  - Recommendation: Option A unless subtasks need to be queried across tasks
+| Thema | Entscheidung |
+|---|---|
+| Board | Global geteilt — alle User sehen dieselben Tasks und Contacts |
+| Contacts | Global — kein `createdBy`, kein `userId` Bezug |
+| User-Eintrag | Wird beim Signup angelegt, nur `name` und `email` — wird für Initialen im Header gebraucht |
+| Guest Login | Kein Eintrag in `users/` — Guest bekommt nur Lesezugriff auf das Board |
+| Subtasks | Nested unter Task (Option A) — einfachere Queries, Daten leben beim Task |
+| Auth | Formvalidierung aktiv, Backend-Validierung als Platzhalter — echte Implementierung folgt |
 
 ## Board Columns
 
