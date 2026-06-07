@@ -4,6 +4,63 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>join</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/board.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/auth.css" />
   </head>
-  <body></body>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar"></aside>
+      <main class="main-board-content">
+        <header>
+          <div class="header-content">
+            <h1>Kanban Project Management Tool</h1>
+            <nav>
+              <div>?</div>
+              <div>name</div>
+            </nav>
+          </div>
+        </header>
+        <section class="board-section">
+          <div>
+            <div class="board-search-sec">
+              <div>
+                <h1>Board</h1>
+              </div>
+              <div class="search-area">
+                <input type="text" placeholder="Find Task" />
+                <button class="add-task-btn">Add task +</button>
+              </div>
+            </div>
+            <div class="board-columms">
+              <div>
+                <h2>To do</h2>
+              </div>
+              <div>
+                <h2>in Progress</h2>
+              </div>
+              <div>
+                <h2>await feedback</h2>
+              </div>
+              <div>
+                <h2>done</h2>
+              </div>
+            </div>
+          </div>
+          <div class="board-columns">
+            <div class="column">
+              <div class="task-card">
+                <span class="task-category user-story">User Story</span>
+                <h3>Kochwelt Page & Recipe Recommender</h3>
+                <p>Build start page with recipe recommendation</p>
+                <div class="subtask-progress">1/2 Subtasks</div>
+              </div>
+              <div class="task-card"></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
 </html>
