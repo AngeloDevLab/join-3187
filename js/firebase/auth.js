@@ -5,22 +5,30 @@ function deriveInitials(name) {
   return name.trim().split(/\s+/).map(w => w[0].toUpperCase()).join('').slice(0, 2);
 }
 
-/** @param {{ id: string, name: string, initials: string }} user */
+/**
+ * Persists the current user to sessionStorage.
+ * @param {{ id: string, name: string, initials: string }} user
+ */
 function setSession(user) {
   sessionStorage.setItem('currentUser', JSON.stringify(user));
 }
 
-/** @returns {{ id: string, name: string, initials: string }|null} */
+/**
+ * Returns the current user from sessionStorage, or null if not logged in.
+ * @returns {{ id: string, name: string, initials: string }|null}
+ */
 export function getCurrentUser() {
   const raw = sessionStorage.getItem('currentUser');
   return raw ? JSON.parse(raw) : null;
 }
 
+/** Removes the current user from sessionStorage. */
 export function clearSession() {
   sessionStorage.removeItem('currentUser');
 }
 
 /**
+ * Searches all users in the DB for a matching email. Returns null if not found.
  * @param {string} email
  * @returns {Promise<{id: string, name: string, email: string, initials: string}|null>}
  */

@@ -3,6 +3,7 @@ const ERROR_FADE_MS = 400;
 const errorTimers = new WeakMap();
 
 /**
+ * Marks a field as invalid, shows an error message, and auto-clears after a timeout.
  * @param {HTMLElement|null} wrapper - input-wrapper element, or null (e.g. checkbox)
  * @param {HTMLElement} errorEl
  * @param {string} message
@@ -19,6 +20,7 @@ export function setError(wrapper, errorEl, message) {
 }
 
 /**
+ * Resets a field to its valid state and clears the error message.
  * @param {HTMLElement|null} wrapper
  * @param {HTMLElement} errorEl
  */

@@ -1,6 +1,7 @@
 import { DB_URL } from './config.js';
 
 /**
+ * Fetches all entries from a collection. Returns null if the collection is empty.
  * @param {string} collection
  * @returns {Promise<Object|null>}
  */
@@ -10,6 +11,7 @@ export async function getAll(collection) {
 }
 
 /**
+ * Creates a new entry in a collection and returns the Firebase-generated ID.
  * @param {string} collection
  * @param {Object} data
  * @returns {Promise<string>} Firebase-generated ID
@@ -24,6 +26,7 @@ export async function create(collection, data) {
 }
 
 /**
+ * Deletes a single entry from a collection by ID.
  * @param {string} collection
  * @param {string} id
  * @returns {Promise<void>}
