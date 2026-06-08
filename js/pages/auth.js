@@ -19,12 +19,6 @@ const PASSWORD_RULES = [
   { id: 'special', test: (v) => /[^A-Za-z0-9]/.test(v) },
 ];
 
-const STRENGTH_LEVELS = {
-  weak: { label: 'Password strength: Weak', dataLevel: 'weak' },
-  medium: { label: 'Password strength: Medium', dataLevel: 'medium' },
-  strong: { label: 'Password strength: Strong', dataLevel: 'strong' },
-};
-
 
 document.addEventListener('DOMContentLoaded', () => {
   initIntro();
@@ -168,7 +162,7 @@ function getStrengthKey(value) {
  */
 function updateStrengthIndicator(value, indicator) {
   if (!value) { delete indicator.dataset.level; return; }
-  indicator.dataset.level = STRENGTH_LEVELS[getStrengthKey(value)].dataLevel;
+  indicator.dataset.level = getStrengthKey(value);
 }
 
 
