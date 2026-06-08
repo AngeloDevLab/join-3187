@@ -26,7 +26,7 @@
 
 ```javascript
 // config.js
-export const FIREBASE_BASE_URL = "https://{your-project}.firebaseio.com"
+export const DB_URL = "https://{your-project}.firebaseio.com"
 ```
 
 The base URL can be found in the Realtime Database under "Data" — it is displayed directly above the data tree.
@@ -63,9 +63,9 @@ All requests go against:
 
 Example:
 ```javascript
-import { FIREBASE_BASE_URL } from './config.js'
+import { DB_URL } from './config.js'
 
 // Fetch all tasks
-const res = await fetch(`${FIREBASE_BASE_URL}/tasks.json`)
+const res = await fetch(`${DB_URL}/tasks.json`)
 const data = await res.json()
 ```

@@ -5,5 +5,5 @@ import { getCurrentUser } from '../firebase/auth.js';
  * Import this module at the top of every protected page.
  */
 if (!getCurrentUser()) {
-  window.location.href = '../index.html';
+    window.location.href = '../index.html';
 }

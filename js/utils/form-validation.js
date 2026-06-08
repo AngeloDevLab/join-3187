@@ -9,14 +9,14 @@ const errorTimers = new WeakMap();
  * @param {string} message
  */
 export function setError(wrapper, errorEl, message) {
-  errorEl.classList.remove('fading-out');
-  if (wrapper) wrapper.classList.add('error');
-  errorEl.textContent = message;
-  clearTimeout(errorTimers.get(errorEl));
-  errorTimers.set(errorEl, setTimeout(() => {
-    errorEl.classList.add('fading-out');
-    setTimeout(() => clearError(wrapper, errorEl), ERROR_FADE_MS);
-  }, ERROR_AUTO_CLEAR_MS));
+    errorEl.classList.remove('fading-out');
+    if (wrapper) wrapper.classList.add('error');
+    errorEl.textContent = message;
+    clearTimeout(errorTimers.get(errorEl));
+    errorTimers.set(errorEl, setTimeout(() => {
+        errorEl.classList.add('fading-out');
+        setTimeout(() => clearError(wrapper, errorEl), ERROR_FADE_MS);
+    }, ERROR_AUTO_CLEAR_MS));
 }
 
 /**
@@ -25,9 +25,9 @@ export function setError(wrapper, errorEl, message) {
  * @param {HTMLElement} errorEl
  */
 export function clearError(wrapper, errorEl) {
-  errorEl.classList.remove('fading-out');
-  if (wrapper) wrapper.classList.remove('error');
-  errorEl.textContent = '';
+    errorEl.classList.remove('fading-out');
+    if (wrapper) wrapper.classList.remove('error');
+    errorEl.textContent = '';
 }
 
 /**
@@ -40,11 +40,11 @@ export function clearError(wrapper, errorEl) {
  * @returns {boolean}
  */
 export function validateField(inputEl, errorEl, condition, message) {
-  const wrapper = inputEl.closest('.input-wrapper');
-  if (!condition) {
-    setError(wrapper, errorEl, message);
-    return false;
-  }
-  clearError(wrapper, errorEl);
-  return true;
+    const wrapper = inputEl.closest('.input-wrapper');
+    if (!condition) {
+        setError(wrapper, errorEl, message);
+        return false;
+    }
+    clearError(wrapper, errorEl);
+    return true;
 }

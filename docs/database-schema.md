@@ -8,6 +8,7 @@
 users/
   {userId}/
     name: ""
+    initials: ""
     email: ""
 
 tasks/
@@ -38,7 +39,7 @@ contacts/
 |---|---|
 | Board | Globally shared — all users see the same tasks and contacts |
 | Contacts | Global — no `createdBy`, no `userId` reference |
-| User entry | Created on signup, only `name` and `email` — used for initials in the header |
+| User entry | Created on signup with `name`, `email`, and `initials` — initials are displayed in the header |
 | Guest login | No entry in `users/` — guest receives read-only access to the board |
 | Subtasks | Nested under task (Option A) — simpler queries, data lives with the task |
 | Auth | Form validation active, backend validation as placeholder — real implementation follows |
