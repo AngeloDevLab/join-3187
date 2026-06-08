@@ -1,0 +1,365 @@
+
+/* ── Intro Animation ───────────────────────────────────── */
+
+.intro {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background-color: var(--color-primary);
+    transition: opacity 400ms ease-in-out, visibility 0s linear 400ms;
+}
+
+.intro-logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120px;
+    aspect-ratio: 101 / 122;
+    transform: translate(-50%, -50%);
+    transition: top 600ms ease-in-out, left 600ms ease-in-out, width 600ms ease-in-out, transform 600ms ease-in-out;
+}
+
+.intro-logo-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.intro-logo-img-dark {
+    opacity: 0;
+}
+
+.intro-animate .intro-logo {
+    top: var(--auth-logo-offset);
+    left: var(--auth-logo-offset);
+    width: var(--auth-logo-size);
+    transform: translate(0, 0);
+}
+
+.intro-hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+@media (min-width: 768px) {
+    .intro {
+        background-color: var(--color-bg);
+    }
+
+    .intro-logo-img-light {
+        opacity: 0;
+    }
+
+    .intro-logo-img-dark {
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .intro,
+    .intro-logo {
+        transition-duration: 0s;
+    }
+}
+
+@media (scripting: none) {
+    .intro {
+        display: none;
+    }
+}
+
+/* ── Page ──────────────────────────────────────────────── */
+
+.page {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-logo {
+    position: fixed;
+    top: var(--auth-logo-offset);
+    left: var(--auth-content-inset);
+    width: var(--auth-logo-size);
+    aspect-ratio: 101 / 122;
+    object-fit: contain;
+}
+
+.page-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+}
+
+.page-footer a {
+    font-size: 14px;
+    color: var(--color-text-muted);
+}
+
+.page-footer a:hover {
+    color: var(--color-link);
+}
+
+/* ── Sign-up Hint ──────────────────────────────────────── */
+
+.signup-hint {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    font-size: 16px;
+    color: var(--color-text);
+}
+
+.signup-hint-header {
+    position: fixed;
+    top: var(--auth-logo-offset);
+    right: var(--auth-content-inset);
+    display: none;
+}
+
+@media (min-width: 530px) {
+    .signup-hint-header {
+        display: flex;
+    }
+
+    .signup-hint-card {
+        display: none;
+    }
+}
+
+/* ── Auth Cards ────────────────────────────────────────── */
+
+.auth {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-view {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 650px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: 1rem clamp(var(--space-xs), 4vw, var(--space-lg));
+    background: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-card);
+}
+
+.is-hidden {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .auth {
+        padding: var(--space-lg) var(--space-md);
+    }
+
+    .auth-card-login {
+        max-height: 500px;
+    }
+}
+
+.auth-title {
+    position: relative;
+    align-self: center;
+    padding-bottom: var(--space-sm);
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+}
+
+.auth-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: clamp(4rem, 12vw, 8rem);
+    height: 3px;
+    background: var(--color-accent);
+    border-radius: var(--border-radius-sm);
+    transform: translateX(-50%);
+}
+
+.auth-card-head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-button {
+    position: absolute;
+    left: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    border: none;
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.back-button:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.back-button img {
+    width: 100%;
+    height: 100%;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    justify-content: center;
+}
+
+.auth-buttons .btn {
+    flex: 1 1 auto;
+    max-width: 180px;
+}
+
+@media (min-width: 530px) {
+    .auth-buttons {
+        flex-direction: row;
+        margin-top: var(--space-md);
+    }
+
+    .auth-card {
+        gap: var(--space-lg);
+    }
+}
+
+
+
+/* ── Toast ─────────────────────────────────────────────── */
+
+.toast {
+    position: fixed;
+    bottom: var(--space-xl);
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--color-primary-dark);
+    color: var(--color-white);
+    font-size: 20px;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-default);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 300ms ease, transform 300ms ease;
+    z-index: 10;
+}
+
+.toast.is-visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ── Password Strength ─────────────────────────────────── */
+
+.strength-indicator {
+    width: 100%;
+}
+
+.strength-track {
+    width: 100%;
+    height: 6px;
+    background: var(--color-border);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.strength-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 3px;
+    transition: width 200ms ease, background-color 200ms ease;
+}
+
+.strength-indicator[data-level="weak"] .strength-fill {
+    width: 33%;
+    background: var(--color-error);
+}
+
+.strength-indicator[data-level="medium"] .strength-fill {
+    width: 66%;
+    background: var(--priority-medium);
+}
+
+.strength-indicator[data-level="strong"] .strength-fill {
+    width: 100%;
+    background: var(--priority-low);
+}
+
+/* ── Checkbox ──────────────────────────────────────────── */
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 16px;
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+.checkbox-input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 0;
+    height: 0;
+    border: none;
+    padding: 0;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.checkbox-icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    background: url('../assets/icons/default-box.svg') center / contain no-repeat;
+}
+
+.checkbox-input:checked + .checkbox-icon {
+    background-image: url('../assets/icons/checked-box.svg');
+}
+
+.checkbox-input:focus-visible + .checkbox-icon {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
