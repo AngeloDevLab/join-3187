@@ -1,70 +1,185 @@
-.logo{
-    display:none;
+.logo {
+  display: none;
 }
 
-nav{
-    background-color: var(--color-primary);
-    padding: 20px;
-        position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+.header {
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
 }
 
-nav ul{
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    justify-content: center;
+.link-dnone {
+  display: none;
 }
+
+.username {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--color-accent);
+  border: 3px solid var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.content {
+  padding: 40px 10px;
+}
+
+.slogan-desktop {
+  display: none;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo-mobile {
+  display: block;
+  width: 40px;
+}
+
+/* ↓ geändert */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+nav {
+  background-color: var(--color-primary);
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+}
+/* ↑ geändert */
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 nav a {
   display: flex;
-  flex-direction: column; /* ← */
+  flex-direction: column;
+  padding: 10px;
   align-items: center;
   gap: 5px;
 }
 
-nav ul li a{
-    text-decoration: none;
-  color:#fff;
+nav ul li:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--color-primary-dark) 30%,
+    transparent
+  );
 }
 
-.nav-icon{
-    width: 20px;
-    height: 20px;
+nav ul li.active {
+  /* ← neu */
+  background-color: var(--color-primary-dark);
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: var(--color-nav-item);
+  cursor: pointer;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
 }
 
 /* Tablet */
 @media (min-width: 768px) {
-
 }
 
 /* Desktop */
 @media (min-width: 1024px) {
-body {
+  body {
     display: flex;
-}
+    flex-direction: row-reverse; /* ← */
+  }
 
-nav {
-  padding: 32px;
-  position: inherit;
-  height: 100vh;
-  box-sizing: border-box; /* ← */
-}
-nav ul {
+  .header {
+    padding: 0 40px;
+    align-items: center;
+  }
+
+  nav {
+    width: 200px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    box-sizing: border-box;
+    margin-top: 0;
+  }
+
+  nav ul {
     flex-direction: column;
- 
-}
-nav a {
-    flex-direction: row;
-}
+    align-items: stretch;
+    gap: 15px;
+  }
 
-.logo{
-    display:block;
-    width:80px;
-    margin-bottom: 40px;
-}
-}
+  nav a {
+    flex-direction: row;
+    padding-left: 50px;
+  }
+
+  .logo {
+    display: block;
+    width: 80px;
+    margin: 40px auto 60px auto;
+  }
+
+  .slogan-desktop {
+    display: inherit;
+  }
+
+  .content {
+    padding: 40px;
+  }
+
+  .logo-mobile {
+    display: none;
+  }
+
+  .link-dnone,
+  .link-dnone a {
+    display: inherit;
+    color: var(--color-nav-item);
+    text-decoration: none;
+  }
+
+  .link-dnone a:hover {
+    color: var(--color-accent);
+    font-weight: bold;
+  }
+
+  @media (min-width: 1024px) {
+   .header {
+    padding: 0 max(calc(50% - 940px), 80px);
+  }
+  .content {
+    padding: 80px max(calc(50% - 940px), 80px);
+  }
+    body {
+    justify-content: center; /* ← neu */
+    max-width: 1880px;       /* ← neu */
+    margin: 0 auto;          /* ← neu */
+  }
+  }
