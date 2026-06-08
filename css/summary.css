@@ -1,3 +1,9 @@
+
+h2 {
+  font-size: 61px;
+  margin: 0;
+}
+
 .subline {
   background: linear-gradient(var(--color-accent), var(--color-accent))
     no-repeat bottom left;
@@ -5,19 +11,7 @@
   padding-bottom: 10px;
   font-size: 27px;
   margin: 0px;
-}
-
-hr {
-  border: 0;
-  height: 100%;
-  background-color: var(--color-border);
-  width: 2px;
-  margin: 0;
-}
-
-h2 {
-  font-size: 61px;
-  margin: 0;
+  color: var(--color-primary);
 }
 
 .summary-card {
@@ -30,10 +24,6 @@ h2 {
 .summary-card:hover {
   background-color: var(--color-primary);
   color: #fff;
-}
-
-.edit-icon svg {
-  fill: #fff; /* ← direkt ohne filter */
 }
 
 .summary-card:hover .edit-icon svg {
@@ -55,13 +45,18 @@ h2 {
   fill: none;
 }
 
-.summary-card:hover .check-icon {
-  background-color: #fff;
+.edit-icon {
+  width: 20px;
+  height: 20px;
+  background-color: var(--color-primary);
+  padding: 10px;
+  border-radius: 50%;
 }
 
-.summary-card:hover .check-icon svg {
-  stroke: #2a3647;
+.edit-icon svg {
+  fill: #fff; /* ← direkt ohne filter */
 }
+
 
 .urgent-icon {
   width: 20px;
@@ -77,6 +72,30 @@ h2 {
   fill: #fff;
 }
 
+hr {  border: 0;
+  height: 100%;
+  background-color: var(--color-border);
+  width: 2px;
+  margin: 0;
+}
+
+/* ↓ summary Template */
+
+.summary-board {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1.5rem;
+  margin: 40px 0;
+}
+
+.summary-card:hover .check-icon {
+  background-color: #fff;
+}
+
+.summary-card:hover .check-icon svg {
+  stroke: #2a3647;
+}
+
 .summary-card:hover .urgent-icon {
   background-color: #fff;
 }
@@ -87,13 +106,6 @@ h2 {
 
 .border-date {
   text-align: left !important;
-}
-
-.summary-board {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 1.5rem;
-  margin: 40px 0;
 }
 
 /* Zeile 1: 2 Karten */
@@ -137,22 +149,6 @@ h2 {
   text-align: center;
 }
 
-.edit-icon {
-  width: 20px;
-  height: 20px;
-  background-color: var(--color-primary);
-  padding: 10px;
-  border-radius: 50%;
-}
-
-.urgent-icon {
-  width: 20px;
-  height: 20px;
-  background-color: var(--priority-urgent);
-  padding: 10px;
-  border-radius: 50%;
-}
-
 .summary-card:hover .edit-icon {
   background-color: #fff; /* ← neu */
 }
@@ -161,16 +157,10 @@ h2 {
   background-color: #fff; /* ← neu */
 }
 
-.edit-icon img,
-.urgent-icon img {
-  width: 100%;
-  height: 100%;
-}
+/* ↓ summary Template */
 
-.summary-card:hover .edit-icon img,
-.summary-card:hover .urgent-icon img {
-  filter: brightness(0) saturate(100%) invert(18%) sepia(20%) saturate(800%)
-    hue-rotate(182deg);
+.date{
+  text-align: left !important;
 }
 
 @keyframes fadeOut {
