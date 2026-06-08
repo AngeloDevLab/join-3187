@@ -37,14 +37,17 @@
   --color-progress: #4589ff;
 
   /* Spacing */
-  --space-xs:  4px;
+  --space-xs: 4px;
   --space-sm: 16px;
   --space-md: 24px;
   --space-lg: 32px;
   --space-xl: 64px;
 
   /* Shadow */
-  --shadow-default: 0 4px 8px rgba(0, 0, 0, 0.08);
+  --shadow-default: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --shadow-btn-hover: 0 4px 4px rgba(0, 0, 0, 0.3);
+  --shadow-header: 0 4px 4px rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 0 10px 3px rgba(0, 0, 0, 0.04);
 
   /* Typography */
   --font-weight-regular: 400;
@@ -55,6 +58,9 @@
   /* Layout */
   --sidebar-width: 232px;
   --header-height: 96px;
+  --auth-logo-size: clamp(48px, 4vw, 64px);
+  --auth-logo-offset: clamp(16px, 4vw, 32px);
+  --auth-content-inset: calc(max(calc(50% - 720px), 0px) + var(--auth-logo-offset));
 
   /* Border Radius */
   --border-radius-sm: 8px;
