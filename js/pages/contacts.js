@@ -1,5 +1,6 @@
 const contacts = [
     {
+        id: 1,
         name: "Anton Mayer",
         email: "anton@gmail.com",
         phone: "+49 123 456789",
@@ -7,6 +8,7 @@ const contacts = [
         color: "bg-orange"
     },
     {
+        id: 2,
         name: "Anja Schulz",
         email: "anja@gmail.com",
         phone: "+49 123 456789",
@@ -14,6 +16,7 @@ const contacts = [
         color: "bg-purple"
     },
     {
+        id: 3,
         name: "Benedikt Ziegler",
         email: "benedikt@gmail.com",
         phone: "+49 123 456789",
@@ -21,6 +24,7 @@ const contacts = [
         color: "bg-blue"
     },
     {
+        id: 4,
         name: "David Eisenberg",
         email: "david@gmail.com",
         phone: "+49 123 456789",
@@ -28,6 +32,7 @@ const contacts = [
         color: "bg-orange"
     },
     {
+        id: 5,
         name: "Eva Fischer",
         email: "eva@gmail.com",
         phone: "+49 123 456789",
@@ -83,7 +88,7 @@ function getContactsByLetter(contactsArray) {
 // Returns the HTML template for contact card
 function getContactTemplate(contact) {
     return `
-        <div class="contact-card">
+        <div class="contact-card" onclick="showContactDetails(${contact.id})">
             <div class="contact-avatar ${contact.color}">
                 ${contact.initials}
             </div>
@@ -96,6 +101,54 @@ function getContactTemplate(contact) {
             </div>
         </div>
     `;
+}
+
+function showContactDetails(contactId) {
+    let contact = contacts.find(contact => contact.id === contactId);
+    let detailsContainer = document.getElementById("contactDetails");
+    let contactsList = document.getElementById("contactsList");
+    contactsList.classList.add("d-none");
+    detailsContainer.classList.remove("d-none");
+    detailsContainer.innerHTML = getContactDetailsTemplate(contact);
+}
+
+function getContactDetailsTemplate(contact) {
+    return `
+        <div class="contact-details-header">
+            <div class="contact-details-title-row">
+                <h1>Contacts</h1>
+                <button class="back-to-contacts-btn" onclick="showContactsList()">
+                    ←
+                </button>
+            </div>
+            <p>Better with a team</p>
+        </div>
+
+        <div class="contact-details-profile">
+            <div class="contact-details-avatar ${contact.color}">
+                ${contact.initials}
+            </div>
+            <h2>${contact.name}</h2>
+        </div>
+
+        <div class="contact-information-title">
+            Contact Information
+        </div>
+
+        <div class="contact-information">
+            <h4>Email</h4>
+            <a href="mailto:${contact.email}">${contact.email}</a>
+            <h4>Phone</h4>
+            <p>${contact.phone}</p>
+        </div>
+    `;
+}
+
+function showContactsList() {
+    let detailsContainer = document.getElementById("contactDetails");
+    let contactsList = document.getElementById("contactsList");
+    detailsContainer.classList.add("d-none");
+    contactsList.classList.remove("d-none");
 }
 
 init();
