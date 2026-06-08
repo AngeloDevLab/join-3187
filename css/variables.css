@@ -37,7 +37,7 @@
   --color-progress: #4589ff;
 
   /* Spacing */
-  --space-xs:  4px;
+  --space-xs: 4px;
   --space-sm: 16px;
   --space-md: 24px;
   --space-lg: 32px;
@@ -58,6 +58,9 @@
   /* Layout */
   --sidebar-width: 232px;
   --header-height: 96px;
+  --auth-logo-size: clamp(48px, 4vw, 64px);
+  --auth-logo-offset: clamp(16px, 4vw, 32px);
+  --auth-content-inset: calc(max(calc(50% - 720px), 0px) + var(--auth-logo-offset));
 
   /* Border Radius */
   --border-radius-sm: 8px;
