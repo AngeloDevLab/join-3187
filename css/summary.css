@@ -5,8 +5,7 @@ h2 {
 }
 
 .subline {
-  background: linear-gradient(var(--color-accent), var(--color-accent))
-    no-repeat bottom left;
+  background: linear-gradient(var(--color-accent), var(--color-accent)) no-repeat bottom left;
   background-size: 18% 2px;
   padding-bottom: 10px;
   font-size: 27px;
@@ -31,8 +30,8 @@ h2 {
 }
 
 .check-icon {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   background-color: var(--color-primary);
   padding: 10px;
   border-radius: 50%;
@@ -46,8 +45,8 @@ h2 {
 }
 
 .edit-icon {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   background-color: var(--color-primary);
   padding: 10px;
   border-radius: 50%;
@@ -59,8 +58,8 @@ h2 {
 
 
 .urgent-icon {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   background-color: var(--priority-urgent);
   padding: 10px;
   border-radius: 50%;
@@ -129,7 +128,6 @@ hr {  border: 0;
 .summary-card_flex {
   display: flex;
   justify-content: space-evenly;
-  gap: 10px;
   align-items: center;
 }
 
@@ -228,7 +226,7 @@ hr {  border: 0;
   }
 
   .summary-board {
-    max-width: 400px;
+    max-width: 450px;
   }
 
   .greeting-overlay p {
