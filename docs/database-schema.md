@@ -32,16 +32,16 @@ contacts/
     phone: ""
 ```
 
-## Entscheidungen
+## Decisions
 
-| Thema | Entscheidung |
+| Topic | Decision |
 |---|---|
-| Board | Global geteilt — alle User sehen dieselben Tasks und Contacts |
-| Contacts | Global — kein `createdBy`, kein `userId` Bezug |
-| User-Eintrag | Wird beim Signup angelegt, nur `name` und `email` — wird für Initialen im Header gebraucht |
-| Guest Login | Kein Eintrag in `users/` — Guest bekommt nur Lesezugriff auf das Board |
-| Subtasks | Nested unter Task (Option A) — einfachere Queries, Daten leben beim Task |
-| Auth | Formvalidierung aktiv, Backend-Validierung als Platzhalter — echte Implementierung folgt |
+| Board | Globally shared — all users see the same tasks and contacts |
+| Contacts | Global — no `createdBy`, no `userId` reference |
+| User entry | Created on signup, only `name` and `email` — used for initials in the header |
+| Guest login | No entry in `users/` — guest receives read-only access to the board |
+| Subtasks | Nested under task (Option A) — simpler queries, data lives with the task |
+| Auth | Form validation active, backend validation as placeholder — real implementation follows |
 
 ## Board Columns
 
