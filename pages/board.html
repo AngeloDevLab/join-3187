@@ -15,7 +15,7 @@
       <main class="main-board-content">
         <header>
           <div class="header-content">
-            <h1>Kanban Project Management Tool</h1>
+            <h2>Kanban Project Management Tool</h2>
             <nav>
               <div>?</div>
               <div>name</div>
@@ -29,8 +29,18 @@
                 <h1>Board</h1>
               </div>
               <div class="search-area">
-                <input type="text" placeholder="Find Task" />
-                <button class="add-task-btn">Add task +</button>
+                <div class="search-wrapper">
+                  <input type="text" placeholder="Find Task" input-wrapper />
+                  <div class="linediv"></div>
+                  <img
+                    src="../assets/icons/search.svg"
+                    alt="search-sign"
+                    class="search-icon"
+                  />
+                </div>
+                <div>
+                  <button class="btn">Add task +</button>
+                </div>
               </div>
             </div>
             <div class="board-columms">
@@ -63,4 +73,5 @@
       </main>
     </div>
   </body>
+  <script src="../js/firebase/config.js"></script>
 </html>

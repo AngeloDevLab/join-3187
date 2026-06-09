@@ -30,6 +30,11 @@ header{
     background-color: rgb(255,255,255);
 }
 
+h1{
+    font-size: 60px;
+    font-weight: bold;
+}
+
 .header-content{
     display: flex;
     justify-content: space-between;
@@ -50,4 +55,49 @@ header{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+
+.search-area{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.search-wrapper input {
+    width:200px;
+    padding: 10px 12px 10px 36px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+}
+
+.btn{
+    background-color: rgb(42,54,71);
+    color: white;
+}
+
+.linediv{
+    width: 1px;
+    color: black;
+    height: 21px;
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #D1D1D1;
 }
