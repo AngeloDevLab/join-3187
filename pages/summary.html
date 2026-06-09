@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Summary</title>
+    <title>Join Summary</title>
     <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
     <link rel="stylesheet" href="../css/variables.css" />
     <link rel="stylesheet" href="../css/summary.css" />
@@ -16,10 +16,11 @@
         <img src="../assets/icons/favicon.svg" alt="Join Logo" class="logo-mobile"/>
         <p class="slogan-desktop">Kanban Project Management Tool</p>
         <div class="user-info">
-          <img src="../assets/icons/help.svg" alt="Help Icon" class="help-icon"/>
+         <a href="../pages/help.html"> <img src="../assets/icons/help.svg" alt="Help Icon" class="help-icon"/></a>
           <p class="username" onclick="openClosedMenue()">U</p>
               <nav id="resp_nav" class="dropdown closed_menu">
               <ul> 
+              <li class="help-link-mobile"><a href="../pages/help.html">Help</a></li>
               <li><a href="../pages/profile.html">Legal Notice</a></li>
               <li><a href="../pages/privacy.html">Privacy Policy</a></li>
               <li><a href="../pages/logout.html">Logout</a></li>
@@ -32,6 +33,7 @@
       <section class="content"><!-- Content Starting-->
         <div class="title">
           <h1>Join 360</h1>
+          <hr class="title-hr">
           <p class="subline">Key Metrics at a Glance</p>
         </div>
         <div class="desktop-container-summary">

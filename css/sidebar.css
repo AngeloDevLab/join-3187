@@ -13,6 +13,10 @@
   display: none;
 }
 
+.help-icon{
+  display:none;
+}
+
 .username {
   width: 40px;
   height: 40px;
@@ -78,6 +82,7 @@ main {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  gap: 10px;
 }
 
 .sidebar a {
@@ -99,6 +104,7 @@ main {
 
 .sidebar ul li.active {
   background-color: var(--color-primary-dark);
+  border-radius: 10px;
 }
 
 .sidebar ul li a,
@@ -119,7 +125,16 @@ main {
   background-color: var(--color-primary);
 }
 .closed_menu {
-  display:none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+
+.open_menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
 .dropdown ul {
@@ -209,6 +224,21 @@ main {
   .legal-links {
     margin-top: 100%;
   }
+
+  .help-link-mobile{
+    display: none;
+  }
+
+  .help-icon{
+  display:inherit;
+}
+
+
+.sidebar ul li.active {
+  background-color: var(--color-primary-dark);
+  border-radius: 0px;
+}
+
 }
 @media (min-width: 1024px) {
   .topbar {

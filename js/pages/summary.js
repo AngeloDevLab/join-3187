@@ -15,7 +15,8 @@ function initActiveNav() {
 }
 
 function openClosedMenue(){
-    document.getElementById("resp_nav").classList.toggle("closed_menu");
+    const nav = document.getElementById("resp_nav");
+    nav.classList.toggle("open_menu");
 }
 
 // muss ins allgemeine JS für alle Seiten, damit die Navigation überall funktioniert
