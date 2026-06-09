@@ -12,7 +12,7 @@
   <body>
     <div class="app-container">
       <aside class="sidebar"></aside>
-      <main class="main-board-content">
+      <main>
         <header>
           <div class="header-content">
             <h2>Kanban Project Management Tool</h2>
@@ -23,50 +23,206 @@
           </div>
         </header>
         <section class="board-section">
-          <div>
-            <div class="board-search-sec">
-              <div>
-                <h1>Board</h1>
+          <div class="board-top">
+            <h1>Board</h1>
+
+            <div class="search-area">
+              <div class="search-wrapper">
+                <input type="text" placeholder="Find Task" />
+                <div class="linediv"></div>
+                <img
+                  src="../assets/icons/search.svg"
+                  alt="search"
+                  class="search-icon"
+                />
               </div>
-              <div class="search-area">
-                <div class="search-wrapper">
-                  <input type="text" placeholder="Find Task" input-wrapper />
-                  <div class="linediv"></div>
-                  <img
-                    src="../assets/icons/search.svg"
-                    alt="search-sign"
-                    class="search-icon"
-                  />
-                </div>
-                <div>
-                  <button class="btn">Add task +</button>
-                </div>
-              </div>
-            </div>
-            <div class="board-columms">
-              <div>
-                <h2>To do</h2>
-              </div>
-              <div>
-                <h2>in Progress</h2>
-              </div>
-              <div>
-                <h2>await feedback</h2>
-              </div>
-              <div>
-                <h2>done</h2>
-              </div>
+              <button class="btn">Add task +</button>
             </div>
           </div>
+
           <div class="board-columns">
-            <div class="column">
+            <div class="board-column">
+              <div class="column-head">
+                <h3>To do</h3>
+                <button class="plus-sign">
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect
+                      x="1"
+                      y="1"
+                      width="22"
+                      height="22"
+                      rx="7"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M12 8V16"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M16 12.0754L8 12.0754"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div class="empty-task">No tasks To do</div>
+            </div>
+
+            <div class="board-column">
+              <div class="column-head">
+                <h3>In progress</h3>
+                <button class="plus-sign">
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect
+                      x="1"
+                      y="1"
+                      width="22"
+                      height="22"
+                      rx="7"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M12 8V16"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M16 12.0754L8 12.0754"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+
               <div class="task-card">
                 <span class="task-category user-story">User Story</span>
-                <h3>Kochwelt Page & Recipe Recommender</h3>
-                <p>Build start page with recipe recommendation</p>
-                <div class="subtask-progress">1/2 Subtasks</div>
+                <h4>Kochwelt Page & Recipe Recommender</h4>
+                <p>Build start page with recipe recommendation...</p>
+                <div class="progress-row">
+                  <div class="progress-bar"><div></div></div>
+                  <span>1/2 Subtasks</span>
+                </div>
+                <div class="card-bottom">
+                  <div>
+                    <span class="avatar orange">AM</span>
+                    <span class="avatar green">EM</span>
+                    <span class="avatar purple">MB</span>
+                  </div>
+                  <span class="priority">=</span>
+                </div>
               </div>
-              <div class="task-card"></div>
+            </div>
+
+            <div class="board-column">
+              <div class="column-head">
+                <h3>Await feedback</h3>
+                <button class="plus-sign">
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect
+                      x="1"
+                      y="1"
+                      width="22"
+                      height="22"
+                      rx="7"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M12 8V16"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M16 12.0754L8 12.0754"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div class="task-card">
+                <span class="task-category technical">Technical Task</span>
+                <h4>HTML Base Template Creation</h4>
+                <p>Create reusable HTML base templates...</p>
+                <div class="card-bottom">
+                  <div>
+                    <span class="avatar orange">AM</span>
+                    <span class="avatar green">EM</span>
+                    <span class="avatar purple">MB</span>
+                  </div>
+                  <span class="priority green-text">⌄</span>
+                </div>
+              </div>
+
+              <div class="task-card">
+                <span class="task-category user-story">User Story</span>
+                <h4>Daily Kochwelt Recipe</h4>
+                <p>Implement daily recipe and portion calculator...</p>
+                <div class="card-bottom">
+                  <div>
+                    <span class="avatar orange">AM</span>
+                    <span class="avatar green">EM</span>
+                    <span class="avatar purple">MB</span>
+                  </div>
+                  <span class="priority">=</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="board-column">
+              <div class="column-head">
+                <h3>Done</h3>
+              </div>
+
+              <div class="task-card">
+                <span class="task-category technical">Technical Task</span>
+                <h4>CSS Architecture Planning</h4>
+                <p>Define CSS naming conventions and structure...</p>
+                <div class="progress-row">
+                  <div class="progress-bar">
+                    <div style="width: 100%"></div>
+                  </div>
+                  <span>2/2 Subtasks</span>
+                </div>
+                <div class="card-bottom">
+                  <div>
+                    <span class="avatar orange">AM</span>
+                    <span class="avatar green">EM</span>
+                    <span class="avatar purple">MB</span>
+                  </div>
+                  <span class="priority red-text">⌃</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
