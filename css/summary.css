@@ -1,6 +1,6 @@
 
-h2 {
-  font-size: 61px;
+h1 {
+  font-size: clamp(2rem, 6vw, 4rem);
   margin: 0;
 }
 
@@ -26,7 +26,7 @@ h2 {
 }
 
 .summary-card:hover .edit-icon svg {
-  fill: #2a3647; /* ← direkt ohne filter */
+  fill: #2a3647; 
 }
 
 .check-icon {
@@ -53,7 +53,7 @@ h2 {
 }
 
 .edit-icon svg {
-  fill: #fff; /* ← direkt ohne filter */
+  fill: #fff;
 }
 
 
@@ -80,13 +80,6 @@ hr {  border: 0;
 
 /* ↓ summary Template */
 
-.summary-board {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 1.5rem;
-  margin: 40px 0;
-}
-
 .summary-card:hover .check-icon {
   background-color: #fff;
 }
@@ -105,6 +98,13 @@ hr {  border: 0;
 
 .border-date {
   text-align: left !important;
+}
+
+.summary-board {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1.5rem;
+  margin: 40px 0;
 }
 
 /* Zeile 1: 2 Karten */
@@ -140,6 +140,7 @@ hr {  border: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .summary-card p {
@@ -207,7 +208,7 @@ hr {  border: 0;
     padding-left: 10px;
   }
 
-  h2 {
+  h1 {
     margin: inherit;
     border-right: 2px solid var(--color-accent);
     padding-right: 10px;
@@ -226,7 +227,7 @@ hr {  border: 0;
   }
 
   .summary-board {
-    max-width: 450px;
+    /*max-width: 400px;*/
   }
 
   .greeting-overlay p {
