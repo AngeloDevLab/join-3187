@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>join</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/board.css" />
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/auth.css" />
+  </head>
+  <body onload="updateHtml()">
+    <div class="app-container">
+      <aside class="sidebar"></aside>
+      <main>
+        <header>
+          <div class="header-content">
+            <h2>Kanban Project Management Tool</h2>
+            <nav>
+              <div>?</div>
+              <div>name</div>
+            </nav>
+          </div>
+        </header>
+        <section class="board-section">
+          <div class="board-top">
+            <h1>Board</h1>
+
+            <div class="search-area">
+              <div class="search-wrapper">
+                <input type="text" placeholder="Find Task" />
+                <div class="linediv"></div>
+                <img
+                  src="../assets/icons/search.svg"
+                  alt="search"
+                  class="search-icon"
+                />
+              </div>
+              <button class="btn">Add task +</button>
+            </div>
+          </div>
+
+          <div class="board-columns">
+            <div class="board-column">
+              <div class="column-head">
+                <h3>To do</h3>
+                <button class="plus-sign">
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect
+                      x="1"
+                      y="1"
+                      width="22"
+                      height="22"
+                      rx="7"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M12 8V16"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M16 12.0754L8 12.0754"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div
+                class="drag-area"
+                id="todo"
+                ondrop="moveTo('todo')"
+                ondragover="allowDrop(event)"
+              >
+                <div class="empty-task">No tasks To do</div>
+              </div>
+            </div>
+
+            <div class="board-column">
+              <div class="column-head">
+                <h3>In progress</h3>
+                <button class="plus-sign">
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect
+                      x="1"
+                      y="1"
+                      width="22"
+                      height="22"
+                      rx="7"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M12 8V16"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M16 12.0754L8 12.0754"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div
+                class="drag-area"
+                id="inProgress"
+                ondrop="moveTo('inProgress')"
+                ondragover="allowDrop(event)"
+              ></div>
+            </div>
+
+            <div class="board-column">
+              <div class="column-head">
+                <h3>Await feedback</h3>
+                <button class="plus-sign">
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect
+                      x="1"
+                      y="1"
+                      width="22"
+                      height="22"
+                      rx="7"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M12 8V16"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M16 12.0754L8 12.0754"
+                      stroke="#2A3647"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div
+                class="drag-area"
+                id="awaitFeedback"
+                ondrop="moveTo('awaitFeedback')"
+                ondragover="allowDrop(event)"
+              ></div>
+            </div>
+
+            <div class="board-column">
+              <div class="column-head">
+                <h3>Done</h3>
+              </div>
+              <div
+                class="drag-area"
+                id="done"
+                ondrop="moveTo('done')"
+                ondragover="allowDrop(event)"
+              ></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <dialog>
+      <div class="dialog-header">
+        <h1>Add Task</h1>
+        <button id="closeDialog" class="close-dialog">✕</button>
+      </div>
+
+      <form class="add-task-form">
+        <div class="dialog-content">
+          <div class="dialog-left">
+            <label>
+              Title<span>*</span>
+              <input type="text" placeholder="Enter a title" />
+            </label>
+
+            <label>
+              Description
+              <textarea placeholder="Enter a Description"></textarea>
+            </label>
+
+            <label>
+              Due date<span>*</span>
+              <input type="date" />
+            </label>
+          </div>
+
+          <div class="dialog-divider"></div>
+
+          <div class="dialog-right">
+            <div>
+              <p class="form-label">Priority</p>
+              <div class="priority-buttons">
+                <button type="button">Urgent ⌃</button>
+                <button type="button" class="active-priority">Medium =</button>
+                <button type="button">Low ⌄</button>
+              </div>
+            </div>
+
+            <label>
+              Assigned to
+              <select>
+                <option>Select contacts to assign</option>
+              </select>
+            </label>
+
+            <label>
+              Category<span>*</span>
+              <select>
+                <option>Select task category</option>
+              </select>
+            </label>
+
+            <label>
+              Subtasks
+              <input type="text" placeholder="Add new subtask" />
+            </label>
+          </div>
+        </div>
+
+        <div class="dialog-footer">
+          <p><span>*</span>This field is required</p>
+          <div>
+            <button type="button" class="cancel-btn">Cancel ✕</button>
+            <button type="submit" class="create-btn">Create Task ✓</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+  </body>
+  <script src="../js/pages/board.js"></script>
+  <script src="../js/firebase/config.js"></script>
+</html>

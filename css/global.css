@@ -381,7 +381,7 @@ a {
 
 a:hover {
     text-decoration: underline;
-    color: var(--color-link); 
+    color: var(--color-link);
     transform: scale(1.03);
 }
 
