@@ -2,8 +2,10 @@ import { validateField, clearError } from '../utils/form-validation.js';
 import { getCurrentUser } from '../firebase/auth.js';
 import { getAll } from '../firebase/database.js';
 import { getAvatarColor } from '../utils/helpers.js';
+import { initNavbar } from '../components/navbar.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    initNavbar();
     initDropdownAutoClose();
     initPriorityButtons();
     initCategoryDropdown();

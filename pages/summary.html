@@ -1,175 +1,97 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Join Summary</title>
+    <title>Join | Summary</title>
     <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
     <link rel="stylesheet" href="../css/variables.css" />
-    <link rel="stylesheet" href="../css/summary.css" />
     <link rel="stylesheet" href="../css/global.css" />
-    <link rel="stylesheet" href="../css/sidebar.css" /> <!-- Sidebar/Design CSS-->
-  </head>
-  <body>
-    <main>
-      <div class="topbar">
-        <img src="../assets/icons/favicon.svg" alt="Join Logo" class="logo-mobile"/>
-        <p class="slogan-desktop">Kanban Project Management Tool</p>
-        <div class="user-info">
-         <a href="../pages/help.html"> <img src="../assets/icons/help.svg" alt="Help Icon" class="help-icon"/></a>
-          <p class="username" onclick="openClosedMenue()">U</p>
-              <nav id="resp_nav" class="dropdown closed_menu">
-              <ul> 
-              <li class="help-link-mobile"><a href="../pages/help.html">Help</a></li>
-              <li><a href="../pages/profile.html">Legal Notice</a></li>
-              <li><a href="../pages/privacy.html">Privacy Policy</a></li>
-              <li><a href="../pages/logout.html">Logout</a></li>
-          </ul>
-        </nav>
-        </div>
-         
-      </div><!-- Header Ending -->
-    
-      <section class="content"><!-- Content Starting-->
-        <div class="title">
-          <h1>Join 360</h1>
-          <hr class="title-hr">
-          <p class="subline">Key Metrics at a Glance</p>
-        </div>
-        <div class="desktop-container-summary">
-          <section class="summary-board">
-            <div class="summary-card summary-card_flex">
-              <div class="edit-icon">
-                <svg
-                  width="25"
-                  height="25"
-                  viewBox="0 0 25 25"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M2.66667 21.6667H4.53333L16.0333 10.1667L14.1667 8.3L2.66667 19.8V21.6667ZM21.7333 8.23333L16.0667 2.63333L17.9333 0.766667C18.4444 0.255556 19.0722 0 19.8167 0C20.5611 0 21.1889 0.255556 21.7 0.766667L23.5667 2.63333C24.0778 3.14444 24.3444 3.76111 24.3667 4.48333C24.3889 5.20556 24.1444 5.82222 23.6333 6.33333L21.7333 8.23333ZM19.8 10.2L5.66667 24.3333H0V18.6667L14.1333 4.53333L19.8 10.2Z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <p class="card-number">1</p>
-                <p>To-do</p>
-              </div>
-            </div>
-            <div class="summary-card summary-card_flex">
-              <div class="check-icon">
-                <svg
-                  width="21"
-                  height="16"
-                  viewBox="0 0 21 16"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M1.5 7.91509L8.00943 14.3302L18.8585 1.5"
-                    stroke-width="3"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </div>
-              <div>
-                <p class="card-number">2</p>
-                <p>Done</p>
-              </div>
-            </div>
-            <div class="summary-card summary-card_flex">
-              <div class="urgent-icon">
-                <svg
-                  width="35"
-                  height="26"
-                  viewBox="0 0 35 26"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M32.3128 25.1162C31.9118 25.1169 31.5211 24.9873 31.1982 24.7465L17.093 14.2167L2.98773 24.7465C2.78971 24.8947 2.56479 25.0019 2.32583 25.062C2.08687 25.1222 1.83854 25.1341 1.59502 25.0971C1.3515 25.0602 1.11755 24.975 0.906549 24.8466C0.695544 24.7181 0.511607 24.5489 0.365241 24.3485C0.218876 24.1481 0.112947 23.9205 0.0535029 23.6787C-0.00594092 23.4369 -0.0177355 23.1856 0.0187927 22.9391C0.0925645 22.4415 0.358687 21.9938 0.758615 21.6947L15.9784 10.3213C16.301 10.0796 16.6917 9.94922 17.093 9.94922C17.4943 9.94922 17.885 10.0796 18.2075 10.3213L33.4274 21.6947C33.7452 21.9317 33.9808 22.2642 34.1007 22.6448C34.2207 23.0254 34.2187 23.4347 34.0951 23.8141C33.9715 24.1935 33.7326 24.5237 33.4125 24.7575C33.0925 24.9913 32.7076 25.1169 32.3128 25.1162Z"
-                  />
-                  <path
-                    d="M32.3127 15.1645C31.9116 15.1652 31.521 15.0357 31.1981 14.7949L17.0929 4.265L2.98762 14.7949C2.58769 15.094 2.08671 15.2201 1.5949 15.1455C1.10309 15.0708 0.660727 14.8015 0.365127 14.3968C0.0695279 13.9921 -0.0550935 13.4852 0.0186784 12.9875C0.0924502 12.4898 0.358572 12.0421 0.758501 11.743L15.9783 0.36961C16.3009 0.127979 16.6916 -0.00244141 17.0929 -0.00244141C17.4942 -0.00244141 17.8849 0.127979 18.2074 0.36961L33.4272 11.743C33.745 11.98 33.9807 12.3126 34.1006 12.6932C34.2205 13.0738 34.2186 13.483 34.095 13.8624C33.9714 14.2418 33.7325 14.572 33.4124 14.8058C33.0924 15.0397 32.7075 15.1652 32.3127 15.1645Z"
-                  />
-                </svg>
-              </div>
-              <div class="border-date">
-                <p class="card-number">1</p>
-                <p>Urgent</p>
-              </div>
-              <hr />
-              <p class="date">
-                <strong>October 16, 2022</strong><br />
-                Upcoming Deadline
-              </p>
-            </div>
-            <div class="summary-card">
-              <p class="card-number">5</p>
-              <p>Tasks in Board</p>
-            </div>
-            <div class="summary-card">
-              <p class="card-number">2</p>
-              <p>Tasks In Progress</p>
-            </div>
-            <div class="summary-card">
-              <p class="card-number">2</p>
-              <p>Awaiting feedback</p>
-            </div>
-          </section>
-          <div class="greeting-overlay">
-            <p>Good Morning!</p>
-          </div>
-        </div>
-      </section><!-- Content Ending-->
-    </main>
-    <nav class="sidebar">
-      <img src="../assets/icons/join_logo.svg" alt="Join Logo" class="logo" />
-      <ul>
-        <li>
-          <a href="../pages/summary.html"
-            ><img
-              src="../assets/icons/summary.svg"
-              alt="Summary Icon"
-              class="nav-icon"
-            />Summary</a
-          >
-        </li>
-        <li>
-          <a href="../pages/board.html"
-            ><img
-              src="../assets/icons/edit_square.svg"
-              alt="Add TaskIcon"
-              class="nav-icon"
-            />Add Task</a
-          >
-        </li>
-        <li>
-          <a href="../pages/calendar.html"
-            ><img
-              src="../assets/icons/board.svg"
-              alt="Calendar Icon"
-              class="nav-icon"
-            />Board</a
-          >
-        </li>
-        <li>
-          <a href="../pages/contacts.html"
-            ><img
-              src="../assets/icons/contact.svg"
-              alt="Settings Icon"
-              class="nav-icon"
-            />Contacts</a
-          >
-        </li>
-      </ul>
-      <div class="legal-links">
-        <p class="link-dnone">
-          <a href="../pages/privacy.html">Privacy Policy</a>
-        </p>
-        <p class="link-dnone"><a href="../pages/imprint.html">Imprint</a></p>
-      </div>
-    </nav>
-      <script src="../js/pages/summary.js"></script>
-  </body>
+    <link rel="stylesheet" href="../css/summary.css" />
+</head>
+
+<body>
+    <div class="app-layout">
+
+        <aside id="app-sidebar" class="app-sidebar"></aside>
+
+        <header id="app-header" class="app-header"></header>
+
+        <main class="app-main">
+            <section class="content">
+                <div class="title">
+                    <h1>Join 360</h1>
+                    <hr class="title-hr">
+                    <p class="subline">Key Metrics at a Glance</p>
+                </div>
+                <div class="desktop-container-summary">
+                    <section class="summary-board">
+                        <div class="summary-card summary-card_flex">
+                            <div class="edit-icon">
+                                <svg width="25" height="25" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M2.66667 21.6667H4.53333L16.0333 10.1667L14.1667 8.3L2.66667 19.8V21.6667ZM21.7333 8.23333L16.0667 2.63333L17.9333 0.766667C18.4444 0.255556 19.0722 0 19.8167 0C20.5611 0 21.1889 0.255556 21.7 0.766667L23.5667 2.63333C24.0778 3.14444 24.3444 3.76111 24.3667 4.48333C24.3889 5.20556 24.1444 5.82222 23.6333 6.33333L21.7333 8.23333ZM19.8 10.2L5.66667 24.3333H0V18.6667L14.1333 4.53333L19.8 10.2Z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="card-number">1</p>
+                                <p>To-do</p>
+                            </div>
+                        </div>
+                        <div class="summary-card summary-card_flex">
+                            <div class="check-icon">
+                                <svg width="21" height="16" viewBox="0 0 21 16" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1.5 7.91509L8.00943 14.3302L18.8585 1.5" stroke-width="3"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="card-number">2</p>
+                                <p>Done</p>
+                            </div>
+                        </div>
+                        <div class="summary-card summary-card_flex">
+                            <div class="urgent-icon">
+                                <svg width="35" height="26" viewBox="0 0 35 26" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M32.3128 25.1162C31.9118 25.1169 31.5211 24.9873 31.1982 24.7465L17.093 14.2167L2.98773 24.7465C2.78971 24.8947 2.56479 25.0019 2.32583 25.062C2.08687 25.1222 1.83854 25.1341 1.59502 25.0971C1.3515 25.0602 1.11755 24.975 0.906549 24.8466C0.695544 24.7181 0.511607 24.5489 0.365241 24.3485C0.218876 24.1481 0.112947 23.9205 0.0535029 23.6787C-0.00594092 23.4369 -0.0177355 23.1856 0.0187927 22.9391C0.0925645 22.4415 0.358687 21.9938 0.758615 21.6947L15.9784 10.3213C16.301 10.0796 16.6917 9.94922 17.093 9.94922C17.4943 9.94922 17.885 10.0796 18.2075 10.3213L33.4274 21.6947C33.7452 21.9317 33.9808 22.2642 34.1007 22.6448C34.2207 23.0254 34.2187 23.4347 34.0951 23.8141C33.9715 24.1935 33.7326 24.5237 33.4125 24.7575C33.0925 24.9913 32.7076 25.1169 32.3128 25.1162Z" />
+                                    <path
+                                        d="M32.3127 15.1645C31.9116 15.1652 31.521 15.0357 31.1981 14.7949L17.0929 4.265L2.98762 14.7949C2.58769 15.094 2.08671 15.2201 1.5949 15.1455C1.10309 15.0708 0.660727 14.8015 0.365127 14.3968C0.0695279 13.9921 -0.0550935 13.4852 0.0186784 12.9875C0.0924502 12.4898 0.358572 12.0421 0.758501 11.743L15.9783 0.36961C16.3009 0.127979 16.6916 -0.00244141 17.0929 -0.00244141C17.4942 -0.00244141 17.8849 0.127979 18.2074 0.36961L33.4272 11.743C33.745 11.98 33.9807 12.3126 34.1006 12.6932C34.2205 13.0738 34.2186 13.483 34.095 13.8624C33.9714 14.2418 33.7325 14.572 33.4124 14.8058C33.0924 15.0397 32.7075 15.1652 32.3127 15.1645Z" />
+                                </svg>
+                            </div>
+                            <div class="border-date">
+                                <p class="card-number">1</p>
+                                <p>Urgent</p>
+                            </div>
+                            <hr />
+                            <p class="date">
+                                <strong>October 16, 2022</strong><br />
+                                Upcoming Deadline
+                            </p>
+                        </div>
+                        <div class="summary-card">
+                            <p class="card-number">5</p>
+                            <p>Tasks in Board</p>
+                        </div>
+                        <div class="summary-card">
+                            <p class="card-number">2</p>
+                            <p>Tasks In Progress</p>
+                        </div>
+                        <div class="summary-card">
+                            <p class="card-number">2</p>
+                            <p>Awaiting feedback</p>
+                        </div>
+                    </section>
+                    <div class="greeting-overlay">
+                        <p>Good Morning!</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+    </div>
+    <script type="module" src="../js/pages/summary.js"></script>
+</body>
 
 </html>

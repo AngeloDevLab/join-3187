@@ -1,50 +1,11 @@
-/* ── Page Layout ──────────────────────────────────────────── */
-
-.page-wrapper {
-    display: grid;
-    grid-template-columns: var(--sidebar-width) 1fr;
-    grid-template-rows: var(--header-height) 1fr;
-    min-height: 100vh;
-}
-
-.sidebar {
-    grid-column: 1;
-    grid-row: 1 / 3;
-    background: var(--color-primary);
-}
-
-/* ── Header ───────────────────────────────────────────────── */
-
-.header {
-    grid-column: 2;
-    grid-row: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 var(--space-xl);
-    background: var(--color-white);
-    box-shadow: var(--shadow-header);
-}
-
-.header-logo {
-    height: 40px;
-}
-
-.header-tagline {
-    font-size: 14px;
-    color: var(--color-text-muted);
-}
-
 /* ── Main Content ─────────────────────────────────────────── */
 
-.main-content {
-    grid-column: 2;
-    grid-row: 2;
+.add-task-main {
     padding: var(--space-lg) var(--space-xl);
     overflow-y: auto;
 }
 
-.main-content h1 {
+.add-task-main h1 {
     font-size: clamp(32px, 5vw, 61px);
     font-weight: var(--font-weight-bold);
     margin-bottom: var(--space-lg);
@@ -115,7 +76,6 @@
     border-radius: var(--border-radius-md);
     background: var(--color-white);
     color: var(--color-text);
-    font-family: 'Inter', sans-serif;
     font-size: 16px;
     font-weight: var(--font-weight-medium);
     cursor: pointer;
@@ -316,7 +276,6 @@
     border: none;
     border-bottom: 1px solid var(--color-accent);
     outline: none;
-    font-family: 'Inter', sans-serif;
     font-size: 16px;
     background: transparent;
     padding: 0;
@@ -325,22 +284,8 @@
 
 /* ── Responsive ───────────────────────────────────────────── */
 
-@media (max-width: 960px) {
-    .page-wrapper {
-        grid-template-columns: 1fr;
-        grid-template-rows: var(--header-height) 1fr;
-    }
-
-    .sidebar {
-        display: none;
-    }
-
-    .header,
-    .main-content {
-        grid-column: 1;
-    }
-
-    .main-content {
+@media (max-width: 1023px) {
+    .add-task-main {
         padding: var(--space-md);
     }
 
