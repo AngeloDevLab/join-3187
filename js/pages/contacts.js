@@ -140,6 +140,13 @@ function getContactDetailsTemplate(contact) {
             <a href="mailto:${contact.email}">${contact.email}</a>
             <h4>Phone</h4>
             <p>${contact.phone}</p>
+            <button id="menuContactBtn" class="menu_contact_btn" onclick="openMenuContact()" aria-label="Contact menu">
+                <img src="../assets/icons/menu_contact.svg" alt="">
+            </button>
+            <div id="contactMenu" class="contact_menu">
+                <button class="contact_menu_option"> <img src="../assets/icons/menu_contact_pencil.svg" alt=""> Edit </button>
+                <button class="contact_menu_option"> <img src="../assets/icons/menu_contact_trash.svg" alt=""> Delete </button>
+            </div>
         </div>
     `;
 }
@@ -149,6 +156,13 @@ function showContactsList() {
     let contactsList = document.getElementById("contactsList");
     detailsContainer.classList.add("d-none");
     contactsList.classList.remove("d-none");
+}
+
+function openMenuContact() {
+    let menu = document.getElementById("contactMenu");
+    let button = document.getElementById("menuContactBtn");
+    menu.classList.toggle("contact_menu_open");
+    button.classList.toggle("menu_contact_btn_active");
 }
 
 init();
