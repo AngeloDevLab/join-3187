@@ -1,11 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" type="image/svg+xml" href="./assets/icons/favicon.svg">
     <title>Join</title>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/auth.css">
+
+    <script type="module" src="js/pages/auth.js"></script>
 </head>
+
 <body>
-    
+    <div class="intro" id="intro" aria-hidden="true">
+        <div class="intro-logo">
+            <img src="./assets/icons/join_logo.svg" alt="" class="intro-logo-img intro-logo-img-light">
+            <img src="./assets/icons/favicon.svg" alt="" class="intro-logo-img intro-logo-img-dark">
+        </div>
+    </div>
+
+    <div class="page max-content">
+        <header class="page-header">
+            <img src="./assets/icons/favicon.svg" alt="Join" class="page-logo">
+
+            <p class="signup-hint signup-hint-header" id="signupHintHeader">
+                Not a Join user? <button type="button" class="btn btn-primary" data-show-auth="signup">Sign up</button>
+            </p>
+        </header>
+
+        <main class="auth">
+            <div class="auth-view" id="loginView">
+                <section class="auth-card auth-card-login" id="loginCard">
+                    <h1 class="auth-title">Log in</h1>
+
+                    <form class="auth-form" id="loginForm" novalidate>
+                        <div class="input-field">
+                            <div class="input-wrapper">
+                                <input type="email" id="loginEmail" name="email" placeholder="Email" autocomplete="email" required>
+                                <img src="./assets/icons/mail.svg" alt="" class="input-icon">
+                            </div>
+                            <p class="input-error-msg" id="loginEmailError"></p>
+                        </div>
+                        <div class="input-field">
+                            <div class="input-wrapper">
+                                <input type="password" id="loginPassword" name="password" placeholder="Password" autocomplete="current-password" required>
+                                <button type="button" class="input-icon-btn" disabled>
+                                    <img src="./assets/icons/lock.svg" alt="">
+                                </button>
+                            </div>
+                            <p class="input-error-msg" id="loginPasswordError"></p>
+                        </div>
+
+                        <div class="auth-buttons">
+                            <button type="submit" class="btn btn-primary">Log in</button>
+                            <button type="button" class="btn btn-secondary" id="guestLoginBtn">Guest Log in</button>
+                        </div>
+                    </form>
+                </section>
+
+                <p class="signup-hint signup-hint-card">
+                    Not a Join user? <button type="button" class="btn btn-primary" data-show-auth="signup">Sign up</button>
+                </p>
+            </div>
+
+            <section class="auth-card auth-card-signup is-hidden" id="signupCard">
+                <div class="auth-card-head">
+                    <button type="button" class="back-button" data-show-auth="login" aria-label="Back to log in">
+                        <img src="./assets/icons/arrow-left.svg" alt="">
+                    </button>
+                    <h1 class="auth-title">Sign up</h1>
+                </div>
+
+                <form class="auth-form" id="signupForm" novalidate>
+                    <div class="input-field">
+                        <div class="input-wrapper">
+                            <input type="text" id="signupName" name="name" placeholder="Name" autocomplete="name" required>
+                            <img src="./assets/icons/person.svg" alt="" class="input-icon">
+                        </div>
+                        <p class="input-error-msg" id="signupNameError"></p>
+                    </div>
+
+                    <div class="input-field">
+                        <div class="input-wrapper">
+                            <input type="email" id="signupEmail" name="email" placeholder="Email" autocomplete="email" required>
+                            <img src="./assets/icons/mail.svg" alt="" class="input-icon">
+                        </div>
+                        <p class="input-error-msg" id="signupEmailError"></p>
+                    </div>
+
+                    <div class="input-field">
+                        <div class="input-wrapper">
+                            <input type="password" id="signupPassword" placeholder="Password" autocomplete="new-password" required>
+                            <button type="button" class="input-icon-btn" disabled>
+                                <img src="./assets/icons/lock.svg" alt="">
+                            </button>
+                        </div>
+                        <div class="strength-indicator" id="passwordStrength">
+                            <div class="strength-track">
+                                <div class="strength-fill"></div>
+                            </div>
+                        </div>
+                        <p class="input-error-msg" id="signupPasswordError"></p>
+                    </div>
+
+                    <div class="input-field">
+                        <div class="input-wrapper">
+                            <input type="password" id="signupConfirm" placeholder="Confirm Password" autocomplete="new-password" required>
+                            <button type="button" class="input-icon-btn" disabled>
+                                <img src="./assets/icons/lock.svg" alt="">
+                            </button>
+                        </div>
+                        <p class="input-error-msg" id="signupConfirmError"></p>
+                    </div>
+
+                    <div class="input-field checkbox">
+                        <label class="checkbox">
+                            <input type="checkbox" id="signupPrivacy" name="privacy" class="checkbox-input" required>
+                            <span class="checkbox-icon" aria-hidden="true"></span>
+                            I accept the <a href="./pages/privacy.html">Privacy policy</a>
+                        </label>
+                        <p class="input-error-msg" id="signupCheckboxError"></p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Sign up</button>
+                </form>
+            </section>
+        </main>
+
+        <footer class="page-footer">
+            <a href="./pages/privacy.html">Privacy Policy</a>
+            <a href="./pages/imprint.html">Legal notice</a>
+        </footer>
+    </div>
+
 </body>
+
 </html>
