@@ -1,6 +1,6 @@
 # Firebase Database Schema
 
-> Draft — to be finalized in team meeting before implementation.
+> Status: Finalized
 
 ## Structure
 
@@ -8,8 +8,8 @@
 users/
   {userId}/
     name: ""
+    initials: ""
     email: ""
-    createdAt: timestamp
 
 tasks/
   {taskId}/
@@ -18,7 +18,7 @@ tasks/
     category: "userStory"       # userStory | technicalTask
     priority: "medium"          # urgent | medium | low
     column: "todo"              # todo | inprogress | awaitingfeedback | done
-    assignedTo: [userId, ...]   # array — multiple assignees possible
+    assignedTo: [contactId, ...]
     dueDate: timestamp
     createdAt: timestamp
     subtasks/
@@ -33,21 +33,16 @@ contacts/
     phone: ""
 ```
 
-## Open Questions (discuss in meeting)
+## Decisions
 
-- **Contacts ownership** — are contacts shared across all users (global) or per user?
-  - README says "all users share the same board and contacts" → suggests global
-  - If global: remove any userId reference from contacts
-  - If per user: add `createdBy: {userId}` to contacts
-
-- **Guest login** — does a guest get a real user entry in `users/`?
-  - Firebase Anonymous Auth creates a uid, so yes — but name/email would be empty
-  - Or: skip writing guest users to the database entirely
-
-- **Subtasks** — nested under task (Option A) vs. own top-level collection (Option B)
-  - Option A (nested): simpler queries, data lives with the task
-  - Option B (separate): easier to query all subtasks independently, more flexible
-  - Recommendation: Option A unless subtasks need to be queried across tasks
+| Topic | Decision |
+|---|---|
+| Board | Globally shared — all users see the same tasks and contacts |
+| Contacts | Global — no `createdBy`, no `userId` reference |
+| User entry | Created on signup with `name`, `email`, and `initials` — initials are displayed in the header |
+| Guest login | No entry in `users/` — guest receives read-only access to the board |
+| Subtasks | Nested under task (Option A) — simpler queries, data lives with the task |
+| Auth | Form validation active, backend validation as placeholder — real implementation follows |
 
 ## Board Columns
 

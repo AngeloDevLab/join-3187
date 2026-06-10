@@ -34,6 +34,22 @@ Join is a project management tool for visualizing task status and responsibiliti
 - One JS file per page in `js/pages/`
 - Firebase logic stays in `js/firebase/` — no direct Firebase calls in page scripts
 - Imprint and Privacy styles live in `css/global.css` (no separate stylesheet needed)
+- Page-specific styles only in the corresponding `css/*.css` — never add page-specific rules to `global.css`
+
+## JavaScript Rules
+
+- **Max 14 lines per function** — if a function exceeds this, split it
+- **JSDoc required on every function** — document parameters and return values
+- Reusable logic belongs in `js/components/` or `js/utils/`, not in page scripts
+- Navbar component (`js/components/navbar.js`) renders the shared navigation dynamically — do not copy-paste navbar HTML into individual pages
+
+## Component Responsibilities
+
+| Component | Owner | Status |
+|---|---|---|
+| Navbar / Sidebar | colleague | in progress |
+| Toast | `js/components/toast.js` | stub — implement when needed |
+| Auth validation | `js/pages/auth.js` | done — refactor into modules pending |
 
 ## Pages
 
