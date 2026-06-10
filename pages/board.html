@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../css/variables.css" />
     <link rel="stylesheet" href="../css/auth.css" />
   </head>
-  <body>
+  <body onload="updateHtml()">
     <div class="app-container">
       <aside class="sidebar"></aside>
       <main>
@@ -76,7 +76,14 @@
                   </svg>
                 </button>
               </div>
-              <div class="empty-task">No tasks To do</div>
+              <div
+                class="drag-area"
+                id="todo"
+                ondrop="moveTo('todo')"
+                ondragover="allowDrop(event)"
+              >
+                <div class="empty-task">No tasks To do</div>
+              </div>
             </div>
 
             <div class="board-column">
@@ -114,24 +121,12 @@
                   </svg>
                 </button>
               </div>
-
-              <div class="task-card">
-                <span class="task-category user-story">User Story</span>
-                <h4>Kochwelt Page & Recipe Recommender</h4>
-                <p>Build start page with recipe recommendation...</p>
-                <div class="progress-row">
-                  <div class="progress-bar"><div></div></div>
-                  <span>1/2 Subtasks</span>
-                </div>
-                <div class="card-bottom">
-                  <div>
-                    <span class="avatar orange">AM</span>
-                    <span class="avatar green">EM</span>
-                    <span class="avatar purple">MB</span>
-                  </div>
-                  <span class="priority">=</span>
-                </div>
-              </div>
+              <div
+                class="drag-area"
+                id="inProgress"
+                ondrop="moveTo('inProgress')"
+                ondragover="allowDrop(event)"
+              ></div>
             </div>
 
             <div class="board-column">
@@ -169,60 +164,24 @@
                   </svg>
                 </button>
               </div>
-
-              <div class="task-card">
-                <span class="task-category technical">Technical Task</span>
-                <h4>HTML Base Template Creation</h4>
-                <p>Create reusable HTML base templates...</p>
-                <div class="card-bottom">
-                  <div>
-                    <span class="avatar orange">AM</span>
-                    <span class="avatar green">EM</span>
-                    <span class="avatar purple">MB</span>
-                  </div>
-                  <span class="priority green-text">⌄</span>
-                </div>
-              </div>
-
-              <div class="task-card">
-                <span class="task-category user-story">User Story</span>
-                <h4>Daily Kochwelt Recipe</h4>
-                <p>Implement daily recipe and portion calculator...</p>
-                <div class="card-bottom">
-                  <div>
-                    <span class="avatar orange">AM</span>
-                    <span class="avatar green">EM</span>
-                    <span class="avatar purple">MB</span>
-                  </div>
-                  <span class="priority">=</span>
-                </div>
-              </div>
+              <div
+                class="drag-area"
+                id="awaitFeedback"
+                ondrop="moveTo('awaitFeedback')"
+                ondragover="allowDrop(event)"
+              ></div>
             </div>
 
             <div class="board-column">
               <div class="column-head">
                 <h3>Done</h3>
               </div>
-
-              <div class="task-card">
-                <span class="task-category technical">Technical Task</span>
-                <h4>CSS Architecture Planning</h4>
-                <p>Define CSS naming conventions and structure...</p>
-                <div class="progress-row">
-                  <div class="progress-bar">
-                    <div style="width: 100%"></div>
-                  </div>
-                  <span>2/2 Subtasks</span>
-                </div>
-                <div class="card-bottom">
-                  <div>
-                    <span class="avatar orange">AM</span>
-                    <span class="avatar green">EM</span>
-                    <span class="avatar purple">MB</span>
-                  </div>
-                  <span class="priority red-text">⌃</span>
-                </div>
-              </div>
+              <div
+                class="drag-area"
+                id="done"
+                ondrop="moveTo('done')"
+                ondragover="allowDrop(event)"
+              ></div>
             </div>
           </div>
         </section>
