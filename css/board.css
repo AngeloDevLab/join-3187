@@ -1,52 +1,14 @@
-/* TODO: body rules below duplicate global.css — margin:0 is redundant, height:100vh conflicts with app-layout */
+/* TODO: board-specific body rule — height:100vh may conflict with app-layout; verify and remove if not needed */
 body {
     height: 100vh;
     margin: 0;
 }
 
-/* TODO: main styles replaced by .app-main in global.css — remove when board layout is fully migrated */
-/* main {
-    display: flex;
-    flex-direction: column;
-    background-color: rgb(246, 247, 248);
-    width: 100%;
-} */
-
-/* TODO: .app-container replaced by .app-layout in global.css */
-/* .app-container {
-    display: flex;
-    width: 100%;
-} */
-
-/* TODO: .sidebar replaced by #app-sidebar / .app-sidebar in global.css */
-/* .sidebar {
-    background-color: rgb(42, 54, 71);
-    width: 232px;
-    height: 100vh;
-} */
-
-/* TODO: bare header selector replaced by #app-header / .app-header in global.css */
-/* header {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    width: 100%;
-    height: 92px;
-    background-color: rgb(255, 255, 255);
-} */
-
-/* TODO: global h1 reset — too broad, affects dialog h1 (60px) unintentionally */
+/* TODO: h1 reset is too broad — affects all h1 on the page including board heading; scope to .dialog-header h1 */
 h1 {
     font-size: 60px;
     font-weight: bold;
 }
-
-/* TODO: .header-content no longer needed after navbar integration */
-/* .header-content {
-    display: flex;
-    justify-content: space-between;
-    padding: 32px 24px;
-} */
 
 .board-section {
     padding: 64px 48px;
@@ -113,7 +75,7 @@ h1 {
     margin: 0;
 }
 
-/* TODO: overrides global.css .btn base — background/color should use .btn-primary instead */
+/* TODO: overrides global buttons.css .btn base — use .btn-primary instead */
 .btn {
     background-color: rgb(42, 54, 71); /* TODO: var(--color-primary) */
     color: white;
@@ -211,7 +173,7 @@ h1 {
     align-items: center;
 }
 
-/* TODO: .avatar duplicates .contact-avatar in global.css — consolidate when board uses Firebase contacts */
+/* TODO: .avatar duplicates .contact-avatar in global/dropdown.css — consolidate when board uses Firebase contacts */
 .avatar {
     display: inline-flex;
     width: 28px;
@@ -292,7 +254,7 @@ dialog::backdrop {
     background-color: #d1d1d1; /* TODO: var(--color-border) */
 }
 
-/* TODO: label/input rules below duplicate global.css .input-wrapper — use those classes in board dialog markup */
+/* TODO: label/input rules below duplicate global/inputs.css — use .input-wrapper classes in board dialog markup */
 label,
 .form-label {
     display: flex;
@@ -311,7 +273,7 @@ label span,
 input,
 textarea,
 select {
-    border: 1px solid #d1d1d1; /* TODO: var(--color-border) — also duplicates global.css input rules */
+    border: 1px solid #d1d1d1; /* TODO: var(--color-border) */
     border-radius: 10px;
     padding: 12px 16px;
     font-size: 16px;
@@ -323,7 +285,7 @@ textarea {
     resize: none;
 }
 
-/* TODO: .priority-buttons duplicated in add-task.css — extract to global.css */
+/* TODO: .priority-buttons duplicated in add-task.css — extract to global/buttons.css */
 .priority-buttons {
     display: flex;
     gap: 16px;
@@ -396,20 +358,8 @@ textarea {
     border-radius: 16px;
 }
 
+/* TODO: breakpoint inconsistency — other pages use 1024px, board uses 700px */
 @media (max-width: 700px) {
-    /* TODO: breakpoint inconsistency — other pages use 1024px, board uses 700px */
-
-    /* TODO: .app-container rule no longer needed after navbar migration */
-    /* .app-container { display: block; } */
-
-    /* TODO: .sidebar rule no longer needed after navbar migration */
-    /* .sidebar { display: none; } */
-
-    /* TODO: bare header rule no longer needed after navbar migration */
-    /* header { height: 80px; }
-    .header-content { padding: 16px; }
-    .header-content h2 { display: none; } */
-
     .board-section {
         padding: 40px 12px 90px;
     }

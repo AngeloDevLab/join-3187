@@ -1,0 +1,37 @@
+/* ── App Layout ─────────────────────────────────────────────
+   Mobile-first: header top, main middle, sidebar bottom.
+   Desktop (≥1024px): sidebar left column, header + main right.
+───────────────────────────────────────────────────────── */
+
+.app-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.app-main {
+    order: 1;
+    flex: 1;
+}
+
+@media (min-width: 1024px) {
+    .app-layout {
+        display: grid;
+        grid-template-columns: var(--sidebar-width) 1fr;
+        grid-template-rows: var(--header-height) 1fr;
+        min-height: 100vh;
+    }
+
+    .app-header {
+        order: unset;
+        grid-column: 2;
+        grid-row: 1;
+        padding: 0 var(--space-xl);
+    }
+
+    .app-main {
+        order: unset;
+        grid-column: 2;
+        grid-row: 2;
+    }
+}
