@@ -193,6 +193,136 @@
 }
 
 
+/* ── Subtask Input ────────────────────────────────────────── */
+
+.subtask-actions {
+    display: none;
+    align-items: center;
+    gap: 2px;
+    position: absolute;
+    right: 10px;
+}
+
+.subtask-input-wrapper.is-active .subtask-actions {
+    display: flex;
+}
+
+.subtask-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--color-primary);
+    border-radius: 6px;
+}
+
+.subtask-action-btn:hover {
+    transform: scale(1.1);
+}
+
+.subtask-action-divider {
+    width: 1px;
+    height: 18px;
+    background: var(--color-border);
+    flex-shrink: 0;
+    margin: 0 2px;
+}
+
+/* ── Subtask List ─────────────────────────────────────────── */
+
+.subtask-list {
+    list-style: none;
+    margin: var(--space-xs) 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.subtask-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 6px 12px;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.subtask-item:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.subtask-bullet {
+    font-size: 20px;
+    line-height: 1;
+    color: var(--color-text);
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.subtask-text {
+    flex: 1;
+    font-size: 16px;
+    color: var(--color-text);
+}
+
+.subtask-item-actions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.subtask-item:hover .subtask-item-actions {
+    opacity: 1;
+}
+
+.subtask-item-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 6px;
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+}
+
+.subtask-item-btn:hover {
+    opacity: 1;
+}
+
+.subtask-item-btn img {
+    width: 18px;
+    height: 18px;
+}
+
+.subtask-item.is-editing .subtask-bullet,
+.subtask-item.is-editing .subtask-text {
+    display: none;
+}
+
+.subtask-edit-input {
+    flex: 1;
+    border: none;
+    border-bottom: 1px solid var(--color-accent);
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    background: transparent;
+    padding: 0;
+}
+
+
 /* ── Responsive ───────────────────────────────────────────── */
 
 @media (max-width: 960px) {
