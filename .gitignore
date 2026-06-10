@@ -1,3 +1,4 @@
 .DS_Store
 js/firebase/config.js
 out/
+node_modules/
