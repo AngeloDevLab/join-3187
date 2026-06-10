@@ -10,17 +10,30 @@
     
     <main class="contacts-main">
     <section id="contactsList" class="contacts-list">
-        <div id="contactsContainer"></div>
+        <div class="desktop-add-contact-wrapper">
+            <button class="desktop-add-contact-btn">
+                Add new contact
+                <img src="../assets/icons/add_contact.svg" alt="">
+            </button>
+        </div>
+        
+        <div id="contactsContainer" class="contacts-scroll-container"></div>
 
-        <button class="add-contact-btn" onclick="showAddContactForm()" aria-label="Add contact">
+        <button class="add-contact-btn" aria-label="Add contact">
             <img src="../assets/icons/add_contact.svg" alt="">
         </button>
     </section>
 
-    <section id="contactDetails" class="contact-details d-none"></section>  
-</main>
+    <section id="contactDetails" class="contact-details d-none">
+        <div class="desktop-contact-placeholder">
+            <h1>Contacts</h1>
+            <div></div>
+            <p>Better with a team</p>
+        </div>
+    </section>
+    </main>
 
-<script src="../js/pages/contacts.js"></script>
+    <script src="../js/pages/contacts.js"></script>
 
 </body>
 </html>
