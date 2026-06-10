@@ -9,3 +9,12 @@ export const AVATAR_COLORS = [
     '#FF4646',
     '#00BEE8',
 ];
+
+/**
+ * Returns a deterministic avatar background color for a given index.
+ * @param {number} index
+ * @returns {string} CSS hex color
+ */
+export function getAvatarColor(index) {
+    return AVATAR_COLORS[index % AVATAR_COLORS.length];
+}

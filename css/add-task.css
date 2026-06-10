@@ -1,0 +1,379 @@
+/* ── Page Layout ──────────────────────────────────────────── */
+
+.page-wrapper {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    grid-template-rows: var(--header-height) 1fr;
+    min-height: 100vh;
+}
+
+.sidebar {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    background: var(--color-primary);
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+
+.header {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-xl);
+    background: var(--color-white);
+    box-shadow: var(--shadow-header);
+}
+
+.header-logo {
+    height: 40px;
+}
+
+.header-tagline {
+    font-size: 14px;
+    color: var(--color-text-muted);
+}
+
+/* ── Main Content ─────────────────────────────────────────── */
+
+.main-content {
+    grid-column: 2;
+    grid-row: 2;
+    padding: var(--space-lg) var(--space-xl);
+    overflow-y: auto;
+}
+
+.main-content h1 {
+    font-size: clamp(32px, 5vw, 61px);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-lg);
+}
+
+/* ── Form Columns ─────────────────────────────────────────── */
+
+.task-form .input-field {
+    max-width: none;
+}
+
+.form-columns {
+    display: flex;
+    align-items: flex-start;
+}
+
+.form-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: 0 var(--space-lg);
+}
+
+.form-col:first-child {
+    padding-left: 0;
+}
+
+.form-col:last-child {
+    padding-right: 0;
+}
+
+.form-divider {
+    width: 1px;
+    align-self: stretch;
+    min-height: 480px;
+    background: var(--color-border);
+    flex-shrink: 0;
+}
+
+/* ── Field Labels ─────────────────────────────────────────── */
+
+.field-label {
+    font-size: 18px;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+}
+
+.required-star {
+    color: var(--color-error);
+}
+
+/* ── Priority Buttons ─────────────────────────────────────── */
+
+.priority-buttons {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.priority-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    flex: 1;
+    padding: 12px var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    background: var(--color-white);
+    color: var(--color-text);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition:
+        background var(--transition-fast),
+        color var(--transition-fast),
+        border-color var(--transition-fast);
+}
+
+.priority-icon {
+    display: flex;
+    align-items: center;
+    line-height: 0;
+}
+
+/* Icon color when not selected */
+.priority-btn[data-priority="urgent"] .priority-icon { color: var(--priority-urgent); }
+.priority-btn[data-priority="medium"] .priority-icon { color: var(--priority-medium); }
+.priority-btn[data-priority="low"]    .priority-icon { color: var(--priority-low); }
+
+/* Selected state per priority */
+.priority-btn[data-priority="urgent"].selected {
+    background: var(--priority-urgent);
+    border-color: var(--priority-urgent);
+    color: var(--color-white);
+}
+
+.priority-btn[data-priority="medium"].selected {
+    background: var(--priority-medium);
+    border-color: var(--priority-medium);
+    color: var(--color-white);
+}
+
+.priority-btn[data-priority="low"].selected {
+    background: var(--priority-low);
+    border-color: var(--priority-low);
+    color: var(--color-white);
+}
+
+/* Icon becomes white when button is selected */
+.priority-btn.selected .priority-icon {
+    color: var(--color-white);
+}
+
+/* Hover for non-selected priority buttons */
+.priority-btn:not(.selected):hover {
+    box-shadow: var(--shadow-btn-hover);
+}
+
+/* ── Form Footer ──────────────────────────────────────────── */
+
+.form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+}
+
+.required-note {
+    font-size: 14px;
+    color: var(--color-text);
+}
+
+.form-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.form-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 14px var(--space-lg);
+}
+
+
+/* ── Subtask Input ────────────────────────────────────────── */
+
+.subtask-actions {
+    display: none;
+    align-items: center;
+    gap: 2px;
+    position: absolute;
+    right: 10px;
+}
+
+.subtask-input-wrapper.is-active .subtask-actions {
+    display: flex;
+}
+
+.subtask-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--color-primary);
+    border-radius: 6px;
+}
+
+.subtask-action-btn:hover {
+    transform: scale(1.1);
+}
+
+.subtask-action-divider {
+    width: 1px;
+    height: 18px;
+    background: var(--color-border);
+    flex-shrink: 0;
+    margin: 0 2px;
+}
+
+/* ── Subtask List ─────────────────────────────────────────── */
+
+.subtask-list {
+    list-style: none;
+    margin: var(--space-xs) 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.subtask-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 6px 12px;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.subtask-item:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.subtask-bullet {
+    font-size: 20px;
+    line-height: 1;
+    color: var(--color-text);
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.subtask-text {
+    flex: 1;
+    font-size: 16px;
+    color: var(--color-text);
+}
+
+.subtask-item-actions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.subtask-item:hover .subtask-item-actions {
+    opacity: 1;
+}
+
+.subtask-item-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 6px;
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+}
+
+.subtask-item-btn:hover {
+    opacity: 1;
+}
+
+.subtask-item-btn img {
+    width: 18px;
+    height: 18px;
+}
+
+.subtask-item.is-editing .subtask-bullet,
+.subtask-item.is-editing .subtask-text {
+    display: none;
+}
+
+.subtask-edit-input {
+    flex: 1;
+    border: none;
+    border-bottom: 1px solid var(--color-accent);
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    background: transparent;
+    padding: 0;
+}
+
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 960px) {
+    .page-wrapper {
+        grid-template-columns: 1fr;
+        grid-template-rows: var(--header-height) 1fr;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .header,
+    .main-content {
+        grid-column: 1;
+    }
+
+    .main-content {
+        padding: var(--space-md);
+    }
+
+    .form-columns {
+        flex-direction: column;
+    }
+
+    .form-divider {
+        display: none;
+    }
+
+    .form-col {
+        padding: 0;
+    }
+
+    .form-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
+    }
+
+    .form-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 480px) {
+    .priority-buttons {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        padding: 12px var(--space-md);
+    }
+}
