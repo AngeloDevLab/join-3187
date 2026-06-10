@@ -65,5 +65,7 @@ a:hover {
 }
 
 .max-content {
-    padding: 0 max(calc(50% - 720px), clamp(var(--space-sm), 4vw, var(--space-xl)));
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 clamp(var(--space-sm), 4vw, var(--space-xl));
 }
