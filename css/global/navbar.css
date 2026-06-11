@@ -36,7 +36,6 @@
     text-decoration: none;
     color: var(--color-nav-item);
     font-size: 12px;
-    font-weight: var(--font-weight-medium);
     transform: none;
     transition: background var(--transition-fast), color var(--transition-fast);
 }
@@ -44,7 +43,7 @@
 .nav-link:hover {
     text-decoration: none;
     transform: none;
-    color: var(--color-white);
+    color: var(--color-nav-item);
 }
 
 .nav-item.active .nav-link {
@@ -91,7 +90,6 @@
 .header-tagline {
     display: none;
     font-size: 14px;
-    color: var(--color-text-muted);
 }
 
 .header-user {
@@ -123,7 +121,7 @@
     border-radius: 50%;
     background: var(--color-bg);
     border: 2px solid var(--color-primary);
-    color: var(--color-primary);
+    color: var(--color-accent);
     font-size: 16px;
     font-weight: var(--font-weight-bold);
     cursor: pointer;
@@ -143,8 +141,8 @@
     right: 0;
     background: var(--color-primary);
     border-radius: var(--border-radius-lg) 0 var(--border-radius-lg) var(--border-radius-lg);
-    padding: var(--space-xs) 0;
-    min-width: 168px;
+    padding: var(--space-sm);
+    min-width: 190px;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);
@@ -168,14 +166,14 @@
 }
 
 .header-dropdown li {
-    padding: var(--space-xs) var(--space-sm);
+    margin: 10px 0;
 }
 
 .header-dropdown li a,
 .header-dropdown li button {
     display: block;
     width: 100%;
-    padding: 0;
+    padding: 10px;
     color: var(--color-nav-item);
     font-size: 16px;
     font-weight: var(--font-weight-regular);
@@ -191,6 +189,7 @@
 .header-dropdown li a:hover,
 .header-dropdown li button:hover {
     color: var(--color-white);
+    background: var(--color-primary-dark);
     text-decoration: none;
     transform: none;
 }
@@ -203,6 +202,10 @@
 /* ── Desktop overrides (≥ 1024px) ───────────────────────── */
 
 @media (min-width: 1024px) {
+    .app-header {
+    padding: 0 var(--space-xl);
+    }
+
     .app-sidebar {
         order: unset;
         grid-column: 1;
@@ -226,7 +229,7 @@
     .nav-list {
         flex-direction: column;
         justify-content: flex-start;
-        width: auto;
+        gap: 20px;
     }
 
     .nav-link {
@@ -250,6 +253,7 @@
         gap: var(--space-xs);
         margin-top: auto;
         padding: var(--space-md) 50px;
+        gap: 20px;
     }
 
     .nav-legal a {
@@ -261,9 +265,10 @@
     }
 
     .nav-legal a:hover {
-        color: var(--color-white);
+        color: var(--color-accent);
         text-decoration: none;
         transform: none;
+        font-weight: var(--font-weight-bold);
     }
 
     .header-logo-mobile {
