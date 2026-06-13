@@ -1,66 +1,73 @@
 :root {
-  /* Brand */
-  --color-primary: #2a3647;
-  --color-primary-dark: #091931;
-  --color-accent: #29abe2;
+    /* Brand */
+    --color-primary: #2a3647;
+    --color-primary-dark: #091931;
+    --color-accent: #29abe2;
 
-  /* Backgrounds */
-  --color-bg: #f6f7f8;
-  --color-white: #ffffff;
+    /* Backgrounds */
+    --color-bg: #f6f7f8;
+    --color-white: #ffffff;
 
-  /* Text */
-  --color-text: #000000;
-  --color-text-muted: #a8a8a8;
+    /* Text */
+    --color-text: #000000;
+    --color-text-muted: #a8a8a8;
 
-  /* Navigation */
-  --color-nav-item: #cdcdcd;
+    /* Navigation */
+    --color-nav-item: #cdcdcd;
 
-  /* Border */
-  --color-border: #d1d1d1;
+    /* Border */
+    --color-border: #d1d1d1;
 
-  /* Links */
-  --color-link: #007cee;
+    /* Links */
+    --color-link: #007cee;
 
-  /* Feedback */
-  --color-error: #e60026;
+    /* Feedback */
+    --color-error: #e60026;
 
-  /* Priority */
-  --priority-urgent: #ff3d00;
-  --priority-medium: #ffa800;
-  --priority-low: #7ae229;
+    /* Priority */
+    --priority-urgent: #ff3d00;
+    --priority-medium: #ffa800;
+    --priority-low: #7ae229;
 
-  /* Task Categories */
-  --category-user-story: #0038ff;
-  --category-technical-task: #1fd7c1;
+    /* Task Categories */
+    --category-user-story: #0038ff;
+    --category-technical-task: #1fd7c1;
 
-  /* Progress */
-  --color-progress: #4589ff;
+    /* Progress */
+    --color-progress: #4589ff;
 
-  /* Spacing */
-  --space-xs:  4px;
-  --space-sm: 16px;
-  --space-md: 24px;
-  --space-lg: 32px;
-  --space-xl: 64px;
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 16px;
+    --space-md: 24px;
+    --space-lg: 32px;
+    --space-xl: 64px;
 
-  /* Shadow */
-  --shadow-default: 0 4px 8px rgba(0, 0, 0, 0.08);
+    /* Shadow */
+    --shadow-default: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --shadow-btn-hover: 0 4px 4px rgba(0, 0, 0, 0.3);
+    --shadow-header: 0 4px 4px rgba(0, 0, 0, 0.1);
+    --shadow-card: 0 0 10px 3px rgba(0, 0, 0, 0.04);
 
-  /* Typography */
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+    /* Typography */
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
 
-  /* Layout */
-  --sidebar-width: 232px;
-  --header-height: 96px;
+    /* Layout */
+    --sidebar-width: 232px;
+    --header-height: 96px;
+    --mobile-nav-height: 72px;
+    --auth-logo-size: clamp(48px, 4vw, 64px);
+    --auth-logo-offset: clamp(16px, 4vw, 32px);
+    --auth-content-inset: calc(max(calc(50% - 720px), 0px) + var(--auth-logo-offset));
 
-  /* Border Radius */
-  --border-radius-sm: 8px;
-  --border-radius-md: 10px;
-  --border-radius-lg: 30px;
+    /* Border Radius */
+    --border-radius-sm: 8px;
+    --border-radius-md: 10px;
+    --border-radius-lg: 30px;
 
-  /* Transitions */
-  --transition-fast: 100ms ease-in-out;
+    /* Transitions */
+    --transition-fast: 100ms ease-in-out;
 }
