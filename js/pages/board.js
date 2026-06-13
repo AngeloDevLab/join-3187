@@ -1,112 +1,149 @@
-
-
-let todos = [
-  {
-    id: 0,
-    title: "Kochwelt Page & Recipe Recommender",
-    description: "Build start page with recipe recommendation...",
-    type: "User Story",
-    category: "inProgress",
-    subtasks: "1/2 Subtasks",
-    priority: "=",
-  },
-  {
-    id: 1,
-    title: "HTML Base Template Creation",
-    description: "Create reusable HTML base templates...",
-    type: "Technical Task",
-    category: "awaitFeedback",
-    subtasks: "",
-    priority: "⌄",
-  },
-  {
-    id: 2,
-    title: "Daily Kochwelt Recipe",
-    description: "Implement daily recipe and portion calculator...",
-    type: "User Story",
-    category: "awaitFeedback",
-    subtasks: "",
-    priority: "=",
-  },
-  {
-    id: 3,
-    title: "CSS Architecture Planning",
-    description: "Define CSS naming conventions and structure...",
-    type: "Technical Task",
-    category: "done",
-    subtasks: "2/2 Subtasks",
-    priority: "⌃",
-  },
-];
-
+let tasks = [];
+let contacts = {};
 let currentDraggedElement;
 
-function updateHtml() {
-  renderColumn("todo");
-  renderColumn("inProgress");
-  renderColumn("awaitFeedback");
-  renderColumn("done");
+async function init(){
+  await loadTasks();
+  await loadContacts();
+  updateHtml()
+
+console.log(tasks[3].assignedTo);
+console.log(contacts["contact1"].name);
+
 }
 
-function renderColumn(category) {
-  const column = todos.filter((todo) => todo.category === category);
-  const container = document.getElementById(category);
+async function loadContacts(){
+  const response = await fetch(`${DB_URL}contacts.json`);
+  contacts = await response.json();
 
+  console.log("contacts", contacts);
+
+}
+
+async function loadTasks(){
+  const response = await fetch(`${DB_URL}tasks.json`);
+   const data = await response.json();
+
+  tasks = Object.values(data);
+
+  console.log("tasks", tasks);
+  
+}
+
+function updateHtml() {
+  renderColumn("todo", "todo");
+  renderColumn("inprogress", "inProgress");
+  renderColumn("awaitingfeedback", "awaitFeedback");
+  renderColumn("done", "done");
+}
+
+
+function renderColumn(columnName, ContainerId) {
+  const columnTasks = tasks.filter((tasks) => tasks.column === columnName);
+  const container = document.getElementById(ContainerId);
   container.innerHTML = "";
 
-  if (column.length === 0 && category === "todo") {
-    container.innerHTML = `<div class="empty-task">No tasks To do</div>`;
+   if (columnTasks.length === 0) {
+    container.innerHTML = `<div class="empty-task">No tasks</div>`;
     return;
   }
 
-  for (let i = 0; i < column.length; i++) {
-    container.innerHTML += generateTodoHtml(column[i]);
+  for (let i = 0; i < columnTasks.length; i++) {
+    const originalIndex = tasks.indexOf(columnTasks[i]);
+    container.innerHTML += generateTodoHtml(columnTasks[i], originalIndex);
   }
 }
 
-function generateTodoHtml(todo) {
-  const categoryClass =
-    todo.type === "User Story" ? "user-story" : "technical";
+ function generateTodoHtml(todo, index){
+  const categoryClass = 
+  todo.category === "userStory" ? "user-story" : "technical";
 
   return `
-    <div class="task-card" draggable="true" ondragstart="startDragging(${todo.id})">
-      <span class="task-category ${categoryClass}">${todo.type}</span>
+    <div class="task-card" draggable="true" ondragstart="startDragging(${index})">
+      <span class="task-category ${categoryClass}">
+        ${formatCategory(todo.category)}
+      </span>
+
       <h4>${todo.title}</h4>
       <p>${todo.description}</p>
 
-      ${
-        todo.subtasks
-          ? `
-          <div class="progress-row">
-            <div class="progress-bar"><div></div></div>
-            <span>${todo.subtasks}</span>
-          </div>
-        `
-          : ""
-      }
+      ${generateSubtasksHtml(todo.subtasks)}
 
       <div class="card-bottom">
         <div>
-          <span class="avatar orange">AM</span>
-          <span class="avatar green">EM</span>
-          <span class="avatar purple">MB</span>
+          ${generateAssignedUsersHtml(todo.assignedTo)}
         </div>
-        <span class="priority">${todo.priority}</span>
+        <span class="priority">${formatPriority(todo.priority)}</span>
       </div>
     </div>
   `;
 }
 
-function startDragging(id) {
-  currentDraggedElement = id;
+function generateAssignedUsersHtml(assignedTo) {
+  if (!assignedTo) return "";
+
+  let html = "";
+
+  for (let i = 0; i < assignedTo.length; i++) {
+    const contactId = assignedTo[i];
+    const contact = contacts[contactId];
+
+    if (contact) {
+      html += `<span class="avatar orange">${getInitials(contact.name)}</span>`;
+    }
+  }
+
+  return html;
+}
+
+function getInitials(name) {
+  return name
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
+}
+
+function generateSubtasksHtml(subtasks) {
+  if (!subtasks) return "";
+
+  const subtaskArray = Object.values(subtasks);
+  const doneTasks = subtaskArray.filter((subtask) => subtask.done).length;
+  const allTasks = subtaskArray.length;
+
+  return `
+    <div class="progress-row">
+      <div class="progress-bar">
+        <div style="width: ${(doneTasks / allTasks) * 100}%"></div>
+      </div>
+      <span>${doneTasks}/${allTasks} Subtasks</span>
+    </div>
+  `;
+}
+
+function formatCategory(category) {
+  if (category === "userStory") return "User Story";
+  return "Technical Task";
+}
+
+function formatPriority(priority) {
+  if (priority === "urgent") return "⌃";
+  if (priority === "medium") return "=";
+  if (priority === "low") return "⌄";
+  return priority;
+}
+
+function startDragging(index) {
+  currentDraggedElement = index;
 }
 
 function allowDrop(event) {
   event.preventDefault();
 }
 
-function moveTo(category) {
-  const todo = todos.find((todo) => todo.id === currentDraggedElement);
-  todo.category = category;
+function moveTo(columnName) {
+  tasks[currentDraggedElement].column = columnName;
   updateHtml();
 }
+
+init();
