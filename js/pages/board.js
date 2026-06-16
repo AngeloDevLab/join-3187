@@ -4,10 +4,8 @@ let todos = [
     { id: 0, title: 'Kochwelt Page & Recipe Recommender', description: 'Build start page with recipe recommendation...', type: 'User Story', category: 'inProgress', subtasks: '1/2 Subtasks', priority: '=' },
     { id: 1, title: 'HTML Base Template Creation', description: 'Create reusable HTML base templates...', type: 'Technical Task', category: 'awaitFeedback', subtasks: '', priority: '⌄' },
     { id: 2, title: 'Daily Kochwelt Recipe', description: 'Implement daily recipe and portion calculator...', type: 'User Story', category: 'awaitFeedback', subtasks: '', priority: '=' },
-    { id: 3, title: 'CSS Architecture Planning', description: 'Define CSS naming conventions and structure...', type: 'Technical Task', category: 'done', subtasks: '2/2 Subtasks', priority: '⌃' },
+    { id: 3, title: 'CSS Architecture Planning', description: 'Define CSS naming conventions and structure...', type: 'Technical Task', category: 'done', subtasks: '2/2 Subtasks', priority: '⌃' }
 ];
-
-let currentDraggedElement;
 
 /** Renders all four board columns. */
 function updateHtml() {
