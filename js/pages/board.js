@@ -7,6 +7,8 @@ let todos = [
     { id: 3, title: 'CSS Architecture Planning', description: 'Define CSS naming conventions and structure...', type: 'Technical Task', category: 'done', subtasks: '2/2 Subtasks', priority: '⌃' }
 ];
 
+let currentDraggedElement;
+
 /** Renders all four board columns. */
 function updateHtml() {
     renderColumn('todo');
