@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join | Contacts</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/global/base.css">
+    <link rel="stylesheet" href="../css/global/layout.css">
+    <link rel="stylesheet" href="../css/global/navbar.css">
+    <link rel="stylesheet" href="../css/global/buttons.css">
+    <link rel="stylesheet" href="../css/contacts.css">
+</head>
+<body>
+    <div class="app-layout">
+        <aside id="app-sidebar" class="app-sidebar"></aside>
+        <header id="app-header" class="app-header"></header>
+
+        <main class="app-main">
+            <div class="contacts-main">
+                <section id="contactsList" class="contacts-list">
+                    <div class="desktop-add-contact-wrapper">
+                        <button class="desktop-add-contact-btn">
+                            Add new contact
+                            <img src="../assets/icons/add_contact.svg" alt="">
+                        </button>
+                    </div>
+
+                    <div id="contactsContainer" class="contacts-scroll-container"></div>
+
+                    <button class="add-contact-btn" aria-label="Add contact">
+                        <img src="../assets/icons/add_contact.svg" alt="">
+                    </button>
+                </section>
+
+                <section id="contactDetails" class="contact-details d-none">
+                    <div class="desktop-contact-placeholder">
+                        <h1>Contacts</h1>
+                        <div></div>
+                        <p>Better with a team</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="../js/pages/contacts.js"></script>
+</body>
+</html>

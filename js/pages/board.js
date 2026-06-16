@@ -1,149 +1,81 @@
-let tasks = [];
-let contacts = {};
-let currentDraggedElement;
+import { initNavbar } from '../components/navbar.js';
 
-async function init(){
-  await loadTasks();
-  await loadContacts();
-  updateHtml()
+let todos = [
+    { id: 0, title: 'Kochwelt Page & Recipe Recommender', description: 'Build start page with recipe recommendation...', type: 'User Story', category: 'inProgress', subtasks: '1/2 Subtasks', priority: '=' },
+    { id: 1, title: 'HTML Base Template Creation', description: 'Create reusable HTML base templates...', type: 'Technical Task', category: 'awaitFeedback', subtasks: '', priority: '⌄' },
+    { id: 2, title: 'Daily Kochwelt Recipe', description: 'Implement daily recipe and portion calculator...', type: 'User Story', category: 'awaitFeedback', subtasks: '', priority: '=' },
+    { id: 3, title: 'CSS Architecture Planning', description: 'Define CSS naming conventions and structure...', type: 'Technical Task', category: 'done', subtasks: '2/2 Subtasks', priority: '⌃' }
+];
 
-console.log(tasks[3].assignedTo);
-console.log(contacts["contact1"].name);
-
-}
-
-async function loadContacts(){
-  const response = await fetch(`${DB_URL}contacts.json`);
-  contacts = await response.json();
-
-  console.log("contacts", contacts);
-
-}
-
-async function loadTasks(){
-  const response = await fetch(`${DB_URL}tasks.json`);
-   const data = await response.json();
-
-  tasks = Object.values(data);
-
-  console.log("tasks", tasks);
-  
-}
-
+/** Renders all four board columns. */
 function updateHtml() {
-  renderColumn("todo", "todo");
-  renderColumn("inprogress", "inProgress");
-  renderColumn("awaitingfeedback", "awaitFeedback");
-  renderColumn("done", "done");
+    renderColumn('todo');
+    renderColumn('inProgress');
+    renderColumn('awaitFeedback');
+    renderColumn('done');
 }
 
-
-function renderColumn(columnName, ContainerId) {
-  const columnTasks = tasks.filter((tasks) => tasks.column === columnName);
-  const container = document.getElementById(ContainerId);
-  container.innerHTML = "";
-
-   if (columnTasks.length === 0) {
-    container.innerHTML = `<div class="empty-task">No tasks</div>`;
-    return;
-  }
-
-  for (let i = 0; i < columnTasks.length; i++) {
-    const originalIndex = tasks.indexOf(columnTasks[i]);
-    container.innerHTML += generateTodoHtml(columnTasks[i], originalIndex);
-  }
-}
-
- function generateTodoHtml(todo, index){
-  const categoryClass = 
-  todo.category === "userStory" ? "user-story" : "technical";
-
-  return `
-    <div class="task-card" draggable="true" ondragstart="startDragging(${index})">
-      <span class="task-category ${categoryClass}">
-        ${formatCategory(todo.category)}
-      </span>
-
-      <h4>${todo.title}</h4>
-      <p>${todo.description}</p>
-
-      ${generateSubtasksHtml(todo.subtasks)}
-
-      <div class="card-bottom">
-        <div>
-          ${generateAssignedUsersHtml(todo.assignedTo)}
-        </div>
-        <span class="priority">${formatPriority(todo.priority)}</span>
-      </div>
-    </div>
-  `;
-}
-
-function generateAssignedUsersHtml(assignedTo) {
-  if (!assignedTo) return "";
-
-  let html = "";
-
-  for (let i = 0; i < assignedTo.length; i++) {
-    const contactId = assignedTo[i];
-    const contact = contacts[contactId];
-
-    if (contact) {
-      html += `<span class="avatar orange">${getInitials(contact.name)}</span>`;
+/**
+ * Renders all tasks for a given category into its column container.
+ * @param {string} category
+ */
+function renderColumn(category) {
+    const column = todos.filter((t) => t.category === category);
+    const container = document.getElementById(category);
+    container.innerHTML = '';
+    if (column.length === 0 && category === 'todo') {
+        container.innerHTML = '<div class="empty-task">No tasks To do</div>';
+        return;
     }
-  }
-
-  return html;
+    column.forEach((todo) => { container.innerHTML += generateTodoHtml(todo); });
 }
 
-function getInitials(name) {
-  return name
-    .split(" ")
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase();
+/**
+ * Returns the HTML markup for a single task card.
+ * @param {{ id: number, title: string, description: string, type: string, subtasks: string, priority: string }} todo
+ * @returns {string}
+ */
+function generateTodoHtml(todo) {
+    const categoryClass = todo.type === 'User Story' ? 'user-story' : 'technical';
+    const subtasksHtml = todo.subtasks
+        ? `<div class="progress-row"><div class="progress-bar"><div></div></div><span>${todo.subtasks}</span></div>`
+        : '';
+    return `<div class="task-card" draggable="true" ondragstart="startDragging(${todo.id})">
+        <span class="task-category ${categoryClass}">${todo.type}</span>
+        <h4>${todo.title}</h4>
+        <p>${todo.description}</p>
+        ${subtasksHtml}
+        <div class="card-bottom">
+            <div><span class="avatar orange">AM</span><span class="avatar green">EM</span><span class="avatar purple">MB</span></div>
+            <span class="priority">${todo.priority}</span>
+        </div>
+    </div>`;
 }
 
-function generateSubtasksHtml(subtasks) {
-  if (!subtasks) return "";
+/**
+ * Stores the id of the task being dragged.
+ * @param {number} id
+ */
+function startDragging(id) { currentDraggedElement = id; }
 
-  const subtaskArray = Object.values(subtasks);
-  const doneTasks = subtaskArray.filter((subtask) => subtask.done).length;
-  const allTasks = subtaskArray.length;
+/** @param {DragEvent} event */
+function allowDrop(event) { event.preventDefault(); }
 
-  return `
-    <div class="progress-row">
-      <div class="progress-bar">
-        <div style="width: ${(doneTasks / allTasks) * 100}%"></div>
-      </div>
-      <span>${doneTasks}/${allTasks} Subtasks</span>
-    </div>
-  `;
+/**
+ * Moves the dragged task to a new category and re-renders.
+ * @param {string} category
+ */
+function moveTo(category) {
+    const todo = todos.find((t) => t.id === currentDraggedElement);
+    todo.category = category;
+    updateHtml();
 }
 
-function formatCategory(category) {
-  if (category === "userStory") return "User Story";
-  return "Technical Task";
-}
+window.startDragging = startDragging;
+window.allowDrop = allowDrop;
+window.moveTo = moveTo;
 
-function formatPriority(priority) {
-  if (priority === "urgent") return "⌃";
-  if (priority === "medium") return "=";
-  if (priority === "low") return "⌄";
-  return priority;
-}
-
-function startDragging(index) {
-  currentDraggedElement = index;
-}
-
-function allowDrop(event) {
-  event.preventDefault();
-}
-
-function moveTo(columnName) {
-  tasks[currentDraggedElement].column = columnName;
-  updateHtml();
-}
-
-init();
+document.addEventListener('DOMContentLoaded', () => {
+    initNavbar();
+    updateHtml();
+});

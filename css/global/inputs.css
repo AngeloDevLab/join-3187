@@ -1,0 +1,167 @@
+/* ── Input Component ───────────────────────────────────────── */
+
+.input-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    width: 100%;
+    max-width: 420px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 10px 20px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    background: var(--color-white);
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(16px, 4vw, 20px);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text);
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.input-wrapper input::placeholder {
+    color: var(--color-text-muted);
+}
+
+.input-wrapper input:focus,
+.input-wrapper input.focused {
+    border-color: var(--color-accent);
+}
+
+.input-wrapper.error input,
+.input-wrapper.error textarea,
+.input-wrapper.error select {
+    border-color: var(--color-error);
+}
+
+.input-wrapper .input-icon,
+.input-wrapper .input-icon-btn {
+    position: absolute;
+    right: clamp(var(--space-xs), 3vw, var(--space-md));
+    width: 20px;
+    height: 20px;
+}
+
+.input-wrapper .input-icon {
+    pointer-events: none;
+    color: var(--color-text-muted);
+}
+
+.input-wrapper .input-icon-btn {
+    display: inline-flex;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.input-wrapper .input-icon-btn:disabled {
+    cursor: default;
+}
+
+.input-wrapper .input-icon-btn img {
+    width: 100%;
+    height: 100%;
+}
+
+.input-error-msg {
+    font-size: 12px;
+    color: var(--color-error);
+    min-height: 1.2em;
+    transition: opacity 400ms ease;
+}
+
+.input-error-msg:empty {
+    visibility: hidden;
+}
+
+.input-error-msg.fading-out {
+    opacity: 0;
+}
+
+/* ── Textarea ──────────────────────────────────────────────── */
+
+.input-wrapper textarea {
+    width: 100%;
+    padding: 10px 20px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    background: var(--color-white);
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(16px, 4vw, 20px);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text);
+    outline: none;
+    resize: vertical;
+    transition: border-color var(--transition-fast);
+}
+
+.input-wrapper textarea::placeholder {
+    color: var(--color-text-muted);
+}
+
+.input-wrapper textarea:focus {
+    border-color: var(--color-accent);
+}
+
+/* ── Select ────────────────────────────────────────────────── */
+
+.input-wrapper select {
+    width: 100%;
+    padding: 10px 48px 10px 20px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    background: var(--color-white);
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(16px, 4vw, 20px);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text);
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    cursor: pointer;
+    transition: border-color var(--transition-fast);
+}
+
+.input-wrapper select:focus {
+    border-color: var(--color-accent);
+}
+
+/* Prevents the custom icon from blocking clicks */
+.select-wrapper .input-icon {
+    pointer-events: none;
+}
+
+/* ── Date Input ────────────────────────────────────────────── */
+
+.input-wrapper input[type="date"] {
+    cursor: text;
+}
+
+.input-wrapper input[type="date"]::-webkit-datetime-edit {
+    color: var(--color-text-muted);
+}
+
+.input-wrapper input[type="date"].has-value::-webkit-datetime-edit {
+    color: var(--color-text);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 0;
+    width: 48px;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 1;
+}

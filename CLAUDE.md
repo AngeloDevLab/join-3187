@@ -16,7 +16,13 @@ Join is a project management tool for visualizing task status and responsibiliti
 ├── pages/              # All other HTML pages
 ├── css/
 │   ├── variables.css   # CSS custom properties (colors, spacing, fonts)
-│   ├── global.css      # Global styles incl. legal pages (Imprint, Privacy)
+│   ├── global/
+│   │   ├── base.css      # @font-face, resets, typography
+│   │   ├── layout.css    # .app-layout, .app-main + desktop grid
+│   │   ├── navbar.css    # .app-sidebar, .app-header + nav components
+│   │   ├── buttons.css   # .btn, .btn-primary, .btn-secondary
+│   │   ├── inputs.css    # input, textarea, select, date-input
+│   │   └── dropdown.css  # .dropdown, .assigned-option, contact chips
 │   └── *.css           # Page-specific stylesheets
 ├── js/
 │   ├── pages/          # One JS module per page
@@ -33,8 +39,9 @@ Join is a project management tool for visualizing task status and responsibiliti
 - All CSS variables are defined exclusively in `css/variables.css`
 - One JS file per page in `js/pages/`
 - Firebase logic stays in `js/firebase/` — no direct Firebase calls in page scripts
-- Imprint and Privacy styles live in `css/global.css` (no separate stylesheet needed)
-- Page-specific styles only in the corresponding `css/*.css` — never add page-specific rules to `global.css`
+- Shared styles live in `css/global/` — import only what each page needs
+- Page-specific styles only in the corresponding `css/*.css` — never add page-specific rules to `css/global/`
+- Import order per page: `variables.css` → `global/*` → page stylesheet
 
 ## JavaScript Rules
 
@@ -60,8 +67,8 @@ Join is a project management tool for visualizing task status and responsibiliti
 | Board | `pages/board.html` | `css/board.css` | `js/pages/board.js` |
 | Add Task | `pages/add-task.html` | `css/add-task.css` | `js/pages/add-task.js` |
 | Contacts | `pages/contacts.html` | `css/contacts.css` | `js/pages/contacts.js` |
-| Imprint | `pages/imprint.html` | _(global.css)_ | — |
-| Privacy | `pages/privacy.html` | _(global.css)_ | — |
+| Imprint | `pages/imprint.html` | _(global/base.css)_ | — |
+| Privacy | `pages/privacy.html` | _(global/base.css)_ | — |
 
 ## Firebase
 
