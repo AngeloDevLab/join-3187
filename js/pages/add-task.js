@@ -1,5 +1,6 @@
 import { validateField, clearError } from '../utils/form-validation.js';
 import { getCurrentUser } from '../firebase/auth.js';
+import { showToast } from '../components/toast.js';
 import { getAll } from '../firebase/database.js';
 import { getAvatarColor } from '../utils/helpers.js';
 import { initNavbar } from '../components/navbar.js';
@@ -159,6 +160,7 @@ function pickCategoryOption(option, els) {
     els.hiddenInput.value = option.dataset.value;
     els.valueEl.textContent = option.textContent.trim();
     els.valueEl.classList.remove('dropdown-placeholder');
+    els.hiddenInput.dispatchEvent(new Event('input'));
     clearError(els.hiddenInput.closest('.input-wrapper'), els.errorEl);
     toggleDropdown(els, false);
 }
@@ -386,17 +388,40 @@ function initSubtaskInput() {
 }
 
 
+// ── Button State ─────────────────────────────────────────
+
+/**
+ * @param {ReturnType<typeof getFormFields>} fields
+ * @returns {boolean}
+ */
+function isTaskReady(fields) {
+    return !!fields.titleInput.value.trim()
+        && !!fields.dueDateInput.value
+        && !!fields.categorySelect.value;
+}
+
+/**
+ * @param {HTMLButtonElement} btn
+ * @param {ReturnType<typeof getFormFields>} fields
+ */
+function updateTaskBtn(btn, fields) {
+    btn.disabled = !isTaskReady(fields);
+}
+
+
 // ── Submit ───────────────────────────────────────────────
 
 /**
  * @param {SubmitEvent} e
  * @param {ReturnType<typeof getFormFields>} fields
  */
-function handleSubmit(e, fields) {
+async function handleSubmit(e, fields) {
     e.preventDefault();
     if (!validateTaskForm(fields)) return;
-    // TODO: persist task via Firebase — getSelectedPriority() returns current value
-    console.log('Task ready, priority:', getSelectedPriority());
+    // TODO: create('tasks', { title, dueDate, category, priority, assigned, subtasks }) via Firebase
+    showToast('Task added to board');
+    clearTaskForm(fields);
+    e.submitter.disabled = true;
 }
 
 /** Wires up submit, clear, and date-color handlers. */
@@ -404,8 +429,13 @@ function initTaskForm() {
     const form = document.querySelector('.task-form');
     if (!form) return;
     const fields = getFormFields();
+    const submitBtn = form.querySelector('[type="submit"]');
+    updateTaskBtn(submitBtn, fields);
+    fields.titleInput.addEventListener('input', () => updateTaskBtn(submitBtn, fields));
+    fields.categorySelect.addEventListener('input', () => updateTaskBtn(submitBtn, fields));
     fields.dueDateInput.addEventListener('change', () => {
         fields.dueDateInput.classList.toggle('has-value', !!fields.dueDateInput.value);
+        updateTaskBtn(submitBtn, fields);
     });
     form.addEventListener('submit', (e) => handleSubmit(e, fields));
     form.querySelector('.clear-btn').addEventListener('click', () => clearTaskForm(fields));

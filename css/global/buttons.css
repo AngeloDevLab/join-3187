@@ -36,3 +36,8 @@
     color: var(--color-accent);
     box-shadow: var(--shadow-btn-hover);
 }
+
+.btn[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
