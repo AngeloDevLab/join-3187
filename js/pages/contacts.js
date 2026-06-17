@@ -13,6 +13,8 @@ const contacts = [
     { id: 10, name: 'Lena Richter',   email: 'lena@gmail.com',     phone: '+49 123 456789', initials: 'LR', color: 'bg-orange' },
 ];
 
+let activeContactId = null;
+
 /** Sorts contacts alphabetically and renders the list. */
 function init() {
     contacts.sort((a, b) => a.name.localeCompare(b.name));
@@ -57,7 +59,7 @@ function renderGroupedContacts(grouped, container) {
  * @returns {string}
  */
 function getContactTemplate(contact) {
-    return `<div class="contact-card" onclick="showContactDetails(${contact.id})">
+    return `<div id="contact-card-${contact.id}" class="contact-card" onclick="showContactDetails(${contact.id})">
         <div class="contact-avatar ${contact.color}">${contact.initials}</div>
         <div><h4>${contact.name}</h4><a href="mailto:${contact.email}">${contact.email}</a></div>
     </div>`;
@@ -69,12 +71,31 @@ function getContactTemplate(contact) {
  */
 function showContactDetails(contactId) {
     const contact = contacts.find((c) => c.id === contactId);
+    setActiveContactCard(contactId);
     const details = document.getElementById('contactDetails');
     details.classList.remove('d-none');
     details.innerHTML = getContactDetailsTemplate(contact);
+    showContactDetailsCard();
     if (window.innerWidth < 1024) {
         document.getElementById('contactsList').classList.add('d-none');
     }
+}
+
+/** Marks the selected contact card as active. */
+function setActiveContactCard(contactId) {
+    if (activeContactId !== null) {
+        document.getElementById(`contact-card-${activeContactId}`).classList.remove('active');
+    }
+
+    document.getElementById(`contact-card-${contactId}`).classList.add('active');
+    activeContactId = contactId;
+}
+
+/** Shows the animated contact details card after it was rendered. */
+function showContactDetailsCard() {
+    requestAnimationFrame(() => {
+        document.getElementById('contactDetailsCard').classList.remove('d-none');
+    });
 }
 
 /**
@@ -90,29 +111,31 @@ function getContactDetailsTemplate(contact) {
         </div>
         <p>Better with a team</p>
     </div>
-    <div class="contact-details-profile">
-        <div class="contact-details-avatar ${contact.color}">${contact.initials}</div>
-        <div class="contact-details-name-actions">
-            <h2>${contact.name}</h2>
-            <div class="desktop-contact-actions">
-                <button><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
-                <button><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
+    <div id="contactDetailsCard" class="contact-details-card d-none">
+        <div class="contact-details-profile">
+            <div class="contact-details-avatar ${contact.color}">${contact.initials}</div>
+            <div class="contact-details-name-actions">
+                <h2>${contact.name}</h2>
+                <div class="desktop-contact-actions">
+                    <button><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
+                    <button><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="contact-information-title">Contact Information</div>
-    <div class="contact-information">
-        <h4>Email</h4>
-        <a href="mailto:${contact.email}">${contact.email}</a>
-        <h4>Phone</h4>
-        <p>${contact.phone}</p>
-        <button id="menuContactBtn" class="menu_contact_btn" onclick="toggleMenuContact()" aria-label="Contact menu">
-            <img src="../assets/icons/menu_contact.svg" alt="">
-        </button>
-        <div id="contactMenuBackdrop" class="contact_menu_backdrop" onclick="closeMenuContact()"></div>
-        <div id="contactMenu" class="contact_menu" onclick="closeMenuContact()">
-            <button class="contact_menu_option" onclick="event.stopPropagation()"><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
-            <button class="contact_menu_option" onclick="event.stopPropagation()"><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
+        <div class="contact-information-title">Contact Information</div>
+        <div class="contact-information">
+            <h4>Email</h4>
+            <a href="mailto:${contact.email}">${contact.email}</a>
+            <h4>Phone</h4>
+            <p>${contact.phone}</p>
+            <button id="menuContactBtn" class="menu_contact_btn" onclick="toggleMenuContact()" aria-label="Contact menu">
+                <img src="../assets/icons/menu_contact.svg" alt="">
+            </button>
+            <div id="contactMenuBackdrop" class="contact_menu_backdrop" onclick="closeMenuContact()"></div>
+            <div id="contactMenu" class="contact_menu" onclick="closeMenuContact()">
+                <button class="contact_menu_option" onclick="event.stopPropagation()"><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
+                <button class="contact_menu_option" onclick="event.stopPropagation()"><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
+            </div>
         </div>
     </div>`;
 }
