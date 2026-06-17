@@ -26,6 +26,20 @@ export async function create(collection, data) {
 }
 
 /**
+ * Partially updates an existing entry in a collection (PATCH — merges fields).
+ * @param {string} collection
+ * @param {string} id
+ * @param {Object} data
+ * @returns {Promise<void>}
+ */
+export async function update(collection, id, data) {
+    await fetch(`${DB_URL}/${collection}/${id}.json`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+    });
+}
+
+/**
  * Deletes a single entry from a collection by ID.
  * @param {string} collection
  * @param {string} id
