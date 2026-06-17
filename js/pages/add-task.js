@@ -1,19 +1,11 @@
+import '../utils/auth-guard.js';
 import { validateField, clearError } from '../utils/form-validation.js';
 import { getCurrentUser } from '../firebase/auth.js';
 import { showToast } from '../components/toast.js';
-import { getAll } from '../firebase/database.js';
+import { getUsers } from '../firebase/cache.js';
 import { getAvatarColor } from '../utils/helpers.js';
 import { initNavbar } from '../components/navbar.js';
-
-document.addEventListener('DOMContentLoaded', () => {
-    initNavbar();
-    initDropdownAutoClose();
-    initPriorityButtons();
-    initCategoryDropdown();
-    initAssignedDropdown();
-    initSubtaskInput();
-    initTaskForm();
-});
+import { initSubtaskInput, getSubtasks } from '../components/subtask.js';
 
 
 // ── Priority ─────────────────────────────────────────────
@@ -27,12 +19,6 @@ function selectPriorityBtn(clicked) {
     clicked.classList.add('selected');
 }
 
-/** Attaches click handlers to all priority buttons. */
-function initPriorityButtons() {
-    document.querySelectorAll('.priority-btn').forEach((btn) => {
-        btn.addEventListener('click', () => selectPriorityBtn(btn));
-    });
-}
 
 /**
  * Returns the currently selected priority value.
@@ -43,7 +29,15 @@ function getSelectedPriority() {
 }
 
 
-// ── Form Fields ──────────────────────────────────────────
+/** Attaches click handlers to all priority buttons. */
+function initPriorityButtons() {
+    document.querySelectorAll('.priority-btn').forEach((btn) => {
+        btn.addEventListener('click', () => selectPriorityBtn(btn));
+    });
+}
+
+
+// ── Fields & Validation ──────────────────────────────────
 
 /**
  * Collects all validated field elements into one object.
@@ -61,7 +55,27 @@ function getFormFields() {
 }
 
 
-// ── Validation ───────────────────────────────────────────
+/**
+ * Returns true when all required task fields are filled.
+ * @param {ReturnType<typeof getFormFields>} fields
+ * @returns {boolean}
+ */
+function isTaskReady(fields) {
+    return !!fields.titleInput.value.trim()
+        && !!fields.dueDateInput.value
+        && !!fields.categorySelect.value;
+}
+
+
+/**
+ * Enables or disables the submit button based on required field completion.
+ * @param {HTMLButtonElement} btn
+ * @param {ReturnType<typeof getFormFields>} fields
+ */
+function updateTaskBtn(btn, fields) {
+    btn.disabled = !isTaskReady(fields);
+}
+
 
 /**
  * Runs all required-field checks and returns true only if all pass.
@@ -78,55 +92,18 @@ function validateTaskForm(fields) {
 }
 
 
-// ── Clear ────────────────────────────────────────────────
-
-/** Resets the category dropdown label back to its placeholder text. */
-function resetCategoryDropdown() {
-    const valueEl = document.querySelector('#categoryDropdown .dropdown-value');
-    if (!valueEl) return;
-    valueEl.textContent = 'Select task category';
-    valueEl.classList.add('dropdown-placeholder');
-}
-
-/**
- * Empties all input values in the form.
- * @param {ReturnType<typeof getFormFields>} fields
- */
-function resetInputs(fields) {
-    fields.titleInput.value = '';
-    fields.dueDateInput.value = '';
-    fields.dueDateInput.classList.remove('has-value');
-    fields.categorySelect.value = '';
-    resetCategoryDropdown();
-    resetAssignedDropdown();
-    document.getElementById('task-description').value = '';
-    document.getElementById('task-subtask').value = '';
-    document.getElementById('subtaskList').innerHTML = '';
-}
-
-/**
- * Clears the error state for all validated fields.
- * @param {ReturnType<typeof getFormFields>} fields
- */
-function resetErrors(fields) {
-    const { titleInput, titleError, dueDateInput, dueDateError, categorySelect, categoryError } = fields;
-    clearError(titleInput.closest('.input-wrapper'), titleError);
-    clearError(dueDateInput.closest('.input-wrapper'), dueDateError);
-    clearError(categorySelect.closest('.input-wrapper'), categoryError);
-}
-
-/**
- * Resets the entire form to its initial state.
- * @param {ReturnType<typeof getFormFields>} fields
- */
-function clearTaskForm(fields) {
-    resetInputs(fields);
-    resetErrors(fields);
-    selectPriorityBtn(document.querySelector('.priority-btn[data-priority="medium"]'));
-}
-
-
 // ── Category Dropdown ────────────────────────────────────
+
+/**
+ * Opens or closes a dropdown by toggling `is-open` and the aria-expanded attribute.
+ * @param {{ dropdown: HTMLElement, trigger: HTMLButtonElement }} els
+ * @param {boolean} open
+ */
+function toggleDropdown(els, open) {
+    els.dropdown.classList.toggle('is-open', open);
+    els.trigger.setAttribute('aria-expanded', String(open));
+}
+
 
 /**
  * Collects DOM elements needed for the category dropdown.
@@ -142,14 +119,6 @@ function getCategoryEls() {
     };
 }
 
-/**
- * @param {{ dropdown: HTMLElement, trigger: HTMLButtonElement }} els
- * @param {boolean} open
- */
-function toggleDropdown(els, open) {
-    els.dropdown.classList.toggle('is-open', open);
-    els.trigger.setAttribute('aria-expanded', String(open));
-}
 
 /**
  * Selects an option: updates the hidden input, display text, and clears any error.
@@ -165,6 +134,7 @@ function pickCategoryOption(option, els) {
     toggleDropdown(els, false);
 }
 
+
 /** Closes any open dropdown when clicking outside it. */
 function initDropdownAutoClose() {
     document.addEventListener('click', (e) => {
@@ -177,7 +147,8 @@ function initDropdownAutoClose() {
     });
 }
 
-/** Sets up the category dropdown — toggle and selection. */
+
+/** Sets up the category dropdown — toggle and option selection. */
 function initCategoryDropdown() {
     const els = getCategoryEls();
     if (!els.dropdown) return;
@@ -208,6 +179,7 @@ function buildAssignedItem(user, color) {
     return li;
 }
 
+
 /**
  * Toggles the selected state of a contact option and swaps the checkbox icon.
  * @param {HTMLLIElement} option
@@ -220,7 +192,8 @@ function toggleAssignedContact(option) {
     option.setAttribute('aria-selected', String(selected));
 }
 
-/** Updates the trigger to show selected avatars or the placeholder text. */
+
+/** Updates the trigger to show selected contact avatars or the placeholder text. */
 function updateAssignedTrigger() {
     const selected = document.querySelectorAll('.assigned-option.selected');
     const valueEl = document.getElementById('assignedValue');
@@ -235,6 +208,7 @@ function updateAssignedTrigger() {
         .join('');
 }
 
+
 /** Deselects all contacts and resets the trigger display. */
 function resetAssignedDropdown() {
     document.querySelectorAll('.assigned-option.selected').forEach((opt) => {
@@ -245,13 +219,12 @@ function resetAssignedDropdown() {
     updateAssignedTrigger();
 }
 
-/**
- * Loads all users from Firebase, puts the current user first, and populates the list.
- */
+
+/** Loads all users from the cache, puts the current user first, and populates the list. */
 async function loadAssignedContacts() {
     const list = document.getElementById('assignedList');
     if (!list) return;
-    const users = await getAll('users');
+    const users = await getUsers();
     if (!users) return;
     const currentUser = getCurrentUser();
     const entries = Object.entries(users)
@@ -259,6 +232,17 @@ async function loadAssignedContacts() {
         .sort((a, b) => (a.id === currentUser?.id ? -1 : b.id === currentUser?.id ? 1 : 0));
     entries.forEach((user, i) => list.appendChild(buildAssignedItem(user, getAvatarColor(i))));
 }
+
+
+/**
+ * Returns an array of selected contact objects for use when saving a task.
+ * @returns {{ id: string, name: string, initials: string, color: string }[]}
+ */
+function getSelectedContacts() {
+    return [...document.querySelectorAll('.assigned-option.selected')]
+        .map((opt) => ({ id: opt.dataset.id, name: opt.dataset.name, initials: opt.dataset.initials, color: opt.dataset.color }));
+}
+
 
 /** Sets up the assigned-to dropdown with event delegation for multi-select. */
 function initAssignedDropdown() {
@@ -275,156 +259,76 @@ function initAssignedDropdown() {
     loadAssignedContacts();
 }
 
-/**
- * Returns an array of selected contact objects for use when saving a task.
- * @returns {{ id: string, name: string, initials: string, color: string }[]}
- */
-function getSelectedContacts() {
-    return [...document.querySelectorAll('.assigned-option.selected')]
-        .map((opt) => ({ id: opt.dataset.id, name: opt.dataset.name, initials: opt.dataset.initials, color: opt.dataset.color }));
+
+// ── Form Reset ───────────────────────────────────────────
+
+/** Resets the category dropdown label back to its placeholder text. */
+function resetCategoryDropdown() {
+    const valueEl = document.querySelector('#categoryDropdown .dropdown-value');
+    if (!valueEl) return;
+    valueEl.textContent = 'Select task category';
+    valueEl.classList.add('dropdown-placeholder');
 }
 
 
-// ── Subtask ──────────────────────────────────────────────
-
 /**
- * Creates a subtask list item with bullet, text, and edit/delete buttons.
- * @param {string} text
- * @returns {HTMLLIElement}
- */
-function buildSubtaskItem(text) {
-    const li = document.createElement('li');
-    li.className = 'subtask-item';
-    li.innerHTML = `<span class="subtask-bullet">•</span>`
-        + `<span class="subtask-text">${text}</span>`
-        + `<div class="subtask-item-actions">`
-        + `<button type="button" class="subtask-item-btn" aria-label="Edit"><img src="../assets/icons/edit.svg" alt="" width="18" height="18"></button>`
-        + `<span class="subtask-action-divider"></span>`
-        + `<button type="button" class="subtask-item-btn" aria-label="Delete"><img src="../assets/icons/delete.svg" alt="" width="18" height="18"></button>`
-        + `</div>`;
-    return li;
-}
-
-/**
- * Reads the subtask input and appends a new item to the list.
- */
-function addSubtask() {
-    const input = document.getElementById('task-subtask');
-    const text = input.value.trim();
-    if (!text) return;
-    document.getElementById('subtaskList').appendChild(buildSubtaskItem(text));
-    input.value = '';
-    input.focus();
-}
-
-/**
- * Replaces the subtask text span with an inline editable input.
- * @param {HTMLLIElement} li
- */
-function startEditSubtask(li) {
-    if (li.classList.contains('is-editing')) return;
-    const textEl = li.querySelector('.subtask-text');
-    const editInput = document.createElement('input');
-    editInput.className = 'subtask-edit-input';
-    editInput.value = textEl.textContent;
-    li.classList.add('is-editing');
-    li.insertBefore(editInput, textEl);
-    editInput.focus();
-    editInput.addEventListener('blur', () => confirmEditSubtask(li, editInput, textEl));
-    editInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') editInput.blur();
-        if (e.key === 'Escape') { editInput.value = textEl.textContent; editInput.blur(); }
-    });
-}
-
-/**
- * Saves the edited text and restores the list item to its display state.
- * @param {HTMLLIElement} li
- * @param {HTMLInputElement} editInput
- * @param {HTMLElement} textEl
- */
-function confirmEditSubtask(li, editInput, textEl) {
-    const text = editInput.value.trim();
-    if (text) textEl.textContent = text;
-    editInput.remove();
-    li.classList.remove('is-editing');
-}
-
-/**
- * Handles edit and delete clicks inside the subtask list via event delegation.
- * @param {MouseEvent} e
- */
-function handleSubtaskListClick(e) {
-    const btn = e.target.closest('.subtask-item-btn');
-    if (!btn) return;
-    const li = btn.closest('.subtask-item');
-    if (btn.getAttribute('aria-label') === 'Edit') startEditSubtask(li);
-    if (btn.getAttribute('aria-label') === 'Delete') li.remove();
-}
-
-/**
- * Returns the current subtask texts for use when saving the task.
- * @returns {string[]}
- */
-function getSubtasks() {
-    return [...document.querySelectorAll('.subtask-text')].map((el) => el.textContent);
-}
-
-/**
- * Sets up the subtask input: active state, Enter key, confirm/clear actions, and list delegation.
- */
-function initSubtaskInput() {
-    const input = document.getElementById('task-subtask');
-    const wrapper = input?.closest('.input-wrapper');
-    if (!input || !wrapper) return;
-    input.addEventListener('focus', () => wrapper.classList.add('is-active'));
-    input.addEventListener('blur', (e) => {
-        if (!wrapper.contains(e.relatedTarget)) wrapper.classList.remove('is-active');
-    });
-    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addSubtask(); } });
-    document.getElementById('subtaskConfirm')?.addEventListener('click', () => { addSubtask(); input.focus(); });
-    document.getElementById('subtaskClear')?.addEventListener('click', () => { input.value = ''; input.focus(); });
-    document.getElementById('subtaskList')?.addEventListener('click', handleSubtaskListClick);
-}
-
-
-// ── Button State ─────────────────────────────────────────
-
-/**
- * @param {ReturnType<typeof getFormFields>} fields
- * @returns {boolean}
- */
-function isTaskReady(fields) {
-    return !!fields.titleInput.value.trim()
-        && !!fields.dueDateInput.value
-        && !!fields.categorySelect.value;
-}
-
-/**
- * @param {HTMLButtonElement} btn
+ * Empties all input values in the form.
  * @param {ReturnType<typeof getFormFields>} fields
  */
-function updateTaskBtn(btn, fields) {
-    btn.disabled = !isTaskReady(fields);
+function resetInputs(fields) {
+    fields.titleInput.value = '';
+    fields.dueDateInput.value = '';
+    fields.dueDateInput.classList.remove('has-value');
+    fields.categorySelect.value = '';
+    resetCategoryDropdown();
+    resetAssignedDropdown();
+    document.getElementById('task-description').value = '';
+    document.getElementById('task-subtask').value = '';
+    document.getElementById('subtaskList').innerHTML = '';
+}
+
+
+/**
+ * Clears the error state for all validated fields.
+ * @param {ReturnType<typeof getFormFields>} fields
+ */
+function resetErrors(fields) {
+    const { titleInput, titleError, dueDateInput, dueDateError, categorySelect, categoryError } = fields;
+    clearError(titleInput.closest('.input-wrapper'), titleError);
+    clearError(dueDateInput.closest('.input-wrapper'), dueDateError);
+    clearError(categorySelect.closest('.input-wrapper'), categoryError);
+}
+
+
+/**
+ * Resets the entire form to its initial state.
+ * @param {ReturnType<typeof getFormFields>} fields
+ */
+function clearTaskForm(fields) {
+    resetInputs(fields);
+    resetErrors(fields);
+    selectPriorityBtn(document.querySelector('.priority-btn[data-priority="medium"]'));
 }
 
 
 // ── Submit ───────────────────────────────────────────────
 
 /**
+ * Validates and submits the task form, shows confirmation, then clears the form.
  * @param {SubmitEvent} e
  * @param {ReturnType<typeof getFormFields>} fields
  */
 async function handleSubmit(e, fields) {
     e.preventDefault();
     if (!validateTaskForm(fields)) return;
-    // TODO: create('tasks', { title, dueDate, category, priority, assigned, subtasks }) via Firebase
+    // TODO: create('tasks', { title, dueDate, category, priority, assigned, subtasks }) via cache.js
     showToast('Task added to board');
     clearTaskForm(fields);
     e.submitter.disabled = true;
 }
 
-/** Wires up submit, clear, and date-color handlers. */
+
+/** Wires up submit, clear, and date-color handlers for the task form. */
 function initTaskForm() {
     const form = document.querySelector('.task-form');
     if (!form) return;
@@ -440,3 +344,12 @@ function initTaskForm() {
     form.addEventListener('submit', (e) => handleSubmit(e, fields));
     form.querySelector('.clear-btn').addEventListener('click', () => clearTaskForm(fields));
 }
+
+
+initNavbar();
+initDropdownAutoClose();
+initPriorityButtons();
+initCategoryDropdown();
+initAssignedDropdown();
+initSubtaskInput();
+initTaskForm();

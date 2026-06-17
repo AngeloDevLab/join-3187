@@ -1,3 +1,4 @@
+import '../utils/auth-guard.js';
 import { initNavbar } from '../components/navbar.js';
 
 /** Disables pointer events on the greeting overlay after its fade-out animation ends. */
@@ -7,7 +8,5 @@ function initGreetingOverlay() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initNavbar();
-    initGreetingOverlay();
-});
+initNavbar();
+initGreetingOverlay();
