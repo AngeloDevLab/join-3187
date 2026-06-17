@@ -1,5 +1,11 @@
 import { initNavbar } from '../components/navbar.js';
 
+document.querySelectorAll('.summary-card').forEach(element => {
+  element.addEventListener('click', () => {
+    window.location.href = './board.html'; 
+  });
+}); // Link for summary-card instead of an a-Tag
+
 /** Disables pointer events on the greeting overlay after its fade-out animation ends. */
 function initGreetingOverlay() {
     let overlay = document.querySelector('.greeting-overlay');
@@ -8,6 +14,7 @@ function initGreetingOverlay() {
     if (!isMobile) return;
 
     let justLoggedIn = sessionStorage.getItem('justLoggedIn') === 'true';
+    
     if (!justLoggedIn) {
         overlay.style.display = 'none';
         return;
