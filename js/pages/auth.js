@@ -13,19 +13,10 @@ const PASSWORD_ICON = {
 };
 
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    initIntro();
-    initAuthSwitch();
-    initPasswordToggles();
-    initLoginForm();
-    initSignupForm();
-});
-
-
-// ── Toast & Redirect ─────────────────────────────────────
+// ── Shared ───────────────────────────────────────────────
 
 /**
+ * Fades out the auth card, shows a toast, then navigates to a new page.
  * @param {HTMLElement} cardEl
  * @param {string} message
  * @param {string} href
@@ -43,6 +34,7 @@ function exitAndRedirect(cardEl, message, href) {
 // ── Intro ────────────────────────────────────────────────
 
 /**
+ * Runs the logo intro animation sequence.
  * @param {HTMLElement} intro
  */
 function playIntro(intro) {
@@ -55,6 +47,7 @@ function playIntro(intro) {
     }, INTRO_DELAY_MS);
 }
 
+
 /** Plays the intro animation on page load. No-ops if the element is absent. */
 function initIntro() {
     const intro = document.getElementById('intro');
@@ -66,6 +59,7 @@ function initIntro() {
 // ── Auth Switch ──────────────────────────────────────────
 
 /**
+ * Shows the login or signup card and hides the other.
  * @param {'login'|'signup'} view
  */
 function showAuthCard(view) {
@@ -75,6 +69,8 @@ function showAuthCard(view) {
     document.getElementById('signupHintHeader').classList.toggle('is-hidden', showSignup);
 }
 
+
+/** Wires up all [data-show-auth] triggers to switch between login and signup. */
 function initAuthSwitch() {
     document.querySelectorAll('[data-show-auth]').forEach((trigger) => {
         trigger.addEventListener('click', () => showAuthCard(trigger.dataset.showAuth));
@@ -85,6 +81,7 @@ function initAuthSwitch() {
 // ── Password Toggle ──────────────────────────────────────
 
 /**
+ * Syncs the toggle button icon and type based on current input value and state.
  * @param {HTMLInputElement} input
  * @param {HTMLButtonElement} button
  * @param {HTMLImageElement} icon
@@ -103,7 +100,9 @@ function updatePasswordToggle(input, button, icon) {
     icon.src = state.src;
 }
 
+
 /**
+ * Wires up the visibility toggle for a single password input wrapper.
  * @param {HTMLElement} wrapper
  */
 function initPasswordToggle(wrapper) {
@@ -118,6 +117,8 @@ function initPasswordToggle(wrapper) {
     input.addEventListener('input', () => updatePasswordToggle(input, button, icon));
 }
 
+
+/** Initializes visibility toggles for all password inputs on the page. */
 function initPasswordToggles() {
     document.querySelectorAll('.input-wrapper').forEach((wrapper) => {
         if (wrapper.querySelector('input[type="password"]')) initPasswordToggle(wrapper);
@@ -125,11 +126,10 @@ function initPasswordToggles() {
 }
 
 
-// ── Password Strength ────────────────────────────────────
-
-// ── Login Form ───────────────────────────────────────────
+// ── Login ────────────────────────────────────────────────
 
 /**
+ * Validates and submits the login form.
  * @param {SubmitEvent} e
  * @param {{ emailInput: HTMLInputElement, emailError: HTMLElement, passwordInput: HTMLInputElement, passwordError: HTMLElement }} fields
  */
@@ -148,6 +148,8 @@ async function handleLoginSubmit(e, fields) {
     }
 }
 
+
+/** Sets up the login form and guest login button. */
 function initLoginForm() {
     const form = document.getElementById('loginForm');
     if (!form) return;
@@ -165,9 +167,10 @@ function initLoginForm() {
 }
 
 
-// ── Signup Form ──────────────────────────────────────────
+// ── Signup ───────────────────────────────────────────────
 
 /**
+ * Collects all signup form field elements into one object.
  * @param {HTMLFormElement} form
  * @returns {{ nameInput: HTMLInputElement, nameError: HTMLElement, emailInput: HTMLInputElement, emailError: HTMLElement, passwordInput: HTMLInputElement, passwordError: HTMLElement, confirmInput: HTMLInputElement, confirmError: HTMLElement, checkbox: HTMLInputElement, checkboxError: HTMLElement }}
  */
@@ -186,7 +189,34 @@ function getSignupFields(form) {
     };
 }
 
+
 /**
+ * Returns true when all signup fields are filled and valid.
+ * @param {ReturnType<typeof getSignupFields>} fields
+ * @returns {boolean}
+ */
+function isSignupReady(fields) {
+    return !!fields.nameInput.value.trim()
+        && isValidEmail(fields.emailInput.value)
+        && !!fields.passwordInput.value.trim()
+        && !!fields.confirmInput.value
+        && fields.confirmInput.value === fields.passwordInput.value
+        && fields.checkbox.checked;
+}
+
+
+/**
+ * Enables or disables the signup submit button based on field completion.
+ * @param {HTMLButtonElement} btn
+ * @param {ReturnType<typeof getSignupFields>} fields
+ */
+function updateSignupBtn(btn, fields) {
+    btn.disabled = !isSignupReady(fields);
+}
+
+
+/**
+ * Validates all signup fields on submit and shows errors for any that fail.
  * @param {ReturnType<typeof getSignupFields>} fields
  * @returns {boolean}
  */
@@ -201,7 +231,9 @@ function validateSignup(fields) {
     ].every(Boolean);
 }
 
+
 /**
+ * Validates and submits the signup form.
  * @param {SubmitEvent} e
  * @param {ReturnType<typeof getSignupFields>} fields
  */
@@ -216,27 +248,8 @@ async function handleSignupSubmit(e, fields) {
     }
 }
 
-/**
- * @param {ReturnType<typeof getSignupFields>} fields
- * @returns {boolean}
- */
-function isSignupReady(fields) {
-    return !!fields.nameInput.value.trim()
-        && isValidEmail(fields.emailInput.value)
-        && !!fields.passwordInput.value.trim()
-        && !!fields.confirmInput.value
-        && fields.confirmInput.value === fields.passwordInput.value
-        && fields.checkbox.checked;
-}
 
-/**
- * @param {HTMLButtonElement} btn
- * @param {ReturnType<typeof getSignupFields>} fields
- */
-function updateSignupBtn(btn, fields) {
-    btn.disabled = !isSignupReady(fields);
-}
-
+/** Sets up the signup form with live validation and submit handling. */
 function initSignupForm() {
     const form = document.getElementById('signupForm');
     if (!form) return;
@@ -248,3 +261,10 @@ function initSignupForm() {
     fields.checkbox.addEventListener('change', () => updateSignupBtn(submitBtn, fields));
     form.addEventListener('submit', (e) => handleSignupSubmit(e, fields));
 }
+
+
+initIntro();
+initAuthSwitch();
+initPasswordToggles();
+initLoginForm();
+initSignupForm();
