@@ -1,22 +1,22 @@
-const ERROR_AUTO_CLEAR_MS = 5000;
-const ERROR_FADE_MS = 400;
-const errorTimers = new WeakMap();
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /**
- * Marks a field as invalid, shows an error message, and auto-clears after a timeout.
+ * @param {string} value
+ * @returns {boolean}
+ */
+export function isValidEmail(value) {
+    return EMAIL_RE.test(value.trim());
+}
+
+/**
+ * Marks a field as invalid and shows an error message.
  * @param {HTMLElement|null} wrapper - input-wrapper element, or null (e.g. checkbox)
  * @param {HTMLElement} errorEl
  * @param {string} message
  */
 export function setError(wrapper, errorEl, message) {
-    errorEl.classList.remove('fading-out');
     if (wrapper) wrapper.classList.add('error');
     errorEl.textContent = message;
-    clearTimeout(errorTimers.get(errorEl));
-    errorTimers.set(errorEl, setTimeout(() => {
-        errorEl.classList.add('fading-out');
-        setTimeout(() => clearError(wrapper, errorEl), ERROR_FADE_MS);
-    }, ERROR_AUTO_CLEAR_MS));
 }
 
 /**
@@ -25,7 +25,6 @@ export function setError(wrapper, errorEl, message) {
  * @param {HTMLElement} errorEl
  */
 export function clearError(wrapper, errorEl) {
-    errorEl.classList.remove('fading-out');
     if (wrapper) wrapper.classList.remove('error');
     errorEl.textContent = '';
 }
@@ -45,6 +44,5 @@ export function validateField(inputEl, errorEl, condition, message) {
         setError(wrapper, errorEl, message);
         return false;
     }
-    clearError(wrapper, errorEl);
     return true;
 }

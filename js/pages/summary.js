@@ -1,3 +1,4 @@
+import '../utils/auth-guard.js';
 import { initNavbar } from '../components/navbar.js';
 import { getCurrentUser } from "../firebase/auth.js";
 

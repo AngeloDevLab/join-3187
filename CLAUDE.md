@@ -46,17 +46,25 @@ Join is a project management tool for visualizing task status and responsibiliti
 ## JavaScript Rules
 
 - **Max 14 lines per function** — if a function exceeds this, split it
+- **Max 400 lines per script** — including JSDoc; extract to a component if exceeded
+- **2 blank lines between functions** — consistent throughout every script
 - **JSDoc required on every function** — document parameters and return values
 - Reusable logic belongs in `js/components/` or `js/utils/`, not in page scripts
 - Navbar component (`js/components/navbar.js`) renders the shared navigation dynamically — do not copy-paste navbar HTML into individual pages
+- **No `DOMContentLoaded` wrapper** — all scripts use `type="module"` which defers automatically; call init functions directly at the top level at the end of the file
+- **`import '../utils/auth-guard.js'` must be the first import** in every protected page script (all pages except `index.html`, `imprint.html`, `privacy.html`)
+- **Never import from `js/firebase/database.js` in page scripts** — always go through `js/firebase/cache.js`
 
 ## Component Responsibilities
 
-| Component | Owner | Status |
+| Component | File | Status |
 |---|---|---|
-| Navbar / Sidebar | colleague | in progress |
-| Toast | `js/components/toast.js` | stub — implement when needed |
-| Auth validation | `js/pages/auth.js` | done — refactor into modules pending |
+| Navbar / Sidebar | `js/components/navbar.js` | in progress (colleague) |
+| Modal / Drawer | `js/components/modal.js` | done |
+| Toast | `js/components/toast.js` | done |
+| Subtask input | `js/components/subtask.js` | done |
+| Form validation | `js/utils/form-validation.js` | done |
+| Auth Guard | `js/utils/auth-guard.js` | done |
 
 ## Pages
 
@@ -73,6 +81,20 @@ Join is a project management tool for visualizing task status and responsibiliti
 ## Firebase
 
 - Config in `js/firebase/config.js`
-- Auth wrapper in `js/firebase/auth.js`
-- Database access in `js/firebase/database.js`
-- Route protection (Auth Guard) in `js/utils/auth-guard.js`
+- Auth wrapper in `js/firebase/auth.js` — session management, login, signup, guest
+- Database access in `js/firebase/database.js` — raw REST fetch wrapper (internal only)
+- Cache layer in `js/firebase/cache.js` — memory + sessionStorage + Firebase; **use this in page scripts**
+- Route protection in `js/utils/auth-guard.js`
+
+## CSS Global Files
+
+| File | Purpose |
+|---|---|
+| `variables.css` | All CSS custom properties — colors, spacing, typography, radii |
+| `global/base.css` | Font-face, resets, typography |
+| `global/layout.css` | `.app-layout`, `.app-main`, desktop grid |
+| `global/navbar.css` | `.app-sidebar`, `.app-header`, nav components |
+| `global/buttons.css` | `.btn`, `.btn-primary`, `.btn-secondary`, disabled state |
+| `global/inputs.css` | `input`, `textarea`, `select`, date input |
+| `global/dropdown.css` | `.dropdown`, `.assigned-option`, contact chips |
+| `global/modal.css` | `.modal`, `::backdrop`, slide-from-bottom/right animations |

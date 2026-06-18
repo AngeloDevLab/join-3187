@@ -1,5 +1,6 @@
-import { validateField, setError } from '../utils/form-validation.js';
+import { validateField, setError, isValidEmail } from '../utils/form-validation.js';
 import { loginUser, registerUser, loginAsGuest } from '../firebase/auth.js';
+import { showToast } from '../components/toast.js';
 
 const INTRO_DELAY_MS = 400;
 const INTRO_MOVE_MS = 600;
@@ -11,39 +12,11 @@ const PASSWORD_ICON = {
     visible: { src: './assets/icons/visibility.svg', label: 'Hide password' },
 };
 
-const PASSWORD_RULES = [
-    { id: 'length', test: (v) => v.length >= 8 },
-    { id: 'upper', test: (v) => /[A-Z]/.test(v) },
-    { id: 'lower', test: (v) => /[a-z]/.test(v) },
-    { id: 'number', test: (v) => /[0-9]/.test(v) },
-    { id: 'special', test: (v) => /[^A-Za-z0-9]/.test(v) },
-];
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    initIntro();
-    initAuthSwitch();
-    initPasswordToggles();
-    initLoginForm();
-    initSignupForm();
-});
-
-
-// ── Toast & Redirect ─────────────────────────────────────
+// ── Shared ───────────────────────────────────────────────
 
 /**
- * @param {string} message
- */
-function showToast(message) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.setAttribute('role', 'status');
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('is-visible')));
-}
-
-/**
+ * Fades out the auth card, shows a toast, then navigates to a new page.
  * @param {HTMLElement} cardEl
  * @param {string} message
  * @param {string} href
@@ -62,6 +35,7 @@ function exitAndRedirect(cardEl, message, href) {
 // ── Intro ────────────────────────────────────────────────
 
 /**
+ * Runs the logo intro animation sequence.
  * @param {HTMLElement} intro
  */
 function playIntro(intro) {
@@ -74,6 +48,7 @@ function playIntro(intro) {
     }, INTRO_DELAY_MS);
 }
 
+
 /** Plays the intro animation on page load. No-ops if the element is absent. */
 function initIntro() {
     const intro = document.getElementById('intro');
@@ -85,6 +60,7 @@ function initIntro() {
 // ── Auth Switch ──────────────────────────────────────────
 
 /**
+ * Shows the login or signup card and hides the other.
  * @param {'login'|'signup'} view
  */
 function showAuthCard(view) {
@@ -94,6 +70,8 @@ function showAuthCard(view) {
     document.getElementById('signupHintHeader').classList.toggle('is-hidden', showSignup);
 }
 
+
+/** Wires up all [data-show-auth] triggers to switch between login and signup. */
 function initAuthSwitch() {
     document.querySelectorAll('[data-show-auth]').forEach((trigger) => {
         trigger.addEventListener('click', () => showAuthCard(trigger.dataset.showAuth));
@@ -104,6 +82,7 @@ function initAuthSwitch() {
 // ── Password Toggle ──────────────────────────────────────
 
 /**
+ * Syncs the toggle button icon and type based on current input value and state.
  * @param {HTMLInputElement} input
  * @param {HTMLButtonElement} button
  * @param {HTMLImageElement} icon
@@ -122,7 +101,9 @@ function updatePasswordToggle(input, button, icon) {
     icon.src = state.src;
 }
 
+
 /**
+ * Wires up the visibility toggle for a single password input wrapper.
  * @param {HTMLElement} wrapper
  */
 function initPasswordToggle(wrapper) {
@@ -137,6 +118,8 @@ function initPasswordToggle(wrapper) {
     input.addEventListener('input', () => updatePasswordToggle(input, button, icon));
 }
 
+
+/** Initializes visibility toggles for all password inputs on the page. */
 function initPasswordToggles() {
     document.querySelectorAll('.input-wrapper').forEach((wrapper) => {
         if (wrapper.querySelector('input[type="password"]')) initPasswordToggle(wrapper);
@@ -144,39 +127,17 @@ function initPasswordToggles() {
 }
 
 
-// ── Password Strength ────────────────────────────────────
+// ── Login ────────────────────────────────────────────────
 
 /**
- * @param {string} value
- * @returns {'weak'|'medium'|'strong'}
- */
-function getStrengthKey(value) {
-    const count = PASSWORD_RULES.filter(({ test }) => test(value)).length;
-    if (count <= 2) return 'weak';
-    if (count <= 4) return 'medium';
-    return 'strong';
-}
-
-/**
- * @param {string} value
- * @param {HTMLElement} indicator
- */
-function updateStrengthIndicator(value, indicator) {
-    if (!value) { delete indicator.dataset.level; return; }
-    indicator.dataset.level = getStrengthKey(value);
-}
-
-
-// ── Login Form ───────────────────────────────────────────
-
-/**
+ * Validates and submits the login form.
  * @param {SubmitEvent} e
  * @param {{ emailInput: HTMLInputElement, emailError: HTMLElement, passwordInput: HTMLInputElement, passwordError: HTMLElement }} fields
  */
 async function handleLoginSubmit(e, fields) {
     e.preventDefault();
     const valid = [
-        validateField(fields.emailInput, fields.emailError, fields.emailInput.validity.valid, 'Please enter a valid email address.'),
+        validateField(fields.emailInput, fields.emailError, isValidEmail(fields.emailInput.value), 'Please enter a valid email address.'),
         validateField(fields.passwordInput, fields.passwordError, !!fields.passwordInput.value.trim(), 'Please enter your password.'),
     ].every(Boolean);
     if (!valid) return;
@@ -188,6 +149,8 @@ async function handleLoginSubmit(e, fields) {
     }
 }
 
+
+/** Sets up the login form and guest login button. */
 function initLoginForm() {
     const form = document.getElementById('loginForm');
     if (!form) return;
@@ -205,9 +168,10 @@ function initLoginForm() {
 }
 
 
-// ── Signup Form ──────────────────────────────────────────
+// ── Signup ───────────────────────────────────────────────
 
 /**
+ * Collects all signup form field elements into one object.
  * @param {HTMLFormElement} form
  * @returns {{ nameInput: HTMLInputElement, nameError: HTMLElement, emailInput: HTMLInputElement, emailError: HTMLElement, passwordInput: HTMLInputElement, passwordError: HTMLElement, confirmInput: HTMLInputElement, confirmError: HTMLElement, checkbox: HTMLInputElement, checkboxError: HTMLElement }}
  */
@@ -226,7 +190,34 @@ function getSignupFields(form) {
     };
 }
 
+
 /**
+ * Returns true when all signup fields are filled and valid.
+ * @param {ReturnType<typeof getSignupFields>} fields
+ * @returns {boolean}
+ */
+function isSignupReady(fields) {
+    return !!fields.nameInput.value.trim()
+        && isValidEmail(fields.emailInput.value)
+        && !!fields.passwordInput.value.trim()
+        && !!fields.confirmInput.value
+        && fields.confirmInput.value === fields.passwordInput.value
+        && fields.checkbox.checked;
+}
+
+
+/**
+ * Enables or disables the signup submit button based on field completion.
+ * @param {HTMLButtonElement} btn
+ * @param {ReturnType<typeof getSignupFields>} fields
+ */
+function updateSignupBtn(btn, fields) {
+    btn.disabled = !isSignupReady(fields);
+}
+
+
+/**
+ * Validates all signup fields on submit and shows errors for any that fail.
  * @param {ReturnType<typeof getSignupFields>} fields
  * @returns {boolean}
  */
@@ -234,14 +225,16 @@ function validateSignup(fields) {
     const { nameInput, nameError, emailInput, emailError, passwordInput, passwordError, confirmInput, confirmError, checkbox, checkboxError } = fields;
     return [
         validateField(nameInput, nameError, !!nameInput.value.trim(), 'Please enter your name.'),
-        validateField(emailInput, emailError, emailInput.validity.valid, 'Please enter a valid email address.'),
+        validateField(emailInput, emailError, isValidEmail(emailInput.value), 'Please enter a valid email address.'),
         validateField(passwordInput, passwordError, !!passwordInput.value.trim(), 'Please enter a password.'),
         validateField(confirmInput, confirmError, confirmInput.value === passwordInput.value, "Your passwords don't match. Please try again."),
         validateField(checkbox, checkboxError, checkbox.checked, 'Please accept the Privacy Policy to continue.'),
     ].every(Boolean);
 }
 
+
 /**
+ * Validates and submits the signup form.
  * @param {SubmitEvent} e
  * @param {ReturnType<typeof getSignupFields>} fields
  */
@@ -256,12 +249,23 @@ async function handleSignupSubmit(e, fields) {
     }
 }
 
+
+/** Sets up the signup form with live validation and submit handling. */
 function initSignupForm() {
     const form = document.getElementById('signupForm');
     if (!form) return;
     const fields = getSignupFields(form);
-    const strengthIndicator = document.getElementById('passwordStrength');
-    fields.passwordInput.addEventListener('input', () =>
-        updateStrengthIndicator(fields.passwordInput.value, strengthIndicator));
+    const submitBtn = form.querySelector('[type="submit"]');
+    updateSignupBtn(submitBtn, fields);
+    [fields.nameInput, fields.emailInput, fields.passwordInput, fields.confirmInput]
+        .forEach((input) => input.addEventListener('input', () => updateSignupBtn(submitBtn, fields)));
+    fields.checkbox.addEventListener('change', () => updateSignupBtn(submitBtn, fields));
     form.addEventListener('submit', (e) => handleSignupSubmit(e, fields));
 }
+
+
+initIntro();
+initAuthSwitch();
+initPasswordToggles();
+initLoginForm();
+initSignupForm();

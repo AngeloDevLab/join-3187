@@ -33,7 +33,7 @@
 
 .intro-animate .intro-logo {
     top: var(--auth-logo-offset);
-    left: var(--auth-logo-offset);
+    left: var(--auth-content-inset);
     width: var(--auth-logo-size);
     transform: translate(0, 0);
 }
@@ -262,67 +262,6 @@
 }
 
 
-
-/* ── Toast ─────────────────────────────────────────────── */
-
-.toast {
-    position: fixed;
-    bottom: var(--space-xl);
-    left: 50%;
-    transform: translateX(-50%) translateY(12px);
-    background: var(--color-primary-dark);
-    color: var(--color-white);
-    font-size: 20px;
-    padding: var(--space-sm) var(--space-lg);
-    border-radius: var(--border-radius-sm);
-    box-shadow: var(--shadow-default);
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 300ms ease, transform 300ms ease;
-    z-index: 10;
-}
-
-.toast.is-visible {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
-
-/* ── Password Strength ─────────────────────────────────── */
-
-.strength-indicator {
-    width: 100%;
-}
-
-.strength-track {
-    width: 100%;
-    height: 6px;
-    background: var(--color-border);
-    border-radius: 3px;
-    overflow: hidden;
-}
-
-.strength-fill {
-    height: 100%;
-    width: 0;
-    border-radius: 3px;
-    transition: width 200ms ease, background-color 200ms ease;
-}
-
-.strength-indicator[data-level="weak"] .strength-fill {
-    width: 33%;
-    background: var(--color-error);
-}
-
-.strength-indicator[data-level="medium"] .strength-fill {
-    width: 66%;
-    background: var(--priority-medium);
-}
-
-.strength-indicator[data-level="strong"] .strength-fill {
-    width: 100%;
-    background: var(--priority-low);
-}
 
 /* ── Checkbox ──────────────────────────────────────────── */
 
