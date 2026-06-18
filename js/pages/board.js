@@ -26,7 +26,7 @@ function renderColumn(category) {
     const column = todos.filter((t) => t.category === category);
     const container = document.getElementById(category);
     container.innerHTML = '';
-    if (column.length === 0 && category === 'todo') {
+    if (column.length === 0) {
         container.innerHTML = '<div class="empty-task">No tasks To do</div>';
         return;
     }
