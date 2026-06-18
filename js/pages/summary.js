@@ -5,23 +5,20 @@ document.querySelectorAll('.summary-card').forEach(element => {
   element.addEventListener('click', () => {
     window.location.href = './board.html'; 
   });
-}); // Link for summary-card instead of an a-Tag
+});
 
 /** Disables pointer events on the greeting overlay after its fade-out animation ends. */
 function initGreetingOverlay() {
     let overlay = document.querySelector('.greeting-overlay');
-    let isMobile = window.matchMedia('(max-width: 768px)').matches;
-
+    let isMobile = window.matchMedia('(max-width: 768px)').matches
     if (!isMobile) {
         setGreetingName(overlay);
         return;
     } // for Desktop
-
     if (sessionStorage.getItem('justLoggedIn') !== 'true') {
         overlay.style.display = 'none';
         return;
     } // for Mobile
-
     sessionStorage.removeItem('justLoggedIn');
     setGreetingName(overlay);
     overlay.addEventListener('animationend', (e) => {
@@ -34,7 +31,7 @@ function setGreetingName(overlay) {
     let greeting = getGreetingDate();
     overlay.querySelector('p').innerHTML = `${greeting}, <span  class="username">${user.name}</span>`;
     if (user.name === 'Guest') {
-     overlay.querySelector('p').innerHTML = `${greeting}!`;   
+     overlay.querySelector('p').textContent = `${greeting}!`;   
     }
 }
 
