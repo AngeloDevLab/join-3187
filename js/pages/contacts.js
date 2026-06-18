@@ -14,6 +14,8 @@ const contacts = [
     { id: 10, name: 'Lena Richter',   email: 'lena@gmail.com',     phone: '+49 123 456789', initials: 'LR', color: 'bg-orange' },
 ];
 
+let activeContactId = null;
+
 /** Sorts contacts alphabetically and renders the list. */
 function init() {
     contacts.sort((a, b) => a.name.localeCompare(b.name));
@@ -34,11 +36,20 @@ function renderContacts() {
  * @returns {Object}
  */
 function groupByFirstLetter(list) {
-    return list.reduce((acc, contact) => {
+    const groupedContacts = {};
+
+    for (let i = 0; i < list.length; i++) {
+        const contact = list[i];
         const letter = contact.name.charAt(0);
-        (acc[letter] = acc[letter] || []).push(contact);
-        return acc;
-    }, {});
+
+        if (!groupedContacts[letter]) {
+            groupedContacts[letter] = [];
+        }
+
+        groupedContacts[letter].push(contact);
+    }
+
+    return groupedContacts;
 }
 
 /**
@@ -47,9 +58,19 @@ function groupByFirstLetter(list) {
  * @param {HTMLElement} container
  */
 function renderGroupedContacts(grouped, container) {
+    let contactsHTML = '';
+
     for (const letter in grouped) {
-        container.innerHTML += `<div class="contact-group"><h3>${letter}</h3>${grouped[letter].map(getContactTemplate).join('')}</div>`;
+        contactsHTML += `<div class="contact-group"><h3>${letter}</h3>`;
+
+        for (let i = 0; i < grouped[letter].length; i++) {
+            contactsHTML += getContactTemplate(grouped[letter][i]);
+        }
+
+        contactsHTML += '</div>';
     }
+
+    container.innerHTML = contactsHTML;
 }
 
 /**
@@ -58,7 +79,7 @@ function renderGroupedContacts(grouped, container) {
  * @returns {string}
  */
 function getContactTemplate(contact) {
-    return `<div class="contact-card" onclick="showContactDetails(${contact.id})">
+    return `<div id="contact-card-${contact.id}" class="contact-card" onclick="showContactDetails(${contact.id})">
         <div class="contact-avatar ${contact.color}">${contact.initials}</div>
         <div><h4>${contact.name}</h4><a href="mailto:${contact.email}">${contact.email}</a></div>
     </div>`;
@@ -69,13 +90,33 @@ function getContactTemplate(contact) {
  * @param {number} contactId
  */
 function showContactDetails(contactId) {
-    const contact = contacts.find((c) => c.id === contactId);
+    const contact = getContactById(contactId);
+    if (!contact) return;
+    setActiveContactCard(contactId);
     const details = document.getElementById('contactDetails');
     details.classList.remove('d-none');
     details.innerHTML = getContactDetailsTemplate(contact);
+    showContactDetailsCard();
     if (window.innerWidth < 1024) {
         document.getElementById('contactsList').classList.add('d-none');
     }
+}
+
+/** Marks the selected contact card as active. */
+function setActiveContactCard(contactId) {
+    if (activeContactId !== null) {
+        document.getElementById(`contact-card-${activeContactId}`).classList.remove('active');
+    }
+
+    document.getElementById(`contact-card-${contactId}`).classList.add('active');
+    activeContactId = contactId;
+}
+
+/** Shows the animated contact details card after it was rendered. */
+function showContactDetailsCard() {
+    requestAnimationFrame(() => {
+        document.getElementById('contactDetailsCard').classList.remove('d-none');
+    });
 }
 
 /**
@@ -91,31 +132,250 @@ function getContactDetailsTemplate(contact) {
         </div>
         <p>Better with a team</p>
     </div>
-    <div class="contact-details-profile">
-        <div class="contact-details-avatar ${contact.color}">${contact.initials}</div>
-        <div class="contact-details-name-actions">
-            <h2>${contact.name}</h2>
-            <div class="desktop-contact-actions">
-                <button><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
-                <button><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
+    <div id="contactDetailsCard" class="contact-details-card d-none">
+        <div class="contact-details-profile">
+            <div class="contact-details-avatar ${contact.color}">${contact.initials}</div>
+            <div class="contact-details-name-actions">
+                <h2>${contact.name}</h2>
+                <div class="desktop-contact-actions">
+                    <button onclick="openEditContactOverlay(${contact.id})"><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
+                    <button onclick="openDeleteContactOverlay(${contact.id})"><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="contact-information-title">Contact Information</div>
-    <div class="contact-information">
-        <h4>Email</h4>
-        <a href="mailto:${contact.email}">${contact.email}</a>
-        <h4>Phone</h4>
-        <p>${contact.phone}</p>
-        <button id="menuContactBtn" class="menu_contact_btn" onclick="toggleMenuContact()" aria-label="Contact menu">
-            <img src="../assets/icons/menu_contact.svg" alt="">
-        </button>
-        <div id="contactMenuBackdrop" class="contact_menu_backdrop" onclick="closeMenuContact()"></div>
-        <div id="contactMenu" class="contact_menu" onclick="closeMenuContact()">
-            <button class="contact_menu_option" onclick="event.stopPropagation()"><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
-            <button class="contact_menu_option" onclick="event.stopPropagation()"><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
+        <div class="contact-information-title">Contact Information</div>
+        <div class="contact-information">
+            <h4>Email</h4>
+            <a href="mailto:${contact.email}">${contact.email}</a>
+            <h4>Phone</h4>
+            <p>${contact.phone}</p>
+            <button id="menuContactBtn" class="menu_contact_btn" onclick="toggleMenuContact()" aria-label="Contact menu">
+                <img src="../assets/icons/menu_contact.svg" alt="">
+            </button>
+            <div id="contactMenuBackdrop" class="contact_menu_backdrop" onclick="closeMenuContact()"></div>
+            <div id="contactMenu" class="contact_menu" onclick="closeMenuContact()">
+                <button class="contact_menu_option" onclick="event.stopPropagation(); openEditContactOverlay(${contact.id})"><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
+                <button class="contact_menu_option" onclick="event.stopPropagation(); openDeleteContactOverlay(${contact.id})"><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
+            </div>
         </div>
     </div>`;
+}
+
+/**
+ * Opens the edit overlay for a contact.
+ * @param {number} contactId
+ */
+function openEditContactOverlay(contactId) {
+    closeMenuContactIfRendered();
+    const contact = getContactById(contactId);
+    if (!contact) return;
+    renderContactOverlay(getEditContactOverlayTemplate(contact));
+}
+
+/**
+ * Opens the delete confirmation overlay for a contact.
+ * @param {number} contactId
+ */
+function openDeleteContactOverlay(contactId) {
+    closeMenuContactIfRendered();
+    const contact = getContactById(contactId);
+    if (!contact) return;
+    renderContactOverlay(getDeleteContactOverlayTemplate(contact));
+}
+
+/**
+ * Renders and animates a contact overlay.
+ * @param {string} template
+ */
+function renderContactOverlay(template) {
+    closeContactOverlay();
+    document.getElementById('contactOverlayContainer').innerHTML = template;
+    requestAnimationFrame(() => {
+        document.getElementById('contactOverlay').classList.add('contact-overlay-open');
+    });
+}
+
+/** Closes the active contact overlay. */
+function closeContactOverlay() {
+    document.getElementById('contactOverlayContainer').innerHTML = '';
+}
+
+/**
+ * Returns the edit overlay HTML.
+ * @param {{ id: number, name: string, email: string, phone: string }} contact
+ * @returns {string}
+ */
+function getEditContactOverlayTemplate(contact) {
+    const name = escapeAttribute(contact.name);
+    const email = escapeAttribute(contact.email);
+    const phone = escapeAttribute(contact.phone);
+
+    return `<div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
+        <section class="contact-overlay contact-edit-overlay" onclick="event.stopPropagation()">
+            <button class="contact-overlay-close" onclick="closeContactOverlay()" aria-label="Close">&times;</button>
+            <div class="contact-overlay-brand">
+                <img src="../assets/icons/join_logo.svg" alt="Join">
+                <h2>Edit contact</h2>
+                <div></div>
+            </div>
+            <form class="contact-edit-form" onsubmit="saveEditedContact(event, ${contact.id})">
+                <input id="editContactName" type="text" value="${name}" placeholder="Name" autocomplete="name" required>
+                <input id="editContactEmail" type="email" value="${email}" placeholder="Email" autocomplete="email" required>
+                <input id="editContactPhone" type="tel" value="${phone}" placeholder="Phone" autocomplete="tel" required>
+                <div class="contact-overlay-actions">
+                    <button type="button" class="contact-secondary-btn" onclick="deleteContact(${contact.id})">Delete</button>
+                    <button type="submit" class="contact-primary-btn">Save</button>
+                </div>
+            </form>
+        </section>
+    </div>`;
+}
+
+/**
+ * Returns the delete confirmation overlay HTML.
+ * @param {{ id: number, name: string }} contact
+ * @returns {string}
+ */
+function getDeleteContactOverlayTemplate(contact) {
+    const name = escapeHtml(contact.name);
+
+    return `<div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
+        <section class="contact-overlay contact-delete-overlay" onclick="event.stopPropagation()">
+            <button class="contact-overlay-close" onclick="closeContactOverlay()" aria-label="Close">&times;</button>
+            <div class="contact-overlay-brand">
+                <img src="../assets/icons/join_logo.svg" alt="Join">
+                <h2>Delete contact</h2>
+                <div></div>
+            </div>
+            <div class="contact-delete-content">
+                <p>Delete ${name}?</p>
+                <div class="contact-overlay-actions">
+                    <button type="button" class="contact-secondary-btn" onclick="closeContactOverlay()">Cancel</button>
+                    <button type="button" class="contact-primary-btn" onclick="deleteContact(${contact.id})">Delete</button>
+                </div>
+            </div>
+        </section>
+    </div>`;
+}
+
+/**
+ * Saves edited contact data and refreshes the current view.
+ * @param {SubmitEvent} event
+ * @param {number} contactId
+ */
+function saveEditedContact(event, contactId) {
+    event.preventDefault();
+    const contact = getContactById(contactId);
+    if (!contact) return;
+    contact.name = document.getElementById('editContactName').value.trim();
+    contact.email = document.getElementById('editContactEmail').value.trim();
+    contact.phone = document.getElementById('editContactPhone').value.trim();
+    contact.initials = getInitials(contact.name);
+    contacts.sort((a, b) => a.name.localeCompare(b.name));
+    closeContactOverlay();
+    renderContacts();
+    showContactDetails(contactId);
+}
+
+/**
+ * Deletes a contact and resets the details panel.
+ * @param {number} contactId
+ */
+function deleteContact(contactId) {
+    const contactIndex = getContactIndexById(contactId);
+    if (contactIndex === -1) return;
+    contacts.splice(contactIndex, 1);
+    activeContactId = null;
+    closeContactOverlay();
+    renderContacts();
+    resetContactDetails();
+}
+
+/**
+ * Gets initials from a contact name.
+ * @param {string} name
+ * @returns {string}
+ */
+function getInitials(name) {
+    const nameParts = name.split(' ');
+    let initials = '';
+
+    for (let i = 0; i < nameParts.length; i++) {
+        if (nameParts[i] !== '' && initials.length < 2) {
+            initials += nameParts[i].charAt(0).toUpperCase();
+        }
+    }
+
+    return initials;
+}
+
+/**
+ * Finds a contact by id.
+ * @param {number} contactId
+ * @returns {Object | undefined}
+ */
+function getContactById(contactId) {
+    for (let i = 0; i < contacts.length; i++) {
+        if (contacts[i].id === contactId) {
+            return contacts[i];
+        }
+    }
+}
+
+/**
+ * Finds the index of a contact by id.
+ * @param {number} contactId
+ * @returns {number}
+ */
+function getContactIndexById(contactId) {
+    for (let i = 0; i < contacts.length; i++) {
+        if (contacts[i].id === contactId) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+/** Restores the empty contact details panel. */
+function resetContactDetails() {
+    const details = document.getElementById('contactDetails');
+    details.classList.add('d-none');
+    details.innerHTML = `<div class="desktop-contact-placeholder">
+        <h1>Contacts</h1>
+        <div></div>
+        <p>Better with a team</p>
+    </div>`;
+    document.getElementById('contactsList').classList.remove('d-none');
+}
+
+/** Closes the mobile menu only when it exists in the DOM. */
+function closeMenuContactIfRendered() {
+    if (document.getElementById('contactMenu')) closeMenuContact();
+}
+
+/**
+ * Escapes text before inserting it as HTML.
+ * @param {string} value
+ * @returns {string}
+ */
+function escapeHtml(value) {
+    return value.replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+    })[char]);
+}
+
+/**
+ * Escapes text before inserting it into an HTML attribute.
+ * @param {string} value
+ * @returns {string}
+ */
+function escapeAttribute(value) {
+    return escapeHtml(value);
 }
 
 /** Shows the contacts list panel and hides details (mobile). */
@@ -142,6 +402,11 @@ window.showContactDetails = showContactDetails;
 window.showContactsList = showContactsList;
 window.toggleMenuContact = toggleMenuContact;
 window.closeMenuContact = closeMenuContact;
+window.openEditContactOverlay = openEditContactOverlay;
+window.openDeleteContactOverlay = openDeleteContactOverlay;
+window.closeContactOverlay = closeContactOverlay;
+window.saveEditedContact = saveEditedContact;
+window.deleteContact = deleteContact;
 
 document.addEventListener('DOMContentLoaded', () => {
     initNavbar();

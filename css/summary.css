@@ -181,7 +181,6 @@ hr {
     justify-content: center;
     animation: fadeOut 1.5s ease-in forwards;
     animation-delay: 1s;
-    z-index: 9999;
 }
 
 .greeting-overlay p {
@@ -191,6 +190,12 @@ hr {
     margin: 0;
     animation: fadeOut 1.5s ease-in forwards;
     animation-delay: 1s;
+}
+
+.username{
+    font-size: clamp(1.75rem, 5.75vw, 3.75rem);
+    color: var(--color-accent);
+    font-weight:700;
 }
 
 /* Tablet */
