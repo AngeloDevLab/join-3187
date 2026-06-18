@@ -50,7 +50,7 @@ Join is a project management tool for visualizing task status and responsibiliti
 - **2 blank lines between functions** — consistent throughout every script
 - **JSDoc required on every function** — document parameters and return values
 - Reusable logic belongs in `js/components/` or `js/utils/`, not in page scripts
-- Navbar component (`js/components/navbar.js`) renders the shared navigation dynamically — do not copy-paste navbar HTML into individual pages
+- Sidebar/header markup is static HTML, copy-pasted identically into every protected page (`pages/board.html`, `pages/summary.html`, `pages/add-task.html`, `pages/contacts.html`); `js/components/navbar.js` only attaches behavior (active-link highlight, header avatar initials, dropdown toggle, logout) via `initNavbar()` — it does not render any markup
 - **No `DOMContentLoaded` wrapper** — all scripts use `type="module"` which defers automatically; call init functions directly at the top level at the end of the file
 - **`import '../utils/auth-guard.js'` must be the first import** in every protected page script (all pages except `index.html`, `imprint.html`, `privacy.html`)
 - **Never import from `js/firebase/database.js` in page scripts** — always go through `js/firebase/cache.js`
@@ -59,7 +59,7 @@ Join is a project management tool for visualizing task status and responsibiliti
 
 | Component | File | Status |
 |---|---|---|
-| Navbar / Sidebar | `js/components/navbar.js` | in progress (colleague) |
+| Navbar / Sidebar (behavior only) | `js/components/navbar.js` | done |
 | Modal / Drawer | `js/components/modal.js` | done |
 | Toast | `js/components/toast.js` | done |
 | Subtask input | `js/components/subtask.js` | done |
