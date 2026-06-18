@@ -54,6 +54,7 @@ function exitAndRedirect(cardEl, message, href) {
     setTimeout(() => {
         showToast(message);
         setTimeout(() => { window.location.href = href; }, 1200);
+        sessionStorage.setItem('justLoggedIn', 'true'); // Check for Animation
     }, 300);
 }
 
