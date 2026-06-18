@@ -27,7 +27,7 @@ body {
     height: calc(100vh - var(--header-height) - var(--mobile-nav-height));
     /* was: height: 100vh */
     overflow-y: auto;
-    padding-top: 96px;
+    padding-top: 20px;
     padding-bottom: 96px;
 }
 
@@ -94,7 +94,7 @@ body {
 .menu_contact_btn {
     position: fixed;
     right: 25px;
-    bottom: 60px;
+    bottom: 100px;
     width: 45px;
     height: 45px;
     border: unset;
@@ -123,7 +123,7 @@ body {
 .bg-blue   { background-color: #6e52ff; }
 
 .contact-details {
-    padding-top: 48px;
+    padding-top: 30px;
     padding-bottom: 96px;
     background-color: #f6f7f8; /* TODO: var(--color-bg) */
 }
@@ -173,6 +173,18 @@ body {
     align-items: center;
     gap: 8px;
     margin-top: 40px;
+}
+
+@keyframes flyInContactCard {
+    from {
+        opacity: 0;
+        transform: translateX(80px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .contact-details-avatar {
@@ -272,7 +284,200 @@ body {
     display: none;
 }
 
+.contact-overlay-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background-color: rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    transition: opacity 180ms ease-out;
+}
+
+.contact-overlay-backdrop.contact-overlay-open {
+    opacity: 1;
+}
+
+.contact-overlay {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(220px, 320px) minmax(280px, 1fr);
+    width: min(900px, 100%);
+    min-height: 360px;
+    overflow: hidden;
+    border-radius: 30px;
+    background-color: white;
+    box-shadow: 0 0 14px 3px rgba(0, 0, 0, 0.12);
+    transform: translateX(120px);
+    transition: transform 180ms ease-out;
+}
+
+.contact-overlay-open .contact-overlay {
+    transform: translateX(0);
+}
+
+.contact-overlay-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 1;
+    border: unset;
+    background: transparent;
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.contact-overlay-brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+    background-color: #2a3647;
+    color: white;
+}
+
+.contact-overlay-brand img {
+    width: 56px;
+    height: 68px;
+    object-fit: contain;
+    margin-bottom: 24px;
+}
+
+.contact-overlay-brand h2 {
+    margin: 0;
+    font-size: clamp(36px, 5vw, 61px);
+    line-height: 1.05;
+}
+
+.contact-overlay-brand div {
+    width: 90px;
+    height: 3px;
+    margin-top: 16px;
+    background-color: #29abe2;
+}
+
+.contact-edit-form,
+.contact-delete-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+    padding: 72px 48px 48px;
+}
+
+.contact-edit-form input {
+    width: 100%;
+    padding: 12px 20px;
+    border: 1px solid #d1d1d1;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    outline: none;
+}
+
+.contact-edit-form input:focus {
+    border-color: #29abe2;
+}
+
+.contact-overlay-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.contact-primary-btn,
+.contact-secondary-btn {
+    min-height: 48px;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.contact-primary-btn {
+    border: 1px solid #2a3647;
+    background-color: #2a3647;
+    color: white;
+}
+
+.contact-primary-btn:hover {
+    border-color: #29abe2;
+    background-color: #29abe2;
+}
+
+.contact-secondary-btn {
+    border: 1px solid #2a3647;
+    background-color: white;
+    color: #2a3647;
+}
+
+.contact-secondary-btn:hover {
+    border-color: #29abe2;
+    color: #29abe2;
+}
+
+.contact-delete-content p {
+    margin: 0;
+    font-size: 24px;
+}
+
+@media (max-width: 700px) {
+    .contact-overlay-backdrop {
+        align-items: flex-end;
+        padding: 16px;
+    }
+
+    .contact-overlay {
+        grid-template-columns: 1fr;
+        min-height: unset;
+        max-height: calc(100vh - 48px);
+        overflow-y: auto;
+        border-radius: 30px 30px 0 0;
+    }
+
+    .contact-overlay-brand {
+        padding: 32px 24px;
+    }
+
+    .contact-overlay-brand img {
+        display: none;
+    }
+
+    .contact-overlay-brand h2 {
+        font-size: 40px;
+    }
+
+    .contact-overlay-close {
+        color: white;
+    }
+
+    .contact-edit-form,
+    .contact-delete-content {
+        padding: 32px 24px;
+    }
+
+    .contact-overlay-actions {
+        flex-wrap: wrap;
+    }
+}
+
 @media (min-width: 1024px) {
+
+    .contact-card.active {
+        background-color: #2a3647;
+    }
+
+    .contact-card.active h4 {
+        color: white;
+    }
+
     .desktop-contact-actions {
         display: flex;
         gap: 16px;
@@ -416,8 +621,16 @@ body {
     }
 
     .contact-details-profile {
-        margin-top: 48px;
+        margin-top: 0;
         gap: 32px;
+    }
+
+    .contact-details-card {
+        max-width: 640px;
+        margin-top: 48px;
+        padding: 32px;
+        background: transparent;
+        box-shadow: none;
     }
 
     .contact-details-avatar {
@@ -455,5 +668,9 @@ body {
     .desktop-contact-placeholder p {
         font-size: clamp(18px, 2vw, 27px);
         margin: 0;
+    }
+
+    .contact-details-card {
+        animation: flyInContactCard 225ms ease-out;
     }
 }
