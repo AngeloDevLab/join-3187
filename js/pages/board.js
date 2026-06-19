@@ -43,7 +43,7 @@ function generateTodoHtml(todo) {
     const subtasksHtml = todo.subtasks
         ? `<div class="progress-row"><div class="progress-bar"><div></div></div><span>${todo.subtasks}</span></div>`
         : '';
-    return `<div class="task-card" draggable="true" ondragstart="startDragging(${todo.id})">
+    return `<div class="task-card" draggable="true" ondragstart="startDragging(event, ${todo.id})" ondragend="stopDragging(event)">
         <span class="task-category ${categoryClass}">${todo.type}</span>
         <h4>${todo.title}</h4>
         <p>${todo.description}</p>
@@ -56,26 +56,56 @@ function generateTodoHtml(todo) {
 }
 
 /**
- * Stores the id of the task being dragged.
+ * Stores the dragged task id and applies the tilt animation to the card.
+ * @param {DragEvent} event
  * @param {number} id
  */
-function startDragging(id) { currentDraggedElement = id; }
+function startDragging(event, id) {
+    currentDraggedElement = id;
+    event.currentTarget.classList.add('dragging');
+}
+
+/**
+ * Removes the tilt animation from the released card.
+ * @param {DragEvent} event
+ */
+function stopDragging(event) { event.currentTarget.classList.remove('dragging'); }
 
 /** @param {DragEvent} event */
 function allowDrop(event) { event.preventDefault(); }
+
+/**
+ * Highlights a column when a dragged card enters it.
+ * @param {string} id
+ */
+function highlightColumn(id) { document.getElementById(id).classList.add('drag-over'); }
+
+/**
+ * Removes the column highlight, only when truly leaving (not entering a child element).
+ * @param {DragEvent} event
+ * @param {string} id
+ */
+function unhighlightColumn(event, id) {
+    const container = document.getElementById(id);
+    if (!container.contains(event.relatedTarget)) container.classList.remove('drag-over');
+}
 
 /**
  * Moves the dragged task to a new category and re-renders.
  * @param {string} category
  */
 function moveTo(category) {
+    document.getElementById(category).classList.remove('drag-over');
     const todo = todos.find((t) => t.id === currentDraggedElement);
     todo.category = category;
     updateHtml();
 }
 
 window.startDragging = startDragging;
+window.stopDragging = stopDragging;
 window.allowDrop = allowDrop;
+window.highlightColumn = highlightColumn;
+window.unhighlightColumn = unhighlightColumn;
 window.moveTo = moveTo;
 
 document.addEventListener('DOMContentLoaded', () => {

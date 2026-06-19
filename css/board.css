@@ -106,6 +106,7 @@ h1 {
     text-align: center;
     padding: 16px;
     border-radius: 10px;
+    pointer-events: none;
 }
 
 .task-card {
@@ -114,6 +115,15 @@ h1 {
     padding: 16px;
     margin-bottom: 16px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.08); /* TODO: var(--shadow-card) */
+    cursor: grab;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.task-card.dragging {
+    transform: rotate(3deg) scale(1.04);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    opacity: 0.85;
+    cursor: grabbing;
 }
 
 .task-category {
@@ -356,6 +366,8 @@ textarea {
 .drag-area.drag-over {
     background-color: #e7f3ff;
     border-radius: 16px;
+    border: 2px dashed #4589ff;
+    transition: background-color 0.2s ease;
 }
 
 /* TODO: breakpoint inconsistency — other pages use 1024px, board uses 700px */

@@ -80,7 +80,7 @@
                                 </svg>
                             </button>
                         </div>
-                        <div class="drag-area" id="todo" ondrop="moveTo('todo')" ondragover="allowDrop(event)">
+                        <div class="drag-area" id="todo" ondrop="moveTo('todo')" ondragover="allowDrop(event)" ondragenter="highlightColumn('todo')" ondragleave="unhighlightColumn(event, 'todo')">
                             <div class="empty-task">No tasks To do</div>
                         </div>
                     </div>
@@ -99,7 +99,7 @@
                             </button>
                         </div>
                         <div class="drag-area" id="inProgress" ondrop="moveTo('inProgress')"
-                            ondragover="allowDrop(event)"></div>
+                            ondragover="allowDrop(event)" ondragenter="highlightColumn('inProgress')" ondragleave="unhighlightColumn(event, 'inProgress')"></div>
                     </div>
 
                     <div class="board-column">
@@ -116,14 +116,14 @@
                             </button>
                         </div>
                         <div class="drag-area" id="awaitFeedback" ondrop="moveTo('awaitFeedback')"
-                            ondragover="allowDrop(event)"></div>
+                            ondragover="allowDrop(event)" ondragenter="highlightColumn('awaitFeedback')" ondragleave="unhighlightColumn(event, 'awaitFeedback')"></div>
                     </div>
 
                     <div class="board-column">
                         <div class="column-head">
                             <h3>Done</h3>
                         </div>
-                        <div class="drag-area" id="done" ondrop="moveTo('done')" ondragover="allowDrop(event)"></div>
+                        <div class="drag-area" id="done" ondrop="moveTo('done')" ondragover="allowDrop(event)" ondragenter="highlightColumn('done')" ondragleave="unhighlightColumn(event, 'done')"></div>
                     </div>
                 </div>
             </section>
