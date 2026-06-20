@@ -15,7 +15,7 @@ function closeModal(dialog) {
  * Opens a modal dialog with the given content and slide-in animation.
  * @param {string | Node} content
  * @param {{ animation?: 'bottom' | 'right', duration?: number | null }} [options]
- * @returns {{ close: () => void }}
+ * @returns {{ close: () => void, dialog: HTMLDialogElement }}
  */
 export function openModal(content, { animation = 'right', duration = null } = {}) {
     const dialog = document.createElement('dialog');
@@ -27,5 +27,5 @@ export function openModal(content, { animation = 'right', duration = null } = {}
     requestAnimationFrame(() => requestAnimationFrame(() => dialog.classList.add('is-open')));
     const close = () => closeModal(dialog);
     if (duration) setTimeout(close, duration);
-    return { close };
+    return { close, dialog };
 }
