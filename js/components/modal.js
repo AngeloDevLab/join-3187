@@ -12,9 +12,20 @@ function closeModal(dialog) {
 }
 
 /**
+ * Closes the modal on Escape (native 'cancel' event) or on a click that
+ * lands on the dialog itself rather than its content (i.e. the backdrop).
+ * @param {HTMLDialogElement} dialog
+ * @param {() => void} close
+ */
+function attachDismissHandlers(dialog, close) {
+    dialog.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) close(); });
+}
+
+/**
  * Opens a modal dialog with the given content and slide-in animation.
  * @param {string | Node} content
- * @param {{ animation?: 'bottom' | 'right', duration?: number | null }} [options]
+ * @param {{ animation?: 'bottom' | 'right' | 'center', duration?: number | null }} [options]
  * @returns {{ close: () => void, dialog: HTMLDialogElement }}
  */
 export function openModal(content, { animation = 'right', duration = null } = {}) {
@@ -26,6 +37,7 @@ export function openModal(content, { animation = 'right', duration = null } = {}
     dialog.showModal();
     requestAnimationFrame(() => requestAnimationFrame(() => dialog.classList.add('is-open')));
     const close = () => closeModal(dialog);
+    attachDismissHandlers(dialog, close);
     if (duration) setTimeout(close, duration);
     return { close, dialog };
 }
