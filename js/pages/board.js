@@ -8,6 +8,13 @@ let todos = [
     { id: 3, title: 'CSS Architecture Planning', description: 'Define CSS naming conventions and structure...', type: 'Technical Task', category: 'done', subtasks: '2/2 Subtasks', priority: '⌃' }
 ];
 
+let categoryMessages = {
+    todo: 'No tasks to do',
+    inProgress: 'No tasks in progress',
+    awaitFeedback: 'No tasks awaiting feedback',
+    done: 'No tasks done'
+};
+
 let currentDraggedElement;
 
 /** Renders all four board columns. */
@@ -27,7 +34,7 @@ function renderColumn(category) {
     const container = document.getElementById(category);
     container.innerHTML = '';
     if (column.length === 0) {
-        container.innerHTML = '<div class="empty-task">No tasks To do</div>';
+        container.innerHTML = `<div class="empty-task">${categoryMessages[category]}</div>`
         return;
     }
     column.forEach((todo) => { container.innerHTML += generateTodoHtml(todo); });
@@ -44,7 +51,10 @@ function generateTodoHtml(todo) {
         ? `<div class="progress-row"><div class="progress-bar"><div></div></div><span>${todo.subtasks}</span></div>`
         : '';
     return `<div class="task-card" draggable="true" ondragstart="startDragging(event, ${todo.id})" ondragend="stopDragging(event)">
+    <div class="card-header">
         <span class="task-category ${categoryClass}">${todo.type}</span>
+      <button class="move-button" onclick="moveTaskMobile(${todo.id})">Move Task</button>
+        </div>
         <h4>${todo.title}</h4>
         <p>${todo.description}</p>
         ${subtasksHtml}
@@ -53,6 +63,30 @@ function generateTodoHtml(todo) {
             <span class="priority">${todo.priority}</span>
         </div>
     </div>`;
+}
+
+// Creates Dialog for Mobile Move
+function moveTaskMobile(id) {
+    const labels = { todo: 'To do', inProgress: 'In Progress', awaitFeedback: 'Await Feedback', done: 'Done' };
+    const dialog = document.createElement('dialog');
+    dialog.className = 'move-dialog';
+    dialog.innerHTML = Object.entries(labels)
+        .map(([key, label]) => `<button class="move-button" onclick="moveToFromDialog('${key}', ${id})">${label}</button>`)
+        .join('') + `<button class="cancel move-button">Abbrechen</button>`;
+    dialog.querySelector('.cancel').onclick = () => dialog.remove();
+    document.body.appendChild(dialog);
+    dialog.showModal();
+}
+
+
+// opens Dialog for Mobile Move
+function moveToFromDialog(category, id) {
+    const todo = todos.find((todo) => todo.id === id);
+    todo.category = category;
+    const dialog = document.querySelector('.move-dialog');
+    dialog.close();
+    dialog.remove();
+    updateHtml();
 }
 
 /**
@@ -107,6 +141,8 @@ window.allowDrop = allowDrop;
 window.highlightColumn = highlightColumn;
 window.unhighlightColumn = unhighlightColumn;
 window.moveTo = moveTo;
+window.moveTaskMobile = moveTaskMobile;
+window.moveToFromDialog = moveToFromDialog;
 
 document.addEventListener('DOMContentLoaded', () => {
     initNavbar();
