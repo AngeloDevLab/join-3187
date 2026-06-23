@@ -11,6 +11,10 @@
     <link rel="stylesheet" href="../css/global/layout.css" />
     <link rel="stylesheet" href="../css/global/navbar.css" />
     <link rel="stylesheet" href="../css/global/buttons.css" />
+    <link rel="stylesheet" href="../css/global/inputs.css" />
+    <link rel="stylesheet" href="../css/global/dropdown.css" />
+    <link rel="stylesheet" href="../css/global/modal.css" />
+    <link rel="stylesheet" href="../css/add-task.css" />
     <link rel="stylesheet" href="../css/board.css" />
 </head>
 
@@ -62,7 +66,7 @@
                             <div class="linediv"></div>
                             <img src="../assets/icons/search.svg" alt="search" class="search-icon" />
                         </div>
-                        <button class="btn">Add task +</button>
+                        <button class="btn" data-status="todo">Add task +</button>
                     </div>
                 </div>
 
@@ -70,7 +74,7 @@
                     <div class="board-column">
                         <div class="column-head">
                             <h3>To do</h3>
-                            <button class="plus-sign">
+                            <button class="plus-sign" data-status="todo">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <rect x="1" y="1" width="22" height="22" rx="7" stroke="#2A3647" stroke-width="2" />
@@ -88,7 +92,7 @@
                     <div class="board-column">
                         <div class="column-head">
                             <h3>In progress</h3>
-                            <button class="plus-sign">
+                            <button class="plus-sign" data-status="inProgress">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <rect x="1" y="1" width="22" height="22" rx="7" stroke="#2A3647" stroke-width="2" />
@@ -105,7 +109,7 @@
                     <div class="board-column">
                         <div class="column-head">
                             <h3>Await feedback</h3>
-                            <button class="plus-sign">
+                            <button class="plus-sign" data-status="awaitFeedback">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <rect x="1" y="1" width="22" height="22" rx="7" stroke="#2A3647" stroke-width="2" />
@@ -130,50 +134,198 @@
         </main>
     </div>
 
-    <dialog>
-        <div class="dialog-header">
+    <template id="addTaskTemplate">
+        <div class="add-task-modal">
+            <button type="button" class="add-task-modal-close" aria-label="Close">✕</button>
             <h1>Add Task</h1>
-            <button id="closeDialog" class="close-dialog">✕</button>
-        </div>
 
-        <form class="add-task-form">
-            <div class="dialog-content">
-                <div class="dialog-left">
-                    <label>Title<span>*</span><input type="text" placeholder="Enter a title" /></label>
-                    <label>Description<textarea placeholder="Enter a Description"></textarea></label>
-                    <label>Due date<span>*</span><input type="date" /></label>
-                </div>
+            <form class="task-form" novalidate>
+                <div class="form-columns">
 
-                <div class="dialog-divider"></div>
+                    <!-- ── Left Column ───────────────────────── -->
+                    <div class="form-col">
 
-                <div class="dialog-right">
-                    <div>
-                        <p class="form-label">Priority</p>
-                        <div class="priority-buttons">
-                            <button type="button">Urgent ⌃</button>
-                            <button type="button" class="active-priority">Medium =</button>
-                            <button type="button">Low ⌄</button>
+                        <div class="input-field">
+                            <label class="field-label" for="task-title">
+                                Title <span class="required-star">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="text" id="task-title" placeholder="Enter a title" required>
+                            </div>
+                            <p class="input-error-msg" id="taskTitleError"></p>
                         </div>
-                    </div>
-                    <label>Assigned to<select>
-                            <option>Select contacts to assign</option>
-                        </select></label>
-                    <label>Category<span>*</span><select>
-                            <option>Select task category</option>
-                        </select></label>
-                    <label>Subtasks<input type="text" placeholder="Add new subtask" /></label>
-                </div>
-            </div>
 
-            <div class="dialog-footer">
-                <p><span>*</span>This field is required</p>
-                <div>
-                    <button type="button" class="cancel-btn">Cancel ✕</button>
-                    <button type="submit" class="create-btn">Create Task ✓</button>
+                        <div class="input-field">
+                            <label class="field-label" for="task-description">Description</label>
+                            <div class="input-wrapper">
+                                <textarea id="task-description" placeholder="Enter a description" rows="4"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="input-field">
+                            <label class="field-label" for="task-due-date">
+                                Due date <span class="required-star">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="date" id="task-due-date" required>
+                                <span class="input-icon">
+                                    <img src="../assets/icons/event.svg" alt="Calendar" width="18" height="20">
+                                </span>
+                            </div>
+                            <p class="input-error-msg" id="taskDueDateError"></p>
+                        </div>
+
+                    </div>
+
+                    <!-- ── Divider ─────────────────────────── -->
+                    <div class="form-divider" aria-hidden="true"></div>
+
+                    <!-- ── Right Column ──────────────────────── -->
+                    <div class="form-col">
+
+                        <div class="input-field">
+                            <p class="field-label">Priority</p>
+                            <div class="priority-buttons">
+
+                                <button type="button" class="priority-btn" data-priority="urgent">
+                                    Urgent
+                                    <span class="priority-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="16"
+                                            viewBox="0 0 21 16" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M2 7L10.5 1L19 7" />
+                                            <path d="M2 14L10.5 8L19 14" />
+                                        </svg>
+                                    </span>
+                                </button>
+
+                                <button type="button" class="priority-btn selected" data-priority="medium">
+                                    Medium
+                                    <span class="priority-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="16"
+                                            viewBox="0 0 21 16" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M2 5H19" />
+                                            <path d="M2 11H19" />
+                                        </svg>
+                                    </span>
+                                </button>
+
+                                <button type="button" class="priority-btn" data-priority="low">
+                                    Low
+                                    <span class="priority-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="16"
+                                            viewBox="0 0 21 16" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M2 1L10.5 7L19 1" />
+                                            <path d="M2 8L10.5 14L19 8" />
+                                        </svg>
+                                    </span>
+                                </button>
+
+                            </div>
+                        </div>
+
+                        <div class="input-field">
+                            <label class="field-label" for="assignedTrigger">Assigned to</label>
+                            <div class="input-wrapper">
+                                <div class="dropdown" id="assignedDropdown">
+                                    <button type="button" id="assignedTrigger" class="dropdown-trigger"
+                                        aria-haspopup="listbox" aria-expanded="false" aria-multiselectable="true">
+                                        <span class="dropdown-value dropdown-placeholder" id="assignedValue">Select
+                                            contacts to assign</span>
+                                        <img src="../assets/icons/arrow_drop_down.svg" class="dropdown-arrow" alt=""
+                                            width="12" height="12">
+                                    </button>
+                                    <ul class="dropdown-panel" role="listbox" id="assignedList"></ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-field">
+                            <label class="field-label" for="categoryTrigger">
+                                Category <span class="required-star">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="hidden" id="task-category">
+                                <div class="dropdown" id="categoryDropdown">
+                                    <button type="button" id="categoryTrigger" class="dropdown-trigger"
+                                        aria-haspopup="listbox" aria-expanded="false">
+                                        <span class="dropdown-value dropdown-placeholder">Select task category</span>
+                                        <img src="../assets/icons/arrow_drop_down.svg" class="dropdown-arrow" alt=""
+                                            width="12" height="12">
+                                    </button>
+                                    <ul class="dropdown-panel" role="listbox">
+                                        <li class="dropdown-option" data-value="user-story" role="option">User Story
+                                        </li>
+                                        <li class="dropdown-option" data-value="technical-task" role="option">Technical
+                                            Task</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <p class="input-error-msg" id="taskCategoryError"></p>
+                        </div>
+
+                        <div class="input-field">
+                            <label class="field-label" for="task-subtask">Subtasks</label>
+                            <div class="input-wrapper subtask-input-wrapper">
+                                <input type="text" id="task-subtask" placeholder="Add new subtask" autocomplete="off">
+                                <div class="subtask-actions">
+                                    <button type="button" class="subtask-action-btn" id="subtaskClear"
+                                        aria-label="Clear subtask input">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M18 6 6 18" />
+                                            <path d="m6 6 12 12" />
+                                        </svg>
+                                    </button>
+                                    <span class="subtask-action-divider"></span>
+                                    <button type="button" class="subtask-action-btn" id="subtaskConfirm"
+                                        aria-label="Add subtask">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 6 9 17l-5-5" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <ul class="subtask-list" id="subtaskList"></ul>
+                        </div>
+
+                    </div>
                 </div>
-            </div>
-        </form>
-    </dialog>
+
+                <!-- ── Form Footer ───────────────────────── -->
+                <div class="form-footer">
+                    <p class="required-note">
+                        <span class="required-star">*</span> This field is required
+                    </p>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary clear-btn">
+                            Clear
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M18 6 6 18" />
+                                <path d="m6 6 12 12" />
+                            </svg>
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Create Task
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M20 6 9 17l-5-5" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </template>
 
     <script type="module" src="../js/pages/board.js"></script>
 </body>

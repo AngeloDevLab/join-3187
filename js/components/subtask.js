@@ -18,12 +18,15 @@ function buildSubtaskItem(text) {
 }
 
 
-/** Reads the subtask input and appends a new item to the list. */
-function addSubtask() {
-    const input = document.getElementById('task-subtask');
+/**
+ * Reads the subtask input and appends a new item to the list.
+ * @param {ParentNode} root
+ */
+function addSubtask(root) {
+    const input = root.querySelector('#task-subtask');
     const text = input.value.trim();
     if (!text) return;
-    document.getElementById('subtaskList').appendChild(buildSubtaskItem(text));
+    root.querySelector('#subtaskList').appendChild(buildSubtaskItem(text));
     input.value = '';
     input.focus();
 }
@@ -79,24 +82,28 @@ function handleSubtaskListClick(e) {
 
 /**
  * Returns the current subtask texts for use when saving the task.
+ * @param {ParentNode} root
  * @returns {string[]}
  */
-export function getSubtasks() {
-    return [...document.querySelectorAll('.subtask-text')].map((el) => el.textContent);
+export function getSubtasks(root) {
+    return [...root.querySelectorAll('.subtask-text')].map((el) => el.textContent);
 }
 
 
-/** Sets up the subtask input: active state, Enter key, confirm/clear actions, and list delegation. */
-export function initSubtaskInput() {
-    const input = document.getElementById('task-subtask');
+/**
+ * Sets up the subtask input: active state, Enter key, confirm/clear actions, and list delegation.
+ * @param {ParentNode} root
+ */
+export function initSubtaskInput(root) {
+    const input = root.querySelector('#task-subtask');
     const wrapper = input?.closest('.input-wrapper');
     if (!input || !wrapper) return;
     input.addEventListener('focus', () => wrapper.classList.add('is-active'));
     input.addEventListener('blur', (e) => {
         if (!wrapper.contains(e.relatedTarget)) wrapper.classList.remove('is-active');
     });
-    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addSubtask(); } });
-    document.getElementById('subtaskConfirm')?.addEventListener('click', () => { addSubtask(); input.focus(); });
-    document.getElementById('subtaskClear')?.addEventListener('click', () => { input.value = ''; input.focus(); });
-    document.getElementById('subtaskList')?.addEventListener('click', handleSubtaskListClick);
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addSubtask(root); } });
+    root.querySelector('#subtaskConfirm')?.addEventListener('click', () => { addSubtask(root); input.focus(); });
+    root.querySelector('#subtaskClear')?.addEventListener('click', () => { input.value = ''; input.focus(); });
+    root.querySelector('#subtaskList')?.addEventListener('click', handleSubtaskListClick);
 }

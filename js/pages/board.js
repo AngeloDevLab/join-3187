@@ -1,5 +1,9 @@
 import '../utils/auth-guard.js';
 import { initNavbar } from '../components/navbar.js';
+import { openModal } from '../components/modal.js';
+import { initAddTaskForm } from '../components/add-task-form.js';
+
+const PRIORITY_SYMBOL = { urgent: '⌃', medium: '=', low: '⌄' };
 
 let todos = [
     { id: 0, title: 'Kochwelt Page & Recipe Recommender', description: 'Build start page with recipe recommendation...', type: 'User Story', category: 'inProgress', subtasks: '1/2 Subtasks', priority: '=' },
@@ -34,6 +38,22 @@ function renderColumn(category) {
 }
 
 /**
+ * Returns avatar markup for a task's assigned contacts, or the placeholder
+ * trio for seed tasks that don't carry an `assigned` list.
+ * @param {{ assigned?: { initials: string, color: string }[] }} todo
+ * @returns {string}
+ */
+function buildAvatarsHtml(todo) {
+    if (!todo.assigned?.length) {
+        return '<span class="avatar orange">AM</span><span class="avatar green">EM</span><span class="avatar purple">MB</span>';
+    }
+    return todo.assigned
+        .map((c) => `<span class="avatar" style="background:${c.color}">${c.initials}</span>`)
+        .join('');
+}
+
+
+/**
  * Returns the HTML markup for a single task card.
  * @param {{ id: number, title: string, description: string, type: string, subtasks: string, priority: string }} todo
  * @returns {string}
@@ -49,7 +69,7 @@ function generateTodoHtml(todo) {
         <p>${todo.description}</p>
         ${subtasksHtml}
         <div class="card-bottom">
-            <div><span class="avatar orange">AM</span><span class="avatar green">EM</span><span class="avatar purple">MB</span></div>
+            <div>${buildAvatarsHtml(todo)}</div>
             <span class="priority">${todo.priority}</span>
         </div>
     </div>`;
@@ -101,6 +121,44 @@ function moveTo(category) {
     updateHtml();
 }
 
+/**
+ * Builds a new todo from collected form data and adds it to the board.
+ * @param {{ title: string, description: string, priority: string, type: string, assigned: object[], subtasks: string[] }} data
+ * @param {string} status
+ * @param {() => void} close
+ */
+function handleNewTask(data, status, close) {
+    const id = Math.max(...todos.map((t) => t.id)) + 1;
+    const subtasksLabel = data.subtasks.length ? `0/${data.subtasks.length} Subtasks` : '';
+    todos.push({
+        id, title: data.title, description: data.description, type: data.type,
+        category: status, assigned: data.assigned, subtasks: subtasksLabel,
+        priority: PRIORITY_SYMBOL[data.priority],
+    });
+    updateHtml();
+    close();
+}
+
+
+/**
+ * Opens the Add Task modal pre-targeted at the given column.
+ * @param {string} status
+ */
+function openAddTaskModal(status) {
+    const node = document.getElementById('addTaskTemplate').content.cloneNode(true);
+    const { dialog, close } = openModal(node, { animation: 'right' });
+    initAddTaskForm(dialog, { onSubmitSuccess: (data) => handleNewTask(data, status, close) });
+    dialog.querySelector('.add-task-modal-close')?.addEventListener('click', close);
+}
+
+
+/** Wires every "+" trigger on the board to open the Add Task modal for its column. */
+function initAddTaskButtons() {
+    document.querySelectorAll('[data-status]').forEach((btn) =>
+        btn.addEventListener('click', () => openAddTaskModal(btn.dataset.status)));
+}
+
+
 window.startDragging = startDragging;
 window.stopDragging = stopDragging;
 window.allowDrop = allowDrop;
@@ -111,4 +169,5 @@ window.moveTo = moveTo;
 document.addEventListener('DOMContentLoaded', () => {
     initNavbar();
     updateHtml();
+    initAddTaskButtons();
 });

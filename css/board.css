@@ -211,148 +211,28 @@ h1 {
 .green-text { color: #7ae229; } /* TODO: var(--priority-low) */
 .red-text   { color: #ff3d00; } /* TODO: var(--priority-urgent) */
 
-dialog {
+.add-task-modal {
     width: 1100px;
     max-width: 90vw;
-    height: 700px;
-    border: none;
-    border-radius: 30px;
+    max-height: 90vh;
     padding: 60px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    position: relative;
 }
 
-dialog::backdrop {
-    background: rgba(0, 0, 0, 0.4);
+.add-task-modal h1 {
+    margin: 0 0 32px;
 }
 
-.dialog-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.dialog-header h1 {
-    font-size: 60px;
-    margin: 0;
-}
-
-.close-dialog {
+.add-task-modal-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
     border: none;
     background: transparent;
     font-size: 24px;
     cursor: pointer;
-}
-
-.add-task-form {
-    height: 100%;
-}
-
-.dialog-content {
-    display: grid;
-    grid-template-columns: 1fr 1px 1fr;
-    gap: 40px;
-    margin-top: 32px;
-}
-
-.dialog-left,
-.dialog-right {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.dialog-divider {
-    background-color: #d1d1d1; /* TODO: var(--color-border) */
-}
-
-/* TODO: label/input rules below duplicate global/inputs.css — use .input-wrapper classes in board dialog markup */
-label,
-.form-label {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    color: #2a3647; /* TODO: var(--color-primary) */
-    font-size: 16px;
-    margin: 0;
-}
-
-label span,
-.dialog-footer span {
-    color: #ff8190;
-}
-
-input,
-textarea,
-select {
-    border: 1px solid #d1d1d1; /* TODO: var(--color-border) */
-    border-radius: 10px;
-    padding: 12px 16px;
-    font-size: 16px;
-    font-family: inherit;
-}
-
-textarea {
-    height: 90px;
-    resize: none;
-}
-
-/* TODO: .priority-buttons duplicated in add-task.css — extract to global/buttons.css */
-.priority-buttons {
-    display: flex;
-    gap: 16px;
-}
-
-.priority-buttons button {
-    flex: 1;
-    border: none;
-    background: white;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.08);
-    border-radius: 10px;
-    padding: 14px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.active-priority {
-    background-color: #ffa800 !important; /* TODO: var(--priority-medium) */
-    color: white;
-    font-weight: bold;
-}
-
-.dialog-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-top: 120px;
-}
-
-.dialog-footer p {
-    margin: 0;
-    font-size: 14px;
-}
-
-.dialog-footer div {
-    display: flex;
-    gap: 16px;
-}
-
-.create-btn {
-    border-radius: 10px;
-    padding: 14px 20px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.cancel-btn {
-    background: white;
-    border: 1px solid #2a3647; /* TODO: var(--color-primary) */
-    color: #2a3647; /* TODO: var(--color-primary) */
-}
-
-.create-btn {
-    background: #2a3647; /* TODO: var(--color-primary) */
-    color: white;
-    border: none;
-    font-weight: bold;
 }
 
 .drag-area {
