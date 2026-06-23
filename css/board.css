@@ -63,6 +63,17 @@ h1 {
   width: fit-content;
 }
 
+.cancel {
+  border: none;
+  background-color: var(--color-accent);
+  color: #fff;
+  border-radius: var(--border-radius-sm);
+  padding: var(--space-xs) var(--space-sm);
+  display: none;
+  text-align: center;
+  width: fit-content;
+}
+
 .board-columns {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -131,7 +142,9 @@ h1 {
     height: fit-content;
     align-items: center;
     background-color: #f6f7f8;
+    box-shadow: var(--shadow-default);
 }
+
 .move-dialog::backdrop {
     background: rgba(0,0,0,0.4);
 }

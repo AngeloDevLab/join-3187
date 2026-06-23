@@ -67,8 +67,8 @@ function generateTodoHtml(todo) {
 
 // Creates Dialog for Mobile Move
 function moveTaskMobile(id) {
-    const labels = { todo: 'To do', inProgress: 'In Progress', awaitFeedback: 'Await Feedback', done: 'Done' };
-    const dialog = document.createElement('dialog');
+    let labels = { todo: 'To do', inProgress: 'In Progress', awaitFeedback: 'Await Feedback', done: 'Done' };
+    let dialog = document.createElement('dialog');
     dialog.className = 'move-dialog';
     dialog.innerHTML = Object.entries(labels)
         .map(([key, label]) => `<button class="move-button" onclick="moveToFromDialog('${key}', ${id})">${label}</button>`)
