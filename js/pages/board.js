@@ -53,7 +53,16 @@ function generateTodoHtml(todo) {
     return `<div class="task-card" draggable="true" ondragstart="startDragging(event, ${todo.id})" ondragend="stopDragging(event)">
     <div class="card-header">
         <span class="task-category ${categoryClass}">${todo.type}</span>
-      <button class="move-button" onclick="moveTaskMobile(${todo.id})">Move Task</button>
+        <img src="../assets/icons/move.svg" alt="Move Icon Mobile" class="move-button" onclick="toggleCategoryNav(event)" tabindex="0">
+                <nav class="category-nav">
+                 <h3>Move To</h3>
+                    <ul>
+                        <li onclick="moveToFromNav('todo', ${todo.id})">Todo</li>
+                        <li onclick="moveToFromNav('inProgress', ${todo.id})">In Progress</li>
+                        <li onclick="moveToFromNav('awaitFeedback', ${todo.id})">Await Feedback</li>
+                        <li onclick="moveToFromNav('done', ${todo.id})">Done</li>
+                    </ul>
+                </nav>
         </div>
         <h4>${todo.title}</h4>
         <p>${todo.description}</p>
@@ -65,28 +74,20 @@ function generateTodoHtml(todo) {
     </div>`;
 }
 
-// Creates Dialog for Mobile Move
-function moveTaskMobile(id) {
-    let labels = { todo: 'To do', inProgress: 'In Progress', awaitFeedback: 'Await Feedback', done: 'Done' };
-    let dialog = document.createElement('dialog');
-    dialog.className = 'move-dialog';
-    dialog.innerHTML = Object.entries(labels)
-        .map(([key, label]) => `<button class="move-button" onclick="moveToFromDialog('${key}', ${id})">${label}</button>`)
-        .join('') + `<button class="cancel move-button">Abbrechen</button>`;
-    dialog.querySelector('.cancel').onclick = () => dialog.remove();
-    document.body.appendChild(dialog);
-    dialog.showModal();
+/**
+ * Moves a task by id to a category (Klick statt Drag&Drop).
+ * @param {string} category
+ * @param {number} id
+ */
+function moveToFromNav(category, id) {
+    const todo = todos.find((t) => t.id === id); // NEU
+    todo.category = category; // NEU
+    updateHtml(); // NEU
 }
 
-
-// opens Dialog for Mobile Move
-function moveToFromDialog(category, id) {
-    const todo = todos.find((todo) => todo.id === id);
-    todo.category = category;
-    const dialog = document.querySelector('.move-dialog');
-    dialog.close();
-    dialog.remove();
-    updateHtml();
+function toggleCategoryNav(event) {
+    let nav = event.target.nextElementSibling;
+    nav.style.display = nav.style.display === 'block' ? 'inherit' : 'block';
 }
 
 /**
@@ -141,8 +142,8 @@ window.allowDrop = allowDrop;
 window.highlightColumn = highlightColumn;
 window.unhighlightColumn = unhighlightColumn;
 window.moveTo = moveTo;
-window.moveTaskMobile = moveTaskMobile;
-window.moveToFromDialog = moveToFromDialog;
+window.moveToFromNav = moveToFromNav; // NEU
+window.toggleCategoryNav = toggleCategoryNav; // NEU
 
 document.addEventListener('DOMContentLoaded', () => {
     initNavbar();
