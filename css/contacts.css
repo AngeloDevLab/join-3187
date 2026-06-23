@@ -486,7 +486,7 @@ body {
     padding: 10px 24px;
     border-radius: 10px;
     font-family: 'Inter', sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     cursor: pointer;
 }
@@ -518,28 +518,29 @@ body {
     font-size: 24px;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 1023px) {
     .contact-overlay-backdrop {
         align-items: flex-end;
         padding: 16px 16px calc(var(--mobile-nav-height) + 5px);
     }
 
-    .contact-overlay {
+    .contact-overlay,
+    .contact-add-overlay,
+    .contact-edit-overlay,
+    .contact-delete-overlay {
         grid-template-columns: 1fr;
-        min-height: unset;
-        max-height: calc(100vh - var(--mobile-nav-height) - 48px);
-        overflow-y: auto;
-        border-radius: 30px 30px 0 0;
-    }
-
-    .contact-add-overlay {
         width: min(390px, 100%);
+        min-height: unset;
         max-height: calc(100vh - var(--mobile-nav-height) - 112px);
+        overflow-y: auto;
         border-radius: 30px;
         transform: translateY(120px);
     }
 
-    .contact-overlay-open .contact-add-overlay {
+    .contact-overlay-open .contact-overlay,
+    .contact-overlay-open .contact-add-overlay,
+    .contact-overlay-open .contact-edit-overlay,
+    .contact-overlay-open .contact-delete-overlay {
         transform: translateY(0);
     }
 
@@ -820,5 +821,9 @@ body {
 
     .contact-details-card {
         animation: flyInContactCard 225ms ease-out;
+    }
+
+    .contact_menu{
+        display: none;
     }
 }
