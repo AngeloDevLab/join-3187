@@ -192,10 +192,10 @@ hr {
     animation-delay: 1s;
 }
 
-.username{
+.username {
     font-size: clamp(1.75rem, 5.75vw, 3.75rem);
     color: var(--color-accent);
-    font-weight:700;
+    font-weight: 700;
 }
 
 /* Tablet */

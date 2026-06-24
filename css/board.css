@@ -1,7 +1,7 @@
 /* TODO: board-specific body rule — height:100vh may conflict with app-layout; verify and remove if not needed */
 body {
-  height: 100vh;
-  margin: 0;
+    height: 100vh;
+    margin: 0;
 }
 
 .board-section {
@@ -25,60 +25,62 @@ h1 {
 }
 
 .search-wrapper {
-  position: relative;
-  display: inline-block;
+    position: relative;
+    display: inline-block;
 }
 
 .search-wrapper input {
-  width: 200px;
-  padding: 10px 8px;
-  border: 1px solid #ccc; /* TODO: var(--color-border) */
-  border-radius: 8px;
-  font-size: 14px;
+    width: 200px;
+    padding: 10px 8px;
+    border: 1px solid #ccc;
+    /* TODO: var(--color-border) */
+    border-radius: 8px;
+    font-size: 14px;
 }
 
 .search-icon {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
 }
 
 
 .cancel {
-  border: none;
-  background-color: var(--color-accent);
-  color: #fff;
-  border-radius: var(--border-radius-sm);
-  padding: var(--space-xs) var(--space-sm);
-  display: none;
-  text-align: center;
-  width: fit-content;
+    border: none;
+    background-color: var(--color-accent);
+    color: #fff;
+    border-radius: var(--border-radius-sm);
+    padding: var(--space-xs) var(--space-sm);
+    display: none;
+    text-align: center;
+    width: fit-content;
 }
 
 .board-columns {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
 }
 
 .board-column {
-  min-width: 0;
+    min-width: 0;
 }
 
 .column-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #42526e; /* TODO: no variable defined — add --color-column-head to variables.css */
-  margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #42526e;
+    /* TODO: no variable defined — add --color-column-head to variables.css */
+    margin-bottom: 16px;
 }
 
 .column-head h3 {
-  font-size: 20px;
-  margin: 0;
+    font-size: 20px;
+    margin: 0;
 }
 
 .linediv {
@@ -93,11 +95,11 @@ h1 {
 }
 
 .plus-sign {
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
 }
 
 .plus-sign:hover rect,
@@ -106,16 +108,18 @@ h1 {
 }
 
 .empty-task {
-  border: 1px dashed #a8a8a8; /* TODO: var(--color-text-muted) */
-  background-color: #e7e7e7;
-  color: #a8a8a8; /* TODO: var(--color-text-muted) */
-  text-align: center;
-  padding: 16px;
-  border-radius: 10px;
-  pointer-events: none;
+    border: 1px dashed #a8a8a8;
+    /* TODO: var(--color-text-muted) */
+    background-color: #e7e7e7;
+    color: #a8a8a8;
+    /* TODO: var(--color-text-muted) */
+    text-align: center;
+    padding: 16px;
+    border-radius: 10px;
+    pointer-events: none;
 }
 
-.card-header{
+.card-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -123,32 +127,33 @@ h1 {
 }
 
 .task-card {
-  background-color: white;
-  border-radius: 24px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08); /* TODO: var(--shadow-card) */
-  cursor: grab;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    opacity 0.15s ease;
+    background-color: white;
+    border-radius: 24px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+    /* TODO: var(--shadow-card) */
+    cursor: grab;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        opacity 0.15s ease;
 }
 
 .task-card.dragging {
-  transform: rotate(3deg) scale(1.04);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
-  opacity: 0.85;
-  cursor: grabbing;
+    transform: rotate(3deg) scale(1.04);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    opacity: 0.85;
+    cursor: grabbing;
 }
 
 .task-category {
-  display: inline-block;
-  color: white;
-  padding: 5px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  margin-bottom: 16px;
+    display: inline-block;
+    color: white;
+    padding: 5px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 16px;
 }
 
 .user-story {
@@ -172,106 +177,115 @@ h1 {
 }
 
 .progress-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 13px;
 }
 
 .progress-bar {
-  flex: 1;
-  height: 8px;
-  background-color: #f4f4f4;
-  border-radius: 8px;
-  overflow: hidden;
+    flex: 1;
+    height: 8px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .progress-bar div {
-  width: 50%;
-  height: 100%;
-  background-color: #4589ff; /* TODO: var(--color-progress) */
+    width: 50%;
+    height: 100%;
+    background-color: #4589ff;
+    /* TODO: var(--color-progress) */
 }
 
 .card-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 /* TODO: .avatar duplicates .contact-avatar in global/dropdown.css — consolidate when board uses Firebase contacts */
 .avatar {
-  display: inline-flex;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  color: white;
-  justify-content: center;
-  align-items: center;
-  font-size: 11px;
-  margin-right: -8px;
-  border: 1px solid white;
+    display: inline-flex;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    font-size: 11px;
+    margin-right: -8px;
+    border: 1px solid white;
 }
 
 /* TODO: add avatar color variables to variables.css */
 .orange {
-  background-color: #ff7a00;
+    background-color: #ff7a00;
 }
+
 .green {
-  background-color: #1fd7c1;
-} /* TODO: same as var(--category-technical-task) */
+    background-color: #1fd7c1;
+}
+
+/* TODO: same as var(--category-technical-task) */
 .purple {
-  background-color: #462f8a;
+    background-color: #462f8a;
 }
 
 .priority {
-  color: #ffb800;
-  font-weight: bold;
-  font-size: 22px;
+    color: #ffb800;
+    font-weight: bold;
+    font-size: 22px;
 }
 
 .green-text {
-  color: #7ae229;
-} /* TODO: var(--priority-low) */
+    color: #7ae229;
+}
+
+/* TODO: var(--priority-low) */
 .red-text {
-  color: #ff3d00;
-} /* TODO: var(--priority-urgent) */
+    color: #ff3d00;
+}
+
+/* TODO: var(--priority-urgent) */
 
 
-.move-button{
-  display: none;
-  position: relative;
+.move-button {
+    display: none;
+    position: relative;
 }
 
 .category-nav {
-  display: none;
+    display: none;
     position: absolute;
     right: 0px;
     background: var(--color-primary);
     border-radius: var(--border-radius-lg) 0 var(--border-radius-lg) var(--border-radius-lg);
     min-width: 190px;
     color: #fff;
-     padding-left: 0px;
-     z-index: 1;
+    padding-left: 0px;
+    z-index: 1;
 }
 
-.category-nav li{
-  list-style-type: none;
-  padding: 10px 0px;
+.category-nav li {
+    list-style-type: none;
+    padding: 10px 0px;
 }
 
-.category-nav li:active{
-   opacity: 0.6;
-}
-.category-nav ul{
-  padding: 0 var(--space-md) var(--space-md) 20px;
-  margin: 0px;
+.category-nav li:active {
+    opacity: 0.6;
 }
 
-.category-nav h3{
- font-size: 18px;
- margin: 0;
- padding:  var(--space-md)  var(--space-md) var(--space-xs) var(--space-md);
+.category-nav ul {
+    padding: 0 var(--space-md) var(--space-md) 20px;
+    margin: 0px;
+}
+
+.category-nav h3 {
+    font-size: 18px;
+    margin: 0;
+    padding: var(--space-md) var(--space-md) var(--space-xs) var(--space-md);
 }
 
 .add-task-modal {
@@ -311,18 +325,18 @@ h1 {
 }
 
 .drag-area {
-  cursor: pointer;
-  min-height: 150px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+    cursor: pointer;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .drag-area.drag-over {
-  background-color: #e7f3ff;
-  border-radius: 16px;
-  border: 2px dashed #4589ff;
-  transition: background-color 0.2s ease;
+    background-color: #e7f3ff;
+    border-radius: 16px;
+    border: 2px dashed #4589ff;
+    transition: background-color 0.2s ease;
 }
 
 @media (max-width: 1023px) {
@@ -392,7 +406,7 @@ h1 {
     }
 
     .task-card {
-        width: 163px;
+        max-width: 280px;
         min-height: 170px;
     }
 
@@ -431,5 +445,9 @@ h1 {
         width: 23px;
         height: 23px;
         font-size: 10px;
+    }
+
+    .move-button {
+        display: inherit;
     }
 }

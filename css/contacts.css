@@ -6,7 +6,8 @@ html,
 body {
     margin: 0;
     /* height: 100% removed — app-layout handles this */
-    overflow: hidden; /* keeps contacts layout contained; intentional */
+    overflow: hidden;
+    /* keeps contacts layout contained; intentional */
 }
 
 /* TODO: body { font-family } duplicates global.css * selector */
@@ -17,7 +18,8 @@ body {
     flex-direction: column;
     height: calc(100vh - var(--header-height) - var(--mobile-nav-height));
     /* was: height: 100vh — now accounts for header (96px) + mobile nav (72px) */
-    background-color: #f6f7f8; /* TODO: var(--color-bg) */
+    background-color: #f6f7f8;
+    /* TODO: var(--color-bg) */
     padding: 0 max(calc(50% - 720px), clamp(1rem, 4vw, 4rem));
 }
 
@@ -46,7 +48,8 @@ body {
     content: '';
     display: block;
     margin-top: 16px;
-    border-bottom: 1px solid #d1d1d1; /* TODO: var(--color-border) */
+    border-bottom: 1px solid #d1d1d1;
+    /* TODO: var(--color-border) */
     width: calc(100% + 30px);
     margin-left: -30px;
 }
@@ -86,7 +89,8 @@ body {
 
 .contact-card a {
     font-size: 14px;
-    color: #007cee; /* TODO: var(--color-link) */
+    color: #007cee;
+    /* TODO: var(--color-link) */
     text-decoration: none;
 }
 
@@ -99,7 +103,8 @@ body {
     height: 45px;
     border: unset;
     border-radius: 50%;
-    background-color: #2a3647; /* TODO: var(--color-primary) */
+    background-color: #2a3647;
+    /* TODO: var(--color-primary) */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -118,14 +123,23 @@ body {
 }
 
 /* TODO: add avatar color variables to variables.css */
-.bg-orange { background-color: #ff7a00; }
-.bg-purple { background-color: #9327ff; }
-.bg-blue   { background-color: #6e52ff; }
+.bg-orange {
+    background-color: #ff7a00;
+}
+
+.bg-purple {
+    background-color: #9327ff;
+}
+
+.bg-blue {
+    background-color: #6e52ff;
+}
 
 .contact-details {
     padding-top: 30px;
     padding-bottom: 96px;
-    background-color: #f6f7f8; /* TODO: var(--color-bg) */
+    background-color: #f6f7f8;
+    /* TODO: var(--color-bg) */
 }
 
 .contact-details-title-row {
@@ -154,7 +168,8 @@ body {
     content: '';
     display: block;
     width: 90px;
-    border-bottom: 3px solid #29abe2; /* TODO: var(--color-accent) */
+    border-bottom: 3px solid #29abe2;
+    /* TODO: var(--color-accent) */
     margin-top: 16px;
 }
 
@@ -163,7 +178,8 @@ body {
     background: transparent;
     cursor: pointer;
     font-size: 32px;
-    color: #29abe2; /* TODO: var(--color-accent) */
+    color: #29abe2;
+    /* TODO: var(--color-accent) */
     padding: 0;
     margin-top: -30px;
 }
@@ -220,7 +236,8 @@ body {
 .contact-information a {
     display: block;
     font-size: 16px;
-    color: #007cee; /* TODO: var(--color-link) */
+    color: #007cee;
+    /* TODO: var(--color-link) */
     text-decoration: none;
     margin-bottom: 24px;
 }
@@ -261,7 +278,8 @@ body {
 }
 
 .menu_contact_btn_active {
-    background-color: #29abe2; /* TODO: var(--color-accent) */
+    background-color: #29abe2;
+    /* TODO: var(--color-accent) */
 }
 
 .contact_menu_backdrop {
@@ -654,7 +672,8 @@ body {
     }
 
     .desktop-contact-actions :hover {
-        color: #29abe2; /* TODO: var(--color-accent) */
+        color: #29abe2;
+        /* TODO: var(--color-accent) */
     }
 
     .desktop-contact-actions img {
@@ -671,7 +690,8 @@ body {
         padding-left: 0;
         padding-top: 0;
         padding-right: 0;
-        background-color: #f6f7f8; /* TODO: var(--color-bg) */
+        background-color: #f6f7f8;
+        /* TODO: var(--color-bg) */
         overflow: hidden;
     }
 
@@ -694,7 +714,8 @@ body {
         height: 48px;
         border: unset;
         border-radius: 10px;
-        background-color: #2a3647; /* TODO: var(--color-primary) */
+        background-color: #2a3647;
+        /* TODO: var(--color-primary) */
         color: white;
         font-size: 21px;
         font-weight: 700;
@@ -706,7 +727,8 @@ body {
     }
 
     .desktop-add-contact-btn:hover {
-        background-color: #29abe2; /* TODO: var(--color-accent) */
+        background-color: #29abe2;
+        /* TODO: var(--color-accent) */
     }
 
     .desktop-add-contact-btn img {
@@ -729,7 +751,8 @@ body {
     .contact-details {
         display: block;
         padding: 96px 64px;
-        background-color: #f6f7f8; /* TODO: var(--color-bg) */
+        background-color: #f6f7f8;
+        /* TODO: var(--color-bg) */
     }
 
     .contact-details.d-none {
@@ -764,7 +787,8 @@ body {
         width: 3px;
         height: 59px;
         border-bottom: unset;
-        background-color: #29abe2; /* TODO: var(--color-accent) */
+        background-color: #29abe2;
+        /* TODO: var(--color-accent) */
         margin-top: 0;
         order: 1;
     }
@@ -811,7 +835,8 @@ body {
     .desktop-contact-placeholder div {
         width: 3px;
         height: 59px;
-        background-color: #29abe2; /* TODO: var(--color-accent) */
+        background-color: #29abe2;
+        /* TODO: var(--color-accent) */
     }
 
     .desktop-contact-placeholder p {
@@ -823,7 +848,7 @@ body {
         animation: flyInContactCard 225ms ease-out;
     }
 
-    .contact_menu{
+    .contact_menu {
         display: none;
     }
 }

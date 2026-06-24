@@ -92,9 +92,17 @@
 }
 
 /* Icon color when not selected */
-.priority-btn[data-priority="urgent"] .priority-icon { color: var(--priority-urgent); }
-.priority-btn[data-priority="medium"] .priority-icon { color: var(--priority-medium); }
-.priority-btn[data-priority="low"]    .priority-icon { color: var(--priority-low); }
+.priority-btn[data-priority="urgent"] .priority-icon {
+    color: var(--priority-urgent);
+}
+
+.priority-btn[data-priority="medium"] .priority-icon {
+    color: var(--priority-medium);
+}
+
+.priority-btn[data-priority="low"] .priority-icon {
+    color: var(--priority-low);
+}
 
 /* Selected state per priority */
 .priority-btn[data-priority="urgent"].selected {
