@@ -48,7 +48,7 @@
             <div class="contacts-main">
                 <section id="contactsList" class="contacts-list">
                     <div class="desktop-add-contact-wrapper">
-                        <button class="desktop-add-contact-btn">
+                        <button class="desktop-add-contact-btn" onclick="openAddContactOverlay()">
                             Add new contact
                             <img src="../assets/icons/add_contact.svg" alt="">
                         </button>
@@ -56,7 +56,7 @@
 
                     <div id="contactsContainer" class="contacts-scroll-container"></div>
 
-                    <button class="add-contact-btn" aria-label="Add contact">
+                    <button class="add-contact-btn" onclick="openAddContactOverlay()" aria-label="Add contact">
                         <img src="../assets/icons/add_contact.svg" alt="">
                     </button>
                 </section>

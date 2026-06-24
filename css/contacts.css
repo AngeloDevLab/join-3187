@@ -353,6 +353,11 @@ body {
     line-height: 1.05;
 }
 
+.contact-overlay-brand p {
+    margin: 12px 0 0;
+    font-size: clamp(18px, 2vw, 24px);
+}
+
 .contact-overlay-brand div {
     width: 90px;
     height: 3px;
@@ -383,6 +388,91 @@ body {
     border-color: #29abe2;
 }
 
+.contact-add-overlay {
+    grid-template-columns: minmax(280px, 370px) minmax(420px, 1fr);
+    width: min(960px, 100%);
+    min-height: 468px;
+}
+
+.contact-add-overlay .contact-overlay-brand {
+    padding: 64px 40px;
+}
+
+.contact-add-form {
+    position: relative;
+    display: grid;
+    grid-template-columns: 120px minmax(280px, 1fr);
+    align-items: center;
+    gap: 56px;
+    padding: 72px 40px;
+}
+
+.contact-add-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid white;
+    background-color: #d1d1d1;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-add-avatar img {
+    width: 52px;
+    height: 52px;
+    filter: brightness(0) invert(1);
+}
+
+.contact-add-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.contact-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.contact-input-wrapper input {
+    width: 100%;
+    height: 40px;
+    padding: 8px 48px 8px 16px;
+    border: 1px solid #d1d1d1;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    outline: none;
+}
+
+.contact-input-wrapper input::placeholder {
+    color: #d1d1d1;
+}
+
+.contact-input-wrapper input:focus {
+    border-color: #29abe2;
+}
+
+.contact-input-wrapper img,
+.contact-input-wrapper span {
+    position: absolute;
+    right: 16px;
+    width: 20px;
+    height: 20px;
+    color: #a8a8a8;
+    font-size: 22px;
+    line-height: 20px;
+    pointer-events: none;
+}
+
+.contact-input-wrapper img {
+    opacity: 0.55;
+}
+
 .contact-overlay-actions {
     display: flex;
     align-items: center;
@@ -396,7 +486,7 @@ body {
     padding: 10px 24px;
     border-radius: 10px;
     font-family: 'Inter', sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     cursor: pointer;
 }
@@ -428,18 +518,30 @@ body {
     font-size: 24px;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 1023px) {
     .contact-overlay-backdrop {
         align-items: flex-end;
-        padding: 16px;
+        padding: 16px 16px calc(var(--mobile-nav-height) + 5px);
     }
 
-    .contact-overlay {
+    .contact-overlay,
+    .contact-add-overlay,
+    .contact-edit-overlay,
+    .contact-delete-overlay {
         grid-template-columns: 1fr;
+        width: min(390px, 100%);
         min-height: unset;
-        max-height: calc(100vh - 48px);
+        max-height: calc(100vh - var(--mobile-nav-height) - 112px);
         overflow-y: auto;
-        border-radius: 30px 30px 0 0;
+        border-radius: 30px;
+        transform: translateY(120px);
+    }
+
+    .contact-overlay-open .contact-overlay,
+    .contact-overlay-open .contact-add-overlay,
+    .contact-overlay-open .contact-edit-overlay,
+    .contact-overlay-open .contact-delete-overlay {
+        transform: translateY(0);
     }
 
     .contact-overlay-brand {
@@ -461,6 +563,53 @@ body {
     .contact-edit-form,
     .contact-delete-content {
         padding: 32px 24px;
+    }
+
+    .contact-add-overlay .contact-overlay-brand {
+        min-height: 305px;
+        padding: 86px 22px 104px;
+    }
+
+    .contact-add-overlay .contact-overlay-brand h2 {
+        font-size: 40px;
+    }
+
+    .contact-add-overlay .contact-overlay-brand p {
+        font-size: 20px;
+    }
+
+    .contact-add-form {
+        display: flex;
+        padding: 82px 14px 54px;
+    }
+
+    .contact-add-avatar {
+        position: absolute;
+        top: -55px;
+        left: 50%;
+        width: 104px;
+        height: 104px;
+        transform: translateX(-50%);
+    }
+
+    .contact-add-fields {
+        width: 100%;
+        gap: 14px;
+    }
+
+    .contact-add-actions {
+        justify-content: center;
+        margin-top: 8px;
+    }
+
+    .contact-add-actions .contact-secondary-btn {
+        display: none;
+    }
+
+    .contact-add-actions .contact-primary-btn {
+        min-height: 44px;
+        padding: 8px 12px;
+        font-size: 18px;
     }
 
     .contact-overlay-actions {
@@ -672,5 +821,9 @@ body {
 
     .contact-details-card {
         animation: flyInContactCard 225ms ease-out;
+    }
+
+    .contact_menu{
+        display: none;
     }
 }

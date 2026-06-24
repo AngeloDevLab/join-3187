@@ -162,6 +162,13 @@ function getContactDetailsTemplate(contact) {
 }
 
 /**
+ * Opens the add contact overlay.
+ */
+function openAddContactOverlay() {
+    renderContactOverlay(getAddContactOverlayTemplate());
+}
+
+/**
  * Opens the edit overlay for a contact.
  * @param {number} contactId
  */
@@ -198,6 +205,47 @@ function renderContactOverlay(template) {
 /** Closes the active contact overlay. */
 function closeContactOverlay() {
     document.getElementById('contactOverlayContainer').innerHTML = '';
+}
+
+/**
+ * Returns the add contact overlay HTML.
+ * @returns {string}
+ */
+function getAddContactOverlayTemplate() {
+    return `<div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
+        <section class="contact-overlay contact-add-overlay" onclick="event.stopPropagation()">
+            <button class="contact-overlay-close" onclick="closeContactOverlay()" aria-label="Close">&times;</button>
+            <div class="contact-overlay-brand">
+                <img src="../assets/icons/join_logo.svg" alt="Join">
+                <h2>Add contact</h2>
+                <p>Tasks are better with a team!</p>
+                <div></div>
+            </div>
+            <form class="contact-edit-form contact-add-form" onsubmit="createContact(event)">
+                <div class="contact-add-avatar" aria-hidden="true">
+                    <img src="../assets/icons/person.svg" alt="">
+                </div>
+                <div class="contact-add-fields">
+                    <label class="contact-input-wrapper">
+                        <input id="addContactName" type="text" placeholder="Name" autocomplete="name" required>
+                        <img src="../assets/icons/person.svg" alt="">
+                    </label>
+                    <label class="contact-input-wrapper">
+                        <input id="addContactEmail" type="email" placeholder="Email" autocomplete="email" required>
+                        <img src="../assets/icons/mail.svg" alt="">
+                    </label>
+                    <label class="contact-input-wrapper">
+                        <input id="addContactPhone" type="tel" placeholder="Phone" autocomplete="tel" required>
+                        <span aria-hidden="true">&#9742;</span>
+                    </label>
+                    <div class="contact-overlay-actions contact-add-actions">
+                        <button type="button" class="contact-secondary-btn" onclick="closeContactOverlay()">Cancel &times;</button>
+                        <button type="submit" class="contact-primary-btn">Create contact &#10003;</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>`;
 }
 
 /**
@@ -259,6 +307,34 @@ function getDeleteContactOverlayTemplate(contact) {
 }
 
 /**
+ * Creates a new contact and selects it.
+ * @param {SubmitEvent} event
+ */
+function createContact(event) {
+    event.preventDefault();
+    const name = document.getElementById('addContactName').value.trim();
+    const email = document.getElementById('addContactEmail').value.trim();
+    const phone = document.getElementById('addContactPhone').value.trim();
+
+    if (!name || !email || !phone) return;
+
+    const contact = {
+        id: getNextContactId(),
+        name,
+        email,
+        phone,
+        initials: getInitials(name),
+        color: getNextContactColor(),
+    };
+
+    contacts.push(contact);
+    contacts.sort((a, b) => a.name.localeCompare(b.name));
+    closeContactOverlay();
+    renderContacts();
+    showContactDetails(contact.id);
+}
+
+/**
  * Saves edited contact data and refreshes the current view.
  * @param {SubmitEvent} event
  * @param {number} contactId
@@ -307,6 +383,29 @@ function getInitials(name) {
     }
 
     return initials;
+}
+
+/**
+ * Gets an unused contact id.
+ * @returns {number}
+ */
+function getNextContactId() {
+    let highestId = 0;
+
+    for (let i = 0; i < contacts.length; i++) {
+        if (contacts[i].id > highestId) highestId = contacts[i].id;
+    }
+
+    return highestId + 1;
+}
+
+/**
+ * Picks a color class for a newly created contact.
+ * @returns {string}
+ */
+function getNextContactColor() {
+    const colors = ['bg-orange', 'bg-purple', 'bg-blue'];
+    return colors[contacts.length % colors.length];
 }
 
 /**
@@ -402,10 +501,12 @@ window.showContactDetails = showContactDetails;
 window.showContactsList = showContactsList;
 window.toggleMenuContact = toggleMenuContact;
 window.closeMenuContact = closeMenuContact;
+window.openAddContactOverlay = openAddContactOverlay;
 window.openEditContactOverlay = openEditContactOverlay;
 window.openDeleteContactOverlay = openDeleteContactOverlay;
 window.closeContactOverlay = closeContactOverlay;
 window.saveEditedContact = saveEditedContact;
+window.createContact = createContact;
 window.deleteContact = deleteContact;
 
 document.addEventListener('DOMContentLoaded', () => {
