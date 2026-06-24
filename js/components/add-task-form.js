@@ -72,12 +72,13 @@ function isTaskReady(fields) {
 
 
 /**
- * Enables or disables the submit button based on required field completion.
+ * Visually dims the submit button when required fields are missing, without
+ * disabling it so a click still triggers validation and shows the errors.
  * @param {HTMLButtonElement} btn
  * @param {ReturnType<typeof getFormFields>} fields
  */
 function updateTaskBtn(btn, fields) {
-    btn.disabled = !isTaskReady(fields);
+    btn.classList.toggle('btn-pending', !isTaskReady(fields));
 }
 
 
@@ -207,26 +208,19 @@ function toggleAssignedContact(option) {
 
 
 /**
- * Updates the trigger to show selected contact avatars or the placeholder text.
+ * Updates the chip row below the dropdown to show the selected contacts' avatars.
  * @param {ParentNode} root
  */
 function updateAssignedTrigger(root) {
     const selected = root.querySelectorAll('.assigned-option.selected');
-    const valueEl = root.querySelector('#assignedValue');
-    if (!selected.length) {
-        valueEl.className = 'dropdown-value dropdown-placeholder';
-        valueEl.textContent = 'Select contacts to assign';
-        return;
-    }
-    valueEl.className = 'dropdown-value assigned-chips';
-    valueEl.innerHTML = [...selected]
+    root.querySelector('#assignedChipsDisplay').innerHTML = [...selected]
         .map((opt) => `<span class="contact-avatar" style="background:${opt.dataset.color}">${opt.dataset.initials}</span>`)
         .join('');
 }
 
 
 /**
- * Deselects all contacts and resets the trigger display.
+ * Deselects all contacts and clears the chip display.
  * @param {ParentNode} root
  */
 function resetAssignedDropdown(root) {
@@ -378,7 +372,7 @@ function handleSubmit(e, fields, root, onSubmitSuccess) {
     onSubmitSuccess?.(collectTaskData(fields, root));
     showToast('Task added to board');
     clearTaskForm(fields, root);
-    e.submitter.disabled = true;
+    updateTaskBtn(e.submitter, fields);
 }
 
 

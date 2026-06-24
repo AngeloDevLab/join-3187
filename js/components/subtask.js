@@ -1,5 +1,6 @@
 /**
  * Creates a subtask list item with bullet, text, and edit/delete buttons.
+ * The left button shows a trash icon and the right one a check icon while editing.
  * @param {string} text
  * @returns {HTMLLIElement}
  */
@@ -10,9 +11,15 @@ function buildSubtaskItem(text) {
         <span class="subtask-bullet">•</span>
         <span class="subtask-text">${text}</span>
         <div class="subtask-item-actions">
-            <button type="button" class="subtask-item-btn" aria-label="Edit"><img src="../assets/icons/edit.svg" alt="" width="18" height="18"></button>
+            <button type="button" class="subtask-item-btn subtask-btn-left" aria-label="Edit">
+                <img class="icon-default" src="../assets/icons/edit.svg" alt="" width="18" height="18">
+                <img class="icon-editing" src="../assets/icons/delete.svg" alt="" width="18" height="18">
+            </button>
             <span class="subtask-action-divider"></span>
-            <button type="button" class="subtask-item-btn" aria-label="Delete"><img src="../assets/icons/delete.svg" alt="" width="18" height="18"></button>
+            <button type="button" class="subtask-item-btn subtask-btn-right" aria-label="Delete">
+                <img class="icon-default" src="../assets/icons/delete.svg" alt="" width="18" height="18">
+                <img class="icon-editing" src="../assets/icons/check.svg" alt="" width="18" height="18">
+            </button>
         </div>`;
     return li;
 }
@@ -42,7 +49,19 @@ function confirmEditSubtask(li, editInput, textEl) {
     const text = editInput.value.trim();
     if (text) textEl.textContent = text;
     editInput.remove();
-    li.classList.remove('is-editing');
+    setEditingState(li, false);
+}
+
+
+/**
+ * Toggles the editing class and updates the action buttons' labels.
+ * @param {HTMLLIElement} li
+ * @param {boolean} isEditing
+ */
+function setEditingState(li, isEditing) {
+    li.classList.toggle('is-editing', isEditing);
+    li.querySelector('.subtask-btn-left').setAttribute('aria-label', isEditing ? 'Delete' : 'Edit');
+    li.querySelector('.subtask-btn-right').setAttribute('aria-label', isEditing ? 'Confirm' : 'Delete');
 }
 
 
@@ -56,7 +75,7 @@ function startEditSubtask(li) {
     const editInput = document.createElement('input');
     editInput.className = 'subtask-edit-input';
     editInput.value = textEl.textContent;
-    li.classList.add('is-editing');
+    setEditingState(li, true);
     li.insertBefore(editInput, textEl);
     editInput.focus();
     editInput.addEventListener('blur', () => confirmEditSubtask(li, editInput, textEl));
@@ -68,15 +87,30 @@ function startEditSubtask(li) {
 
 
 /**
- * Handles edit and delete clicks inside the subtask list via event delegation.
+ * Handles clicks inside the subtask list: item clicks start editing, while the
+ * left/right action buttons delete or confirm depending on the editing state.
  * @param {MouseEvent} e
  */
 function handleSubtaskListClick(e) {
+    const li = e.target.closest('.subtask-item');
+    if (!li) return;
     const btn = e.target.closest('.subtask-item-btn');
-    if (!btn) return;
-    const li = btn.closest('.subtask-item');
-    if (btn.getAttribute('aria-label') === 'Edit') startEditSubtask(li);
-    if (btn.getAttribute('aria-label') === 'Delete') li.remove();
+    if (!btn) return startEditSubtask(li);
+    const isEditing = li.classList.contains('is-editing');
+    const isLeft = btn.classList.contains('subtask-btn-left');
+    if (isLeft) return isEditing ? li.remove() : startEditSubtask(li);
+    if (isEditing) li.querySelector('.subtask-edit-input')?.blur();
+    else li.remove();
+}
+
+
+/**
+ * Keeps the edit input focused on mousedown so clicking an action button
+ * doesn't blur it first and exit editing before the click is handled.
+ * @param {MouseEvent} e
+ */
+function handleSubtaskListMousedown(e) {
+    if (e.target.closest('.subtask-item-btn')) e.preventDefault();
 }
 
 
@@ -105,5 +139,7 @@ export function initSubtaskInput(root) {
     input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addSubtask(root); } });
     root.querySelector('#subtaskConfirm')?.addEventListener('click', () => { addSubtask(root); input.focus(); });
     root.querySelector('#subtaskClear')?.addEventListener('click', () => { input.value = ''; input.focus(); });
-    root.querySelector('#subtaskList')?.addEventListener('click', handleSubtaskListClick);
+    const list = root.querySelector('#subtaskList');
+    list?.addEventListener('mousedown', handleSubtaskListMousedown);
+    list?.addEventListener('click', handleSubtaskListClick);
 }
