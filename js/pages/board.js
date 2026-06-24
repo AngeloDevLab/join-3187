@@ -12,6 +12,13 @@ let todos = [
     { id: 3, title: 'CSS Architecture Planning', description: 'Define CSS naming conventions and structure...', type: 'Technical Task', category: 'done', subtasks: '2/2 Subtasks', priority: '⌃' }
 ];
 
+let categoryMessages = {
+    todo: 'No tasks to do',
+    inProgress: 'No tasks in progress',
+    awaitFeedback: 'No tasks awaiting feedback',
+    done: 'No tasks done'
+};
+
 let currentDraggedElement;
 
 /** Renders all four board columns. */
@@ -31,7 +38,7 @@ function renderColumn(category) {
     const container = document.getElementById(category);
     container.innerHTML = '';
     if (column.length === 0) {
-        container.innerHTML = '<div class="empty-task">No tasks To do</div>';
+        container.innerHTML = `<div class="empty-task">${categoryMessages[category]}</div>`
         return;
     }
     column.forEach((todo) => { container.innerHTML += generateTodoHtml(todo); });
@@ -64,7 +71,19 @@ function generateTodoHtml(todo) {
         ? `<div class="progress-row"><div class="progress-bar"><div></div></div><span>${todo.subtasks}</span></div>`
         : '';
     return `<div class="task-card" draggable="true" ondragstart="startDragging(event, ${todo.id})" ondragend="stopDragging(event)">
+    <div class="card-header">
         <span class="task-category ${categoryClass}">${todo.type}</span>
+        <img src="../assets/icons/move.svg" alt="Move Icon Mobile" class="move-button" onclick="toggleCategoryNav(event)" tabindex="0">
+                <nav class="category-nav">
+                 <h3>Move To</h3>
+                    <ul>
+                        <li onclick="moveToFromNav('todo', ${todo.id})">Todo</li>
+                        <li onclick="moveToFromNav('inProgress', ${todo.id})">In Progress</li>
+                        <li onclick="moveToFromNav('awaitFeedback', ${todo.id})">Await Feedback</li>
+                        <li onclick="moveToFromNav('done', ${todo.id})">Done</li>
+                    </ul>
+                </nav>
+        </div>
         <h4>${todo.title}</h4>
         <p>${todo.description}</p>
         ${subtasksHtml}
@@ -73,6 +92,22 @@ function generateTodoHtml(todo) {
             <span class="priority">${todo.priority}</span>
         </div>
     </div>`;
+}
+
+/**
+ * Moves a task by id to a category (Klick statt Drag&Drop).
+ * @param {string} category
+ * @param {number} id
+ */
+function moveToFromNav(category, id) {
+    const todo = todos.find((t) => t.id === id); // NEU
+    todo.category = category; // NEU
+    updateHtml(); // NEU
+}
+
+function toggleCategoryNav(event) {
+    let nav = event.target.nextElementSibling;
+    nav.style.display = nav.style.display === 'block' ? 'inherit' : 'block';
 }
 
 /**
@@ -165,6 +200,8 @@ window.allowDrop = allowDrop;
 window.highlightColumn = highlightColumn;
 window.unhighlightColumn = unhighlightColumn;
 window.moveTo = moveTo;
+window.moveToFromNav = moveToFromNav; // NEU
+window.toggleCategoryNav = toggleCategoryNav; // NEU
 
 document.addEventListener('DOMContentLoaded', () => {
     initNavbar();
