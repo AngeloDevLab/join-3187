@@ -297,11 +297,11 @@ dialog::backdrop {
 
 .category-nav li{
   list-style-type: none;
-  padding: 5px 0px;
+  padding: 10px 0px;
 }
 
-.category-nav li:hover{
-  background-color: var(--color-accent);
+.category-nav li:active{
+   opacity: 0.6;
 }
 .category-nav ul{
   padding: 0 var(--space-md) var(--space-md) 20px;
@@ -311,7 +311,7 @@ dialog::backdrop {
 .category-nav h3{
  font-size: 18px;
  margin: 0;
- padding:  var(--space-md);
+ padding:  var(--space-md)  var(--space-md) var(--space-xs) var(--space-md);
 }
 
 .dialog-content {
