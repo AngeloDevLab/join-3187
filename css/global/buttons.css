@@ -41,3 +41,13 @@
     opacity: 0.4;
     cursor: not-allowed;
 }
+
+.btn-pending {
+    opacity: 0.4;
+}
+
+.btn-pending:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: none;
+}

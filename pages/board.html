@@ -34,7 +34,7 @@
             </ul>
             <div class="nav-legal">
                 <a href="privacy.html">Privacy Policy</a>
-                <a href="imprint.html">Imprint</a>
+                <a href="imprint.html">Legal Notice</a>
             </div>
         </aside>
 
@@ -60,14 +60,15 @@
                 <div class="board-top">
                     <h1>Board</h1>
 
-                    <div class="search-area">
-                        <div class="search-wrapper">
-                            <input type="text" placeholder="Find Task" />
-                            <div class="linediv"></div>
-                            <img src="../assets/icons/search.svg" alt="search" class="search-icon" />
-                        </div>
-                        <button class="btn" data-status="todo">Add task +</button>
+                    <div class="search-wrapper">
+                        <input type="text" placeholder="Find Task" />
+                        <div class="linediv"></div>
+                        <img src="../assets/icons/search.svg" alt="search" class="search-icon" />
                     </div>
+
+                    <button class="btn btn-primary add-task-trigger" data-status="todo">
+                        <span class="add-task-trigger-label">Add task</span> +
+                    </button>
                 </div>
 
                 <div class="board-columns">
@@ -240,6 +241,7 @@
                                     <ul class="dropdown-panel" role="listbox" id="assignedList"></ul>
                                 </div>
                             </div>
+                            <div class="assigned-chips" id="assignedChipsDisplay"></div>
                         </div>
 
                         <div class="input-field">
