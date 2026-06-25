@@ -100,9 +100,9 @@ function generateTodoHtml(todo) {
  * @param {number} id
  */
 function moveToFromNav(category, id) {
-    const todo = todos.find((t) => t.id === id); // NEU
-    todo.category = category; // NEU
-    updateHtml(); // NEU
+    const todo = todos.find((t) => t.id === id); 
+    todo.category = category; 
+    updateHtml(); 
 }
 
 function toggleCategoryNav(event) {
@@ -200,8 +200,8 @@ window.allowDrop = allowDrop;
 window.highlightColumn = highlightColumn;
 window.unhighlightColumn = unhighlightColumn;
 window.moveTo = moveTo;
-window.moveToFromNav = moveToFromNav; // NEU
-window.toggleCategoryNav = toggleCategoryNav; // NEU
+window.moveToFromNav = moveToFromNav;
+window.toggleCategoryNav = toggleCategoryNav; 
 
 document.addEventListener('DOMContentLoaded', () => {
     initNavbar();
