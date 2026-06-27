@@ -1,0 +1,99 @@
+.help-main {
+    margin: 0;
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-lg);
+}
+
+.help-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+}
+
+.help-head h1 {
+    font-size: clamp(2rem, 6vw, 4rem);
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    border: none;
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.back-button:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.back-button img {
+    width: 100%;
+    height: 100%;
+}
+
+.help-intro,
+.help-outro {
+    color: var(--color-primary);
+    line-height: 1.5;
+    margin-bottom: var(--space-lg);
+}
+
+.help-section {
+    margin-bottom: var(--space-lg);
+}
+
+.help-section h2 {
+    font-size: clamp(1.5rem, 6vw, 2.5rem);
+    margin-bottom: var(--space-sm);
+}
+
+.help-section p {
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.help-steps {
+    list-style: none;
+    margin: var(--space-md) 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.help-step {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+}
+
+.help-step-number {
+    flex-shrink: 0;
+    font-size: clamp(1.25rem, 6vw, 1.75rem);
+    line-height: 1.2;
+    font-weight: var(--font-weight-bold);
+}
+
+.help-step-body h3 {
+    font-size: clamp(1.25rem, 6vw, 1.75rem);
+    line-height: 1.2;
+    margin: 0 0 var(--space-xs);
+}
+
+.help-step-body p {
+    color: var(--color-primary);
+    line-height: 1.5;
+}
+
+.accent {
+    color: var(--color-accent);
+}
