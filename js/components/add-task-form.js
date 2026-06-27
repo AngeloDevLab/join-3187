@@ -72,6 +72,17 @@ function isTaskReady(fields) {
 
 
 /**
+ * Returns today's date as a local YYYY-MM-DD string, for use as a date input's min/value.
+ * @returns {string}
+ */
+function getTodayDateString() {
+    const today = new Date();
+    const offset = today.getTimezoneOffset() * 60000;
+    return new Date(today - offset).toISOString().slice(0, 10);
+}
+
+
+/**
  * Visually dims the submit button when required fields are missing, without
  * disabling it so a click still triggers validation and shows the errors.
  * @param {HTMLButtonElement} btn
@@ -89,9 +100,11 @@ function updateTaskBtn(btn, fields) {
  */
 function validateTaskForm(fields) {
     const { titleInput, titleError, dueDateInput, dueDateError, categorySelect, categoryError } = fields;
+    const dueDateValid = !!dueDateInput.value && dueDateInput.value >= getTodayDateString();
     return [
         validateField(titleInput, titleError, !!titleInput.value.trim(), 'This field is required'),
-        validateField(dueDateInput, dueDateError, !!dueDateInput.value, 'This field is required'),
+        validateField(dueDateInput, dueDateError, dueDateValid, dueDateInput.value
+            ? 'Date cannot be in the past' : 'This field is required'),
         validateField(categorySelect, categoryError, !!categorySelect.value, 'This field is required'),
     ].every(Boolean);
 }
@@ -377,15 +390,17 @@ function handleSubmit(e, fields, root, onSubmitSuccess) {
 
 
 /**
- * Wires up submit, clear, and date-color handlers for the task form.
+ * Wires up submit, clear/cancel, and date-color handlers for the task form.
  * @param {ParentNode} root
  * @param {(data: ReturnType<typeof collectTaskData>) => void} [onSubmitSuccess]
+ * @param {() => void} [onCancel]
  */
-function initTaskForm(root, onSubmitSuccess) {
+function initTaskForm(root, onSubmitSuccess, onCancel) {
     const form = root.querySelector('.task-form');
     if (!form) return;
     const fields = getFormFields(root);
     const submitBtn = form.querySelector('[type="submit"]');
+    fields.dueDateInput.min = getTodayDateString();
     updateTaskBtn(submitBtn, fields);
     fields.titleInput.addEventListener('input', () => updateTaskBtn(submitBtn, fields));
     fields.categorySelect.addEventListener('input', () => updateTaskBtn(submitBtn, fields));
@@ -394,7 +409,8 @@ function initTaskForm(root, onSubmitSuccess) {
         updateTaskBtn(submitBtn, fields);
     });
     form.addEventListener('submit', (e) => handleSubmit(e, fields, root, onSubmitSuccess));
-    form.querySelector('.clear-btn').addEventListener('click', () => clearTaskForm(fields, root));
+    form.querySelector('.clear-btn').addEventListener('click', () =>
+        onCancel ? onCancel() : clearTaskForm(fields, root));
 }
 
 
@@ -402,13 +418,13 @@ function initTaskForm(root, onSubmitSuccess) {
  * Initializes the add-task form within the given root (the document for the
  * standalone page, or a modal's dialog element when reused inside one).
  * @param {ParentNode} root
- * @param {{ onSubmitSuccess?: (data: ReturnType<typeof collectTaskData>) => void }} [options]
+ * @param {{ onSubmitSuccess?: (data: ReturnType<typeof collectTaskData>) => void, onCancel?: () => void }} [options]
  */
-export function initAddTaskForm(root, { onSubmitSuccess } = {}) {
+export function initAddTaskForm(root, { onSubmitSuccess, onCancel } = {}) {
     initDropdownAutoClose();
     initPriorityButtons(root);
     initCategoryDropdown(root);
     initAssignedDropdown(root);
     initSubtaskInput(root);
-    initTaskForm(root, onSubmitSuccess);
+    initTaskForm(root, onSubmitSuccess, onCancel);
 }
