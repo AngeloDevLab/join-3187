@@ -1,36 +1,17 @@
 import { getAll, create, update, remove } from './database.js';
 
 const memory = {};
-const SS_PREFIX = 'cache:';
 
 /**
- * Returns parsed sessionStorage value, or undefined if the key is absent.
- * @param {string} key
- * @returns {any|undefined}
- */
-function fromStorage(key) {
-    const raw = sessionStorage.getItem(SS_PREFIX + key);
-    return raw !== null ? JSON.parse(raw) : undefined;
-}
-
-/** @param {string} key @param {any} data */
-function toStorage(key, data) {
-    sessionStorage.setItem(SS_PREFIX + key, JSON.stringify(data));
-}
-
-/**
- * Reads from memory → sessionStorage → Firebase (in that order).
- * Populates all layers on a cache miss.
+ * Reads from memory → Firebase (in that order).
+ * Populates the memory layer on a cache miss.
  * @param {string} key  Firebase collection name
  * @returns {Promise<Object|null>}
  */
 async function cached(key) {
     if (key in memory) return memory[key];
-    const stored = fromStorage(key);
-    if (stored !== undefined) { memory[key] = stored; return stored; }
     const data = await getAll(key);
     memory[key] = data;
-    toStorage(key, data);
     return data;
 }
 
@@ -39,9 +20,9 @@ async function cached(key) {
  * @param {string} key @param {string} id @param {Object} data
  */
 function addToCache(key, id, data) {
-    if (!(key in memory) || memory[key] === null) return;
+    if (!(key in memory)) return;
+    if (memory[key] === null) memory[key] = {};
     memory[key][id] = data;
-    toStorage(key, memory[key]);
 }
 
 /**
@@ -51,7 +32,6 @@ function addToCache(key, id, data) {
 function removeFromCache(key, id) {
     if (!(key in memory) || memory[key] === null) return;
     delete memory[key][id];
-    toStorage(key, memory[key]);
 }
 
 /**
@@ -59,9 +39,9 @@ function removeFromCache(key, id) {
  * @param {string} key @param {string} id @param {Object} data
  */
 function updateInCache(key, id, data) {
-    if (!(key in memory) || memory[key] === null) return;
+    if (!(key in memory)) return;
+    if (memory[key] === null) memory[key] = {};
     memory[key][id] = { ...memory[key][id], ...data };
-    toStorage(key, memory[key]);
 }
 
 /** @returns {Promise<Object|null>} */
