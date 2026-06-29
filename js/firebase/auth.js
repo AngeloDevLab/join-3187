@@ -7,7 +7,7 @@ function deriveInitials(name) {
 
 /**
  * Persists the current user to sessionStorage.
- * @param {{ id: string, name: string, initials: string }} user
+ * @param {{ id: string, name: string, initials: string, email?: string }} user
  */
 function setSession(user) {
     sessionStorage.setItem('currentUser', JSON.stringify(user));
@@ -15,7 +15,7 @@ function setSession(user) {
 
 /**
  * Returns the current user from sessionStorage, or null if not logged in.
- * @returns {{ id: string, name: string, initials: string }|null}
+ * @returns {{ id: string, name: string, initials: string, email?: string }|null}
  */
 export function getCurrentUser() {
     const raw = sessionStorage.getItem('currentUser');
@@ -49,7 +49,7 @@ async function findUserByEmail(email) {
 export async function loginUser(email) {
     const user = await findUserByEmail(email);
     if (!user) throw new Error('No account found. Please sign up.');
-    setSession({ id: user.id, name: user.name, initials: user.initials });
+    setSession({ id: user.id, name: user.name, initials: user.initials, email: user.email });
 }
 
 /**
@@ -64,7 +64,7 @@ export async function registerUser(name, email) {
     if (existing) throw new Error('Already registered. Please log in.');
     const initials = deriveInitials(name);
     const id = await create('users', { name, email, initials });
-    setSession({ id, name, initials });
+    setSession({ id, name, initials, email });
 }
 
 /** Sets a local-only guest session — no DB entry created. */

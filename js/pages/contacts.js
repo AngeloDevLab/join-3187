@@ -1,5 +1,6 @@
 import '../utils/auth-guard.js';
 import { initNavbar } from '../components/navbar.js';
+import { getCurrentUser } from '../firebase/auth.js';
 
 const contacts = [
     { id: 1,  name: 'Anton Mayer',    email: 'anton@gmail.com',    phone: '+49 123 456789', initials: 'AM', color: 'bg-orange' },
@@ -18,8 +19,33 @@ let activeContactId = null;
 
 /** Sorts contacts alphabetically and renders the list. */
 function init() {
+    addCurrentUserToContacts();
     contacts.sort((a, b) => a.name.localeCompare(b.name));
     renderContacts();
+}
+
+/** Adds the logged-in user to the contact list once, if available. */
+function addCurrentUserToContacts() {
+    const currentUser = getCurrentUser();
+    if (!currentUser?.email || hasContactWithEmail(currentUser.email)) return;
+
+    contacts.push({
+        id: getNextContactId(),
+        name: currentUser.name,
+        email: currentUser.email,
+        phone: '',
+        initials: currentUser.initials || getInitials(currentUser.name),
+        color: getNextContactColor(),
+    });
+}
+
+/**
+ * Checks whether a contact with this email already exists.
+ * @param {string} email
+ * @returns {boolean}
+ */
+function hasContactWithEmail(email) {
+    return contacts.some((contact) => contact.email.toLowerCase() === email.toLowerCase());
 }
 
 /** Renders all contacts grouped by first letter. */
