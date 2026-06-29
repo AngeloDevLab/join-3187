@@ -2,6 +2,7 @@ import '../utils/auth-guard.js';
 import { initNavbar } from '../components/navbar.js';
 import { openModal } from '../components/modal.js';
 import { initAddTaskForm } from '../components/add-task-form.js';
+import { openTaskDetailModal } from '../components/task-detail-modal.js';
 
 const PRIORITY_SYMBOL = { urgent: '⌃', medium: '=', low: '⌄' };
 
@@ -70,7 +71,7 @@ function generateTodoHtml(todo) {
     const subtasksHtml = todo.subtasks
         ? `<div class="progress-row"><div class="progress-bar"><div></div></div><span>${todo.subtasks}</span></div>`
         : '';
-    return `<div class="task-card" draggable="true" ondragstart="startDragging(event, ${todo.id})" ondragend="stopDragging(event)">
+    return `<div class="task-card" data-id="${todo.id}" draggable="true" ondragstart="startDragging(event, ${todo.id})" ondragend="stopDragging(event)">
     <div class="card-header">
         <span class="task-category ${categoryClass}">${todo.type}</span>
         <img src="../assets/icons/move.svg" alt="Move Icon Mobile" class="move-button" onclick="toggleCategoryNav(event)" tabindex="0">
@@ -187,6 +188,23 @@ function openAddTaskModal(status) {
 }
 
 
+/**
+ * Delegates card clicks to open the task detail modal, skipping drag controls.
+ */
+function initCardDetailClick() {
+    document.querySelectorAll('.drag-area').forEach((area) => {
+        area.addEventListener('click', (e) => {
+            if (e.target.closest('.move-button, .category-nav')) return;
+            const card = e.target.closest('.task-card');
+            if (!card) return;
+            const id = parseInt(card.dataset.id, 10);
+            const todo = todos.find((t) => t.id === id);
+            if (todo) openTaskDetailModal(todo);
+        });
+    });
+}
+
+
 /** Wires every "+" trigger on the board to open the Add Task modal for its column. */
 function initAddTaskButtons() {
     document.querySelectorAll('[data-status]').forEach((btn) =>
@@ -207,4 +225,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavbar();
     updateHtml();
     initAddTaskButtons();
+    initCardDetailClick();
 });

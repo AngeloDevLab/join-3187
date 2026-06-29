@@ -1,0 +1,144 @@
+import { openModal } from './modal.js';
+
+const PRIORITY_META = {
+    '⌃': { label: 'Urgent', cls: 'urgent', icon: '../assets/icons/urgent.svg' },
+    '=': { label: 'Medium', cls: 'medium', icon: '../assets/icons/equal.svg' },
+    '⌄': { label: 'Low', cls: 'low', icon: '../assets/icons/low.svg' },
+};
+
+
+/**
+ * Formats "YYYY-MM-DD" to "DD/MM/YYYY", or returns "—" when absent.
+ * @param {string|undefined} dateStr
+ * @returns {string}
+ */
+function formatDate(dateStr) {
+    if (!dateStr) return '—';
+    const [y, m, d] = dateStr.split('-');
+    return `${d}/${m}/${y}`;
+}
+
+
+/**
+ * Returns HTML for the priority chip with label and icon.
+ * @param {string} priority - symbol ('⌃', '=', '⌄')
+ * @returns {string}
+ */
+function buildPriorityHtml(priority) {
+    const meta = PRIORITY_META[priority]
+        ?? { label: priority, cls: 'medium', icon: '../assets/icons/equal.svg' };
+    return `<span class="priority-chip priority-chip--${meta.cls}">
+        ${meta.label} <img src="${meta.icon}" alt="" width="16" height="12">
+    </span>`;
+}
+
+
+/**
+ * Returns HTML rows for all assigned contacts.
+ * @param {{ initials: string, color: string, name?: string }[]} [assigned]
+ * @returns {string}
+ */
+function buildAssignedHtml(assigned) {
+    if (!assigned?.length) return '<p class="task-detail-muted">No contacts assigned</p>';
+    return assigned.map((c) =>
+        `<div class="task-detail-contact">
+            <span class="avatar" style="background:${c.color}">${c.initials}</span>
+            <span>${c.name ?? c.initials}</span>
+        </div>`
+    ).join('');
+}
+
+
+/**
+ * Returns HTML for the category badge, title and description.
+ * @param {{ type: string, title: string, description: string }} todo
+ * @returns {string}
+ */
+function buildDetailTop(todo) {
+    const cls = todo.type === 'User Story' ? 'user-story' : 'technical';
+    return `<span class="task-category ${cls}">${todo.type}</span>
+        <h2 class="task-detail-title">${todo.title}</h2>
+        <p class="task-detail-description">${todo.description}</p>`;
+}
+
+
+/**
+ * Returns HTML for the due date and priority rows.
+ * @param {{ dueDate?: string, priority: string }} todo
+ * @returns {string}
+ */
+function buildDetailMeta(todo) {
+    return `<div class="task-detail-row">
+        <span class="task-detail-label">Due date:</span>
+        <span>${formatDate(todo.dueDate)}</span>
+    </div>
+    <div class="task-detail-row">
+        <span class="task-detail-label">Priority:</span>
+        ${buildPriorityHtml(todo.priority)}
+    </div>`;
+}
+
+
+/**
+ * Returns HTML for the assigned contacts and subtasks sections.
+ * @param {{ assigned?: object[], subtasks: string }} todo
+ * @returns {string}
+ */
+function buildDetailSections(todo) {
+    const subtasksHtml = todo.subtasks
+        ? `<p class="task-detail-muted">${todo.subtasks}</p>`
+        : '<p class="task-detail-muted">No subtasks</p>';
+    return `<div class="task-detail-section">
+        <p class="task-detail-label">Assigned To:</p>
+        ${buildAssignedHtml(todo.assigned)}
+    </div>
+    <div class="task-detail-section">
+        <p class="task-detail-label">Subtasks</p>
+        ${subtasksHtml}
+    </div>`;
+}
+
+
+/**
+ * Returns HTML for the delete and edit action buttons.
+ * @returns {string}
+ */
+function buildDetailActions() {
+    return `<div class="task-detail-actions">
+        <button type="button" class="task-detail-action">
+            <img src="../assets/icons/delete.svg" alt="" width="16"> Delete
+        </button>
+        <div class="task-detail-action-divider"></div>
+        <button type="button" class="task-detail-action">
+            <img src="../assets/icons/edit.svg" alt="" width="16"> Edit
+        </button>
+    </div>`;
+}
+
+
+/**
+ * Assembles the full detail panel HTML.
+ * @param {object} todo
+ * @returns {string}
+ */
+function buildDetailHtml(todo) {
+    return `<div class="task-detail">
+        <button type="button" class="task-detail-close" aria-label="Close">✕</button>
+        ${buildDetailTop(todo)}
+        ${buildDetailMeta(todo)}
+        ${buildDetailSections(todo)}
+        ${buildDetailActions()}
+    </div>`;
+}
+
+
+/**
+ * Opens a right-slide modal showing the detail view of the given task.
+ * @param {object} todo
+ */
+export function openTaskDetailModal(todo) {
+    const div = document.createElement('div');
+    div.innerHTML = buildDetailHtml(todo);
+    const { dialog, close } = openModal(div, { animation: 'center' });
+    dialog.querySelector('.task-detail-close').addEventListener('click', close);
+}
