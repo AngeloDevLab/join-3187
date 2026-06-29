@@ -384,6 +384,29 @@ function collectTaskData(fields, root) {
 }
 
 
+/**
+ * Maps collected form data to a Firebase-ready task object for the given column.
+ * @param {ReturnType<typeof collectTaskData>} data
+ * @param {string} column
+ * @returns {Object}
+ */
+export function toFirebaseTask(data, column) {
+    const subtasks = {};
+    data.subtasks.forEach((title, i) => { subtasks[`subtask${i + 1}`] = { title, done: false }; });
+    return {
+        title: data.title,
+        description: data.description,
+        category: data.type === 'User Story' ? 'userStory' : 'technicalTask',
+        priority: data.priority,
+        column,
+        assignedTo: data.assigned.map((c) => c.id),
+        dueDate: data.dueDate,
+        createdAt: getTodayDateString(),
+        subtasks,
+    };
+}
+
+
 // ── Submit ───────────────────────────────────────────────
 
 /**

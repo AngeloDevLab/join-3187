@@ -8,7 +8,6 @@
 users/
   {userId}/
     name: ""
-    initials: ""
     email: ""
 
 tasks/
@@ -17,7 +16,7 @@ tasks/
     description: ""
     category: "userStory"       # userStory | technicalTask
     priority: "medium"          # urgent | medium | low
-    column: "todo"              # todo | inprogress | awaitingfeedback | done
+    column: "todo"              # todo | inProgress | awaitFeedback | done
     assignedTo: [contactId, ...]
     dueDate: timestamp
     createdAt: timestamp
@@ -39,7 +38,7 @@ contacts/
 |---|---|
 | Board | Globally shared — all users see the same tasks and contacts |
 | Contacts | Global — no `createdBy`, no `userId` reference |
-| User entry | Created on signup with `name`, `email`, and `initials` — initials are displayed in the header |
+| User entry | Created on signup with `name` and `email` only — `initials` is never persisted, it's derived from `name` on demand (`getInitials()` in `helpers.js`), same as for contacts |
 | Guest login | No entry in `users/` — guest receives read-only access to the board |
 | Subtasks | Nested under task (Option A) — simpler queries, data lives with the task |
 | Auth | Form validation active, backend validation as placeholder — real implementation follows |
@@ -49,6 +48,6 @@ contacts/
 | Key | Label |
 |---|---|
 | `todo` | To Do |
-| `inprogress` | In Progress |
-| `awaitingfeedback` | Awaiting Feedback |
+| `inProgress` | In Progress |
+| `awaitFeedback` | Awaiting Feedback |
 | `done` | Done |

@@ -70,8 +70,8 @@ function computeSummaryCounts(tasks) {
     return {
         todo: byColumn('todo'),
         done: byColumn('done'),
-        inProgress: byColumn('inprogress'),
-        awaitingFeedback: byColumn('awaitingfeedback'),
+        inProgress: byColumn('inProgress'),
+        awaitingFeedback: byColumn('awaitFeedback'),
         total: list.length,
         urgent: urgentDueDates.length,
         nextUrgentDue: urgentDueDates[0] ?? null,

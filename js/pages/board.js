@@ -1,17 +1,12 @@
 import '../utils/auth-guard.js';
 import { initNavbar } from '../components/navbar.js';
 import { openModal } from '../components/modal.js';
-import { initAddTaskForm } from '../components/add-task-form.js';
+import { initAddTaskForm, toFirebaseTask } from '../components/add-task-form.js';
 import { openTaskDetailModal } from '../components/task-detail-modal.js';
+import { getTasks, getContacts, saveTask, updateTask } from '../firebase/cache.js';
+import { getAvatarColorForId, getInitials, PRIORITY_META } from '../utils/helpers.js';
 
-const PRIORITY_SYMBOL = { urgent: '⌃', medium: '=', low: '⌄' };
-
-let todos = [
-    { id: 0, title: 'Kochwelt Page & Recipe Recommender', description: 'Build start page with recipe recommendation...', type: 'User Story', category: 'inProgress', subtasks: '1/2 Subtasks', priority: '=' },
-    { id: 1, title: 'HTML Base Template Creation', description: 'Create reusable HTML base templates...', type: 'Technical Task', category: 'awaitFeedback', subtasks: '', priority: '⌄' },
-    { id: 2, title: 'Daily Kochwelt Recipe', description: 'Implement daily recipe and portion calculator...', type: 'User Story', category: 'awaitFeedback', subtasks: '', priority: '=' },
-    { id: 3, title: 'CSS Architecture Planning', description: 'Define CSS naming conventions and structure...', type: 'Technical Task', category: 'done', subtasks: '2/2 Subtasks', priority: '⌃' }
-];
+const CATEGORY_LABEL = { userStory: 'User Story', technicalTask: 'Technical Task' };
 
 let categoryMessages = {
     todo: 'No tasks to do',
@@ -22,20 +17,49 @@ let categoryMessages = {
 
 let currentDraggedElement;
 
-/** Renders all four board columns. */
-function updateHtml() {
-    renderColumn('todo');
-    renderColumn('inProgress');
-    renderColumn('awaitFeedback');
-    renderColumn('done');
+/** Loads tasks and contacts from Firebase, then renders all four board columns. */
+async function updateHtml() {
+    const tasks = (await getTasks()) || {};
+    const contacts = (await getContacts()) || {};
+    const todos = Object.entries(tasks).map(([id, task]) => toDisplayTodo(id, task, contacts));
+    renderColumn('todo', todos);
+    renderColumn('inProgress', todos);
+    renderColumn('awaitFeedback', todos);
+    renderColumn('done', todos);
+}
+
+/**
+ * Converts a raw Firebase task into the display shape used for rendering.
+ * @param {string} id
+ * @param {Object} task
+ * @param {Object} contacts
+ * @returns {Object}
+ */
+function toDisplayTodo(id, task, contacts) {
+    const subtasksList = Object.values(task.subtasks ?? {});
+    const done = subtasksList.filter((s) => s.done).length;
+    return {
+        id,
+        column: task.column,
+        title: task.title,
+        description: task.description,
+        type: CATEGORY_LABEL[task.category] ?? task.category,
+        priority: task.priority,
+        dueDate: task.dueDate,
+        subtasks: subtasksList.length ? `${done}/${subtasksList.length} Subtasks` : '',
+        assigned: (task.assignedTo ?? [])
+            .filter((cid) => contacts[cid])
+            .map((cid) => ({ name: contacts[cid].name, initials: getInitials(contacts[cid].name), color: getAvatarColorForId(cid) })),
+    };
 }
 
 /**
  * Renders all tasks for a given category into its column container.
  * @param {string} category
+ * @param {Array} todos
  */
-function renderColumn(category) {
-    const column = todos.filter((t) => t.category === category);
+function renderColumn(category, todos) {
+    const column = todos.filter((t) => t.column === category);
     const container = document.getElementById(category);
     container.innerHTML = '';
     if (column.length === 0) {
@@ -46,15 +70,11 @@ function renderColumn(category) {
 }
 
 /**
- * Returns avatar markup for a task's assigned contacts, or the placeholder
- * trio for seed tasks that don't carry an `assigned` list.
- * @param {{ assigned?: { initials: string, color: string }[] }} todo
+ * Returns avatar markup for a task's assigned contacts.
+ * @param {{ assigned: { initials: string, color: string }[] }} todo
  * @returns {string}
  */
 function buildAvatarsHtml(todo) {
-    if (!todo.assigned?.length) {
-        return '<span class="avatar orange">AM</span><span class="avatar green">EM</span><span class="avatar purple">MB</span>';
-    }
     return todo.assigned
         .map((c) => `<span class="avatar" style="background:${c.color}">${c.initials}</span>`)
         .join('');
@@ -63,7 +83,7 @@ function buildAvatarsHtml(todo) {
 
 /**
  * Returns the HTML markup for a single task card.
- * @param {{ id: number, title: string, description: string, type: string, subtasks: string, priority: string }} todo
+ * @param {{ id: string, title: string, description: string, type: string, subtasks: string, priority: string }} todo
  * @returns {string}
  */
 function generateTodoHtml(todo) {
@@ -71,17 +91,17 @@ function generateTodoHtml(todo) {
     const subtasksHtml = todo.subtasks
         ? `<div class="progress-row"><div class="progress-bar"><div></div></div><span>${todo.subtasks}</span></div>`
         : '';
-    return `<div class="task-card" data-id="${todo.id}" draggable="true" ondragstart="startDragging(event, ${todo.id})" ondragend="stopDragging(event)">
+    return `<div class="task-card" data-id="${todo.id}" draggable="true" ondragstart="startDragging(event, '${todo.id}')" ondragend="stopDragging(event)">
     <div class="card-header">
         <span class="task-category ${categoryClass}">${todo.type}</span>
         <img src="../assets/icons/move.svg" alt="Move Icon Mobile" class="move-button" onclick="toggleCategoryNav(event)" tabindex="0">
                 <nav class="category-nav">
                  <h3>Move To</h3>
                     <ul>
-                        <li onclick="moveToFromNav('todo', ${todo.id})">Todo</li>
-                        <li onclick="moveToFromNav('inProgress', ${todo.id})">In Progress</li>
-                        <li onclick="moveToFromNav('awaitFeedback', ${todo.id})">Await Feedback</li>
-                        <li onclick="moveToFromNav('done', ${todo.id})">Done</li>
+                        <li onclick="moveToFromNav('todo', '${todo.id}')">Todo</li>
+                        <li onclick="moveToFromNav('inProgress', '${todo.id}')">In Progress</li>
+                        <li onclick="moveToFromNav('awaitFeedback', '${todo.id}')">Await Feedback</li>
+                        <li onclick="moveToFromNav('done', '${todo.id}')">Done</li>
                     </ul>
                 </nav>
         </div>
@@ -90,20 +110,29 @@ function generateTodoHtml(todo) {
         ${subtasksHtml}
         <div class="card-bottom">
             <div>${buildAvatarsHtml(todo)}</div>
-            <span class="priority">${todo.priority}</span>
+            <span class="priority">${buildPriorityIconHtml(todo.priority)}</span>
         </div>
     </div>`;
 }
 
 /**
- * Moves a task by id to a category (Klick statt Drag&Drop).
- * @param {string} category
- * @param {number} id
+ * Returns the priority icon markup for a task card.
+ * @param {string} priority - 'urgent' | 'medium' | 'low'
+ * @returns {string}
  */
-function moveToFromNav(category, id) {
-    const todo = todos.find((t) => t.id === id); 
-    todo.category = category; 
-    updateHtml(); 
+function buildPriorityIconHtml(priority) {
+    const meta = PRIORITY_META[priority] ?? PRIORITY_META.medium;
+    return `<img src="${meta.icon}" alt="${meta.label}" width="18" height="14">`;
+}
+
+/**
+ * Moves a task by id to a category (Klick statt Drag&Drop) and persists it.
+ * @param {string} category
+ * @param {string} id
+ */
+async function moveToFromNav(category, id) {
+    await updateTask(id, { column: category });
+    await updateHtml();
 }
 
 function toggleCategoryNav(event) {
@@ -114,7 +143,7 @@ function toggleCategoryNav(event) {
 /**
  * Stores the dragged task id and applies the tilt animation to the card.
  * @param {DragEvent} event
- * @param {number} id
+ * @param {string} id
  */
 function startDragging(event, id) {
     currentDraggedElement = id;
@@ -147,31 +176,24 @@ function unhighlightColumn(event, id) {
 }
 
 /**
- * Moves the dragged task to a new category and re-renders.
+ * Persists the dragged task's new column and re-renders.
  * @param {string} category
  */
-function moveTo(category) {
+async function moveTo(category) {
     document.getElementById(category).classList.remove('drag-over');
-    const todo = todos.find((t) => t.id === currentDraggedElement);
-    todo.category = category;
-    updateHtml();
+    await updateTask(currentDraggedElement, { column: category });
+    await updateHtml();
 }
 
 /**
- * Builds a new todo from collected form data and adds it to the board.
- * @param {{ title: string, description: string, priority: string, type: string, assigned: object[], subtasks: string[] }} data
+ * Saves a new task to Firebase for the given column and refreshes the board.
+ * @param {Parameters<typeof toFirebaseTask>[0]} data
  * @param {string} status
  * @param {() => void} close
  */
-function handleNewTask(data, status, close) {
-    const id = Math.max(...todos.map((t) => t.id)) + 1;
-    const subtasksLabel = data.subtasks.length ? `0/${data.subtasks.length} Subtasks` : '';
-    todos.push({
-        id, title: data.title, description: data.description, type: data.type,
-        category: status, assigned: data.assigned, subtasks: subtasksLabel,
-        priority: PRIORITY_SYMBOL[data.priority],
-    });
-    updateHtml();
+async function handleNewTask(data, status, close) {
+    await saveTask(toFirebaseTask(data, status));
+    await updateHtml();
     close();
 }
 
@@ -193,13 +215,15 @@ function openAddTaskModal(status) {
  */
 function initCardDetailClick() {
     document.querySelectorAll('.drag-area').forEach((area) => {
-        area.addEventListener('click', (e) => {
+        area.addEventListener('click', async (e) => {
             if (e.target.closest('.move-button, .category-nav')) return;
             const card = e.target.closest('.task-card');
             if (!card) return;
-            const id = parseInt(card.dataset.id, 10);
-            const todo = todos.find((t) => t.id === id);
-            if (todo) openTaskDetailModal(todo);
+            const tasks = (await getTasks()) || {};
+            const task = tasks[card.dataset.id];
+            if (!task) return;
+            const contacts = (await getContacts()) || {};
+            openTaskDetailModal(toDisplayTodo(card.dataset.id, task, contacts));
         });
     });
 }
@@ -219,7 +243,7 @@ window.highlightColumn = highlightColumn;
 window.unhighlightColumn = unhighlightColumn;
 window.moveTo = moveTo;
 window.moveToFromNav = moveToFromNav;
-window.toggleCategoryNav = toggleCategoryNav; 
+window.toggleCategoryNav = toggleCategoryNav;
 
 document.addEventListener('DOMContentLoaded', () => {
     initNavbar();

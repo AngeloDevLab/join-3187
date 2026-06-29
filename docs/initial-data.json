@@ -29,7 +29,7 @@
             "description": "Build login and signup form with validation",
             "category": "userStory",
             "priority": "urgent",
-            "column": "inprogress",
+            "column": "inProgress",
             "assignedTo": [
                 "contact1",
                 "contact2"
@@ -82,7 +82,7 @@
             "description": "Display and manage contacts",
             "category": "userStory",
             "priority": "low",
-            "column": "awaitingfeedback",
+            "column": "awaitFeedback",
             "assignedTo": [
                 "contact1"
             ],
