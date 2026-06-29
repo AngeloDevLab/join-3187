@@ -1,8 +1,8 @@
 import { validateField, clearError } from '../utils/form-validation.js';
 import { getCurrentUser } from '../firebase/auth.js';
 import { showToast } from '../components/toast.js';
-import { getUsers } from '../firebase/cache.js';
-import { getAvatarColor } from '../utils/helpers.js';
+import { getContacts } from '../firebase/cache.js';
+import { getAvatarColor, getInitials } from '../utils/helpers.js';
 import { initSubtaskInput, getSubtasks } from './subtask.js';
 
 
@@ -190,18 +190,21 @@ function initCategoryDropdown(root) {
 
 /**
  * Builds a single assigned-to list item element.
- * @param {{ id: string, name: string, initials: string }} user
+ * @param {{ id: string, name: string }} contact
  * @param {string} color
+ * @param {boolean} isYou
  * @returns {HTMLLIElement}
  */
-function buildAssignedItem(user, color) {
+function buildAssignedItem(contact, color, isYou) {
+    const initials = getInitials(contact.name);
+    const displayName = isYou ? `${contact.name} (You)` : contact.name;
     const li = document.createElement('li');
-    Object.assign(li.dataset, { id: user.id, name: user.name, initials: user.initials, color });
+    Object.assign(li.dataset, { id: contact.id, name: contact.name, initials, color });
     li.className = 'dropdown-option assigned-option';
     li.setAttribute('role', 'option');
     li.setAttribute('aria-selected', 'false');
-    li.innerHTML = `<span class="contact-avatar" style="background:${color}">${user.initials}</span>`
-        + `<span class="contact-name">${user.name}</span>`
+    li.innerHTML = `<span class="contact-avatar" style="background:${color}">${initials}</span>`
+        + `<span class="contact-name">${displayName}</span>`
         + `<img src="../assets/icons/default-box.svg" class="contact-checkbox" alt="">`;
     return li;
 }
@@ -247,19 +250,30 @@ function resetAssignedDropdown(root) {
 
 
 /**
- * Loads all users from the cache, puts the current user first, and populates the list.
+ * Checks whether a contact represents the currently logged-in user.
+ * @param {{ email?: string }} contact
+ * @param {{ email?: string }|null} currentUser
+ * @returns {boolean}
+ */
+function isCurrentUser(contact, currentUser) {
+    return !!currentUser?.email && contact.email === currentUser.email;
+}
+
+
+/**
+ * Loads all contacts from the cache, puts the current user first, and populates the list.
  * @param {ParentNode} root
  */
 async function loadAssignedContacts(root) {
     const list = root.querySelector('#assignedList');
     if (!list) return;
-    const users = await getUsers();
-    if (!users) return;
+    const contacts = await getContacts();
+    if (!contacts) return;
     const currentUser = getCurrentUser();
-    const entries = Object.entries(users)
+    const entries = Object.entries(contacts)
         .map(([id, data]) => ({ id, ...data }))
-        .sort((a, b) => (a.id === currentUser?.id ? -1 : b.id === currentUser?.id ? 1 : 0));
-    entries.forEach((user, i) => list.appendChild(buildAssignedItem(user, getAvatarColor(i))));
+        .sort((a, b) => (isCurrentUser(a, currentUser) ? -1 : isCurrentUser(b, currentUser) ? 1 : 0));
+    entries.forEach((c, i) => list.appendChild(buildAssignedItem(c, getAvatarColor(i), isCurrentUser(c, currentUser))));
 }
 
 
