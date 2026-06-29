@@ -1,9 +1,6 @@
 import { getAll, create } from './database.js';
-
-/** @returns {string} First letter of each word, max 2 chars — e.g. "Max Mustermann" → "MM" */
-function deriveInitials(name) {
-    return name.trim().split(/\s+/).map(w => w[0].toUpperCase()).join('').slice(0, 2);
-}
+import { saveContact } from './cache.js';
+import { getInitials } from '../utils/helpers.js';
 
 /**
  * Persists the current user to sessionStorage.
@@ -30,7 +27,7 @@ export function clearSession() {
 /**
  * Searches all users in the DB for a matching email. Returns null if not found.
  * @param {string} email
- * @returns {Promise<{id: string, name: string, email: string, initials: string}|null>}
+ * @returns {Promise<{id: string, name: string, email: string}|null>}
  */
 async function findUserByEmail(email) {
     const users = await getAll('users');
@@ -49,7 +46,7 @@ async function findUserByEmail(email) {
 export async function loginUser(email) {
     const user = await findUserByEmail(email);
     if (!user) throw new Error('No account found. Please sign up.');
-    setSession({ id: user.id, name: user.name, initials: user.initials, email: user.email });
+    setSession({ id: user.id, name: user.name, initials: getInitials(user.name), email: user.email });
 }
 
 /**
@@ -62,9 +59,9 @@ export async function loginUser(email) {
 export async function registerUser(name, email) {
     const existing = await findUserByEmail(email);
     if (existing) throw new Error('Already registered. Please log in.');
-    const initials = deriveInitials(name);
-    const id = await create('users', { name, email, initials });
-    setSession({ id, name, initials, email });
+    const id = await create('users', { name, email });
+    await saveContact({ name, email, phone: '' });
+    setSession({ id, name, initials: getInitials(name), email });
 }
 
 /** Sets a local-only guest session — no DB entry created. */
