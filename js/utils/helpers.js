@@ -10,6 +10,12 @@ export const AVATAR_COLORS = [
     '#00BEE8',
 ];
 
+export const PRIORITY_META = {
+    urgent: { label: 'Urgent', cls: 'urgent', icon: '../assets/icons/urgent.svg' },
+    medium: { label: 'Medium', cls: 'medium', icon: '../assets/icons/equal.svg' },
+    low: { label: 'Low', cls: 'low', icon: '../assets/icons/low.svg' },
+};
+
 /**
  * Returns a deterministic avatar background color for a given index.
  * @param {number} index

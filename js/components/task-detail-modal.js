@@ -1,10 +1,5 @@
 import { openModal } from './modal.js';
-
-const PRIORITY_META = {
-    '⌃': { label: 'Urgent', cls: 'urgent', icon: '../assets/icons/urgent.svg' },
-    '=': { label: 'Medium', cls: 'medium', icon: '../assets/icons/equal.svg' },
-    '⌄': { label: 'Low', cls: 'low', icon: '../assets/icons/low.svg' },
-};
+import { PRIORITY_META } from '../utils/helpers.js';
 
 
 /**
@@ -21,14 +16,13 @@ function formatDate(dateStr) {
 
 /**
  * Returns HTML for the priority chip with label and icon.
- * @param {string} priority - symbol ('⌃', '=', '⌄')
+ * @param {string} priority - 'urgent' | 'medium' | 'low'
  * @returns {string}
  */
 function buildPriorityHtml(priority) {
-    const meta = PRIORITY_META[priority]
-        ?? { label: priority, cls: 'medium', icon: '../assets/icons/equal.svg' };
+    const meta = PRIORITY_META[priority] ?? PRIORITY_META.medium;
     return `<span class="priority-chip priority-chip--${meta.cls}">
-        ${meta.label} <img src="${meta.icon}" alt="" width="16" height="12">
+        ${meta.label} <img src="${meta.icon}" alt="" width="18" height="14">
     </span>`;
 }
 
