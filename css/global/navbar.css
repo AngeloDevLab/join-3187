@@ -25,6 +25,7 @@
     flex-direction: row;
     justify-content: space-around;
     width: 100%;
+    align-items: center;
 }
 
 .nav-link {
@@ -104,6 +105,14 @@
     line-height: 0;
     transform: none;
 }
+
+      .nav-legal-mobile {
+   color: #fff;
+  }
+
+.nav-legal-mobile a {
+  color: var(--color-nav-item);
+  }
 
 .header-help img {
     width: 24px;
@@ -230,6 +239,7 @@
         flex-direction: column;
         justify-content: flex-start;
         gap: 20px;
+        align-items: normal;
     }
 
     .nav-link {
@@ -255,6 +265,10 @@
         padding: var(--space-md) 50px;
         gap: 20px;
     }
+
+      .nav-legal-mobile {
+    display: none;
+  }
 
     .nav-legal a {
         color: var(--color-nav-item);
