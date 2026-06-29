@@ -122,19 +122,6 @@ body {
     display: none;
 }
 
-/* TODO: add avatar color variables to variables.css */
-.bg-orange {
-    background-color: #ff7a00;
-}
-
-.bg-purple {
-    background-color: #9327ff;
-}
-
-.bg-blue {
-    background-color: #6e52ff;
-}
-
 .contact-details {
     padding-top: 30px;
     padding-bottom: 96px;

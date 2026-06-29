@@ -1,60 +1,60 @@
 import '../utils/auth-guard.js';
 import { initNavbar } from '../components/navbar.js';
 import { getCurrentUser } from '../firebase/auth.js';
-
-const contacts = [
-    { id: 1,  name: 'Anton Mayer',    email: 'anton@gmail.com',    phone: '+49 123 456789', initials: 'AM', color: 'bg-orange' },
-    { id: 2,  name: 'Anja Schulz',    email: 'anja@gmail.com',     phone: '+49 123 456789', initials: 'AS', color: 'bg-purple' },
-    { id: 3,  name: 'Benedikt Ziegler', email: 'benedikt@gmail.com', phone: '+49 123 456789', initials: 'BZ', color: 'bg-blue' },
-    { id: 4,  name: 'David Eisenberg', email: 'david@gmail.com',   phone: '+49 123 456789', initials: 'DE', color: 'bg-orange' },
-    { id: 5,  name: 'Eva Fischer',    email: 'eva@gmail.com',      phone: '+49 123 456789', initials: 'EF', color: 'bg-purple' },
-    { id: 6,  name: 'Felix Wagner',   email: 'felix@gmail.com',    phone: '+49 123 456789', initials: 'FW', color: 'bg-blue' },
-    { id: 7,  name: 'Greta Klein',    email: 'greta@gmail.com',    phone: '+49 123 456789', initials: 'GK', color: 'bg-orange' },
-    { id: 8,  name: 'Hannah Becker',  email: 'hannah@gmail.com',   phone: '+49 123 456789', initials: 'HB', color: 'bg-purple' },
-    { id: 9,  name: 'Jonas Hoffmann', email: 'jonas@gmail.com',    phone: '+49 123 456789', initials: 'JH', color: 'bg-blue' },
-    { id: 10, name: 'Lena Richter',   email: 'lena@gmail.com',     phone: '+49 123 456789', initials: 'LR', color: 'bg-orange' },
-];
+import { getAvatarColorForId, getInitials } from '../utils/helpers.js';
+import { getContacts, saveContact, updateContact, removeContact } from '../firebase/cache.js';
 
 let activeContactId = null;
 
-/** Sorts contacts alphabetically and renders the list. */
-function init() {
-    addCurrentUserToContacts();
-    contacts.sort((a, b) => a.name.localeCompare(b.name));
-    renderContacts();
+/** Adds the logged-in user to contacts if needed, then renders the list. */
+async function init() {
+    await addCurrentUserToContacts();
+    await renderContacts();
 }
+
 
 /** Adds the logged-in user to the contact list once, if available. */
-function addCurrentUserToContacts() {
+async function addCurrentUserToContacts() {
     const currentUser = getCurrentUser();
-    if (!currentUser?.email || hasContactWithEmail(currentUser.email)) return;
-
-    contacts.push({
-        id: getNextContactId(),
-        name: currentUser.name,
-        email: currentUser.email,
-        phone: '',
-        initials: currentUser.initials || getInitials(currentUser.name),
-        color: getNextContactColor(),
-    });
+    if (!currentUser?.email) return;
+    const contacts = (await getContacts()) || {};
+    if (hasContactWithEmail(contacts, currentUser.email)) return;
+    await saveContact({ name: currentUser.name, email: currentUser.email, phone: '' });
 }
+
 
 /**
  * Checks whether a contact with this email already exists.
+ * @param {Object} contacts
  * @param {string} email
  * @returns {boolean}
  */
-function hasContactWithEmail(email) {
-    return contacts.some((contact) => contact.email.toLowerCase() === email.toLowerCase());
+function hasContactWithEmail(contacts, email) {
+    return Object.values(contacts).some((contact) => contact.email.toLowerCase() === email.toLowerCase());
 }
 
-/** Renders all contacts grouped by first letter. */
-function renderContacts() {
+
+/**
+ * Returns all contacts as an array, sorted alphabetically by name.
+ * @param {Object} contacts
+ * @returns {Array<{id: string, name: string, email: string, phone: string}>}
+ */
+function getSortedContacts(contacts) {
+    return Object.entries(contacts)
+        .map(([id, data]) => ({ id, ...data }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+
+/** Loads contacts from cache and renders them grouped by first letter. */
+async function renderContacts() {
+    const contacts = (await getContacts()) || {};
     const container = document.getElementById('contactsContainer');
     container.innerHTML = '';
-    const grouped = groupByFirstLetter(contacts);
+    const grouped = groupByFirstLetter(getSortedContacts(contacts));
     renderGroupedContacts(grouped, container);
 }
+
 
 /**
  * Groups an array of contacts by the first letter of their name.
@@ -78,6 +78,7 @@ function groupByFirstLetter(list) {
     return groupedContacts;
 }
 
+
 /**
  * Appends grouped contact HTML into the container.
  * @param {Object} grouped
@@ -99,24 +100,26 @@ function renderGroupedContacts(grouped, container) {
     container.innerHTML = contactsHTML;
 }
 
+
 /**
  * Returns the card HTML for a single contact.
- * @param {{ id: number, initials: string, color: string, name: string, email: string }} contact
+ * @param {{ id: string, name: string, email: string }} contact
  * @returns {string}
  */
 function getContactTemplate(contact) {
-    return `<div id="contact-card-${contact.id}" class="contact-card" onclick="showContactDetails(${contact.id})">
-        <div class="contact-avatar ${contact.color}">${contact.initials}</div>
+    return `<div id="contact-card-${contact.id}" class="contact-card" onclick="showContactDetails('${contact.id}')">
+        <div class="contact-avatar" style="background:${getAvatarColorForId(contact.id)}">${getInitials(contact.name)}</div>
         <div><h4>${contact.name}</h4><a href="mailto:${contact.email}">${contact.email}</a></div>
     </div>`;
 }
 
+
 /**
  * Shows the detail panel for a contact; on mobile hides the list.
- * @param {number} contactId
+ * @param {string} contactId
  */
-function showContactDetails(contactId) {
-    const contact = getContactById(contactId);
+async function showContactDetails(contactId) {
+    const contact = await getContactById(contactId);
     if (!contact) return;
     setActiveContactCard(contactId);
     const details = document.getElementById('contactDetails');
@@ -128,6 +131,7 @@ function showContactDetails(contactId) {
     }
 }
 
+
 /** Marks the selected contact card as active. */
 function setActiveContactCard(contactId) {
     if (activeContactId !== null) {
@@ -138,6 +142,7 @@ function setActiveContactCard(contactId) {
     activeContactId = contactId;
 }
 
+
 /** Shows the animated contact details card after it was rendered. */
 function showContactDetailsCard() {
     requestAnimationFrame(() => {
@@ -145,9 +150,10 @@ function showContactDetailsCard() {
     });
 }
 
+
 /**
  * Returns the detail panel HTML for a contact.
- * @param {{ initials: string, color: string, name: string, email: string, phone: string }} contact
+ * @param {{ id: string, name: string, email: string, phone: string }} contact
  * @returns {string}
  */
 function getContactDetailsTemplate(contact) {
@@ -160,12 +166,12 @@ function getContactDetailsTemplate(contact) {
     </div>
     <div id="contactDetailsCard" class="contact-details-card d-none">
         <div class="contact-details-profile">
-            <div class="contact-details-avatar ${contact.color}">${contact.initials}</div>
+            <div class="contact-details-avatar" style="background:${getAvatarColorForId(contact.id)}">${getInitials(contact.name)}</div>
             <div class="contact-details-name-actions">
                 <h2>${contact.name}</h2>
                 <div class="desktop-contact-actions">
-                    <button onclick="openEditContactOverlay(${contact.id})"><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
-                    <button onclick="openDeleteContactOverlay(${contact.id})"><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
+                    <button onclick="openEditContactOverlay('${contact.id}')"><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
+                    <button onclick="openDeleteContactOverlay('${contact.id}')"><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
                 </div>
             </div>
         </div>
@@ -180,12 +186,13 @@ function getContactDetailsTemplate(contact) {
             </button>
             <div id="contactMenuBackdrop" class="contact_menu_backdrop" onclick="closeMenuContact()"></div>
             <div id="contactMenu" class="contact_menu" onclick="closeMenuContact()">
-                <button class="contact_menu_option" onclick="event.stopPropagation(); openEditContactOverlay(${contact.id})"><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
-                <button class="contact_menu_option" onclick="event.stopPropagation(); openDeleteContactOverlay(${contact.id})"><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
+                <button class="contact_menu_option" onclick="event.stopPropagation(); openEditContactOverlay('${contact.id}')"><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
+                <button class="contact_menu_option" onclick="event.stopPropagation(); openDeleteContactOverlay('${contact.id}')"><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
             </div>
         </div>
     </div>`;
 }
+
 
 /**
  * Opens the add contact overlay.
@@ -194,27 +201,30 @@ function openAddContactOverlay() {
     renderContactOverlay(getAddContactOverlayTemplate());
 }
 
+
 /**
  * Opens the edit overlay for a contact.
- * @param {number} contactId
+ * @param {string} contactId
  */
-function openEditContactOverlay(contactId) {
+async function openEditContactOverlay(contactId) {
     closeMenuContactIfRendered();
-    const contact = getContactById(contactId);
+    const contact = await getContactById(contactId);
     if (!contact) return;
     renderContactOverlay(getEditContactOverlayTemplate(contact));
 }
 
+
 /**
  * Opens the delete confirmation overlay for a contact.
- * @param {number} contactId
+ * @param {string} contactId
  */
-function openDeleteContactOverlay(contactId) {
+async function openDeleteContactOverlay(contactId) {
     closeMenuContactIfRendered();
-    const contact = getContactById(contactId);
+    const contact = await getContactById(contactId);
     if (!contact) return;
     renderContactOverlay(getDeleteContactOverlayTemplate(contact));
 }
+
 
 /**
  * Renders and animates a contact overlay.
@@ -228,10 +238,12 @@ function renderContactOverlay(template) {
     });
 }
 
+
 /** Closes the active contact overlay. */
 function closeContactOverlay() {
     document.getElementById('contactOverlayContainer').innerHTML = '';
 }
+
 
 /**
  * Returns the add contact overlay HTML.
@@ -274,9 +286,10 @@ function getAddContactOverlayTemplate() {
     </div>`;
 }
 
+
 /**
  * Returns the edit overlay HTML.
- * @param {{ id: number, name: string, email: string, phone: string }} contact
+ * @param {{ id: string, name: string, email: string, phone: string }} contact
  * @returns {string}
  */
 function getEditContactOverlayTemplate(contact) {
@@ -292,12 +305,12 @@ function getEditContactOverlayTemplate(contact) {
                 <h2>Edit contact</h2>
                 <div></div>
             </div>
-            <form class="contact-edit-form" onsubmit="saveEditedContact(event, ${contact.id})">
+            <form class="contact-edit-form" onsubmit="saveEditedContact(event, '${contact.id}')">
                 <input id="editContactName" type="text" value="${name}" placeholder="Name" autocomplete="name" required>
                 <input id="editContactEmail" type="email" value="${email}" placeholder="Email" autocomplete="email" required>
                 <input id="editContactPhone" type="tel" value="${phone}" placeholder="Phone" autocomplete="tel" required>
                 <div class="contact-overlay-actions">
-                    <button type="button" class="contact-secondary-btn" onclick="deleteContact(${contact.id})">Delete</button>
+                    <button type="button" class="contact-secondary-btn" onclick="deleteContact('${contact.id}')">Delete</button>
                     <button type="submit" class="contact-primary-btn">Save</button>
                 </div>
             </form>
@@ -305,9 +318,10 @@ function getEditContactOverlayTemplate(contact) {
     </div>`;
 }
 
+
 /**
  * Returns the delete confirmation overlay HTML.
- * @param {{ id: number, name: string }} contact
+ * @param {{ id: string, name: string }} contact
  * @returns {string}
  */
 function getDeleteContactOverlayTemplate(contact) {
@@ -325,142 +339,75 @@ function getDeleteContactOverlayTemplate(contact) {
                 <p>Delete ${name}?</p>
                 <div class="contact-overlay-actions">
                     <button type="button" class="contact-secondary-btn" onclick="closeContactOverlay()">Cancel</button>
-                    <button type="button" class="contact-primary-btn" onclick="deleteContact(${contact.id})">Delete</button>
+                    <button type="button" class="contact-primary-btn" onclick="deleteContact('${contact.id}')">Delete</button>
                 </div>
             </div>
         </section>
     </div>`;
 }
 
+
 /**
- * Creates a new contact and selects it.
+ * Creates a new contact in Firebase and selects it.
  * @param {SubmitEvent} event
  */
-function createContact(event) {
+async function createContact(event) {
     event.preventDefault();
     const name = document.getElementById('addContactName').value.trim();
     const email = document.getElementById('addContactEmail').value.trim();
     const phone = document.getElementById('addContactPhone').value.trim();
-
     if (!name || !email || !phone) return;
 
-    const contact = {
-        id: getNextContactId(),
-        name,
-        email,
-        phone,
-        initials: getInitials(name),
-        color: getNextContactColor(),
+    const id = await saveContact({ name, email, phone });
+    closeContactOverlay();
+    await renderContacts();
+    await showContactDetails(id);
+}
+
+
+/**
+ * Saves edited contact data to Firebase and refreshes the current view.
+ * @param {SubmitEvent} event
+ * @param {string} contactId
+ */
+async function saveEditedContact(event, contactId) {
+    event.preventDefault();
+    const data = {
+        name: document.getElementById('editContactName').value.trim(),
+        email: document.getElementById('editContactEmail').value.trim(),
+        phone: document.getElementById('editContactPhone').value.trim(),
     };
 
-    contacts.push(contact);
-    contacts.sort((a, b) => a.name.localeCompare(b.name));
+    await updateContact(contactId, data);
     closeContactOverlay();
-    renderContacts();
-    showContactDetails(contact.id);
+    await renderContacts();
+    await showContactDetails(contactId);
 }
 
-/**
- * Saves edited contact data and refreshes the current view.
- * @param {SubmitEvent} event
- * @param {number} contactId
- */
-function saveEditedContact(event, contactId) {
-    event.preventDefault();
-    const contact = getContactById(contactId);
-    if (!contact) return;
-    contact.name = document.getElementById('editContactName').value.trim();
-    contact.email = document.getElementById('editContactEmail').value.trim();
-    contact.phone = document.getElementById('editContactPhone').value.trim();
-    contact.initials = getInitials(contact.name);
-    contacts.sort((a, b) => a.name.localeCompare(b.name));
-    closeContactOverlay();
-    renderContacts();
-    showContactDetails(contactId);
-}
 
 /**
- * Deletes a contact and resets the details panel.
- * @param {number} contactId
+ * Deletes a contact from Firebase and resets the details panel.
+ * @param {string} contactId
  */
-function deleteContact(contactId) {
-    const contactIndex = getContactIndexById(contactId);
-    if (contactIndex === -1) return;
-    contacts.splice(contactIndex, 1);
+async function deleteContact(contactId) {
+    await removeContact(contactId);
     activeContactId = null;
     closeContactOverlay();
-    renderContacts();
+    await renderContacts();
     resetContactDetails();
 }
 
-/**
- * Gets initials from a contact name.
- * @param {string} name
- * @returns {string}
- */
-function getInitials(name) {
-    const nameParts = name.split(' ');
-    let initials = '';
-
-    for (let i = 0; i < nameParts.length; i++) {
-        if (nameParts[i] !== '' && initials.length < 2) {
-            initials += nameParts[i].charAt(0).toUpperCase();
-        }
-    }
-
-    return initials;
-}
-
-/**
- * Gets an unused contact id.
- * @returns {number}
- */
-function getNextContactId() {
-    let highestId = 0;
-
-    for (let i = 0; i < contacts.length; i++) {
-        if (contacts[i].id > highestId) highestId = contacts[i].id;
-    }
-
-    return highestId + 1;
-}
-
-/**
- * Picks a color class for a newly created contact.
- * @returns {string}
- */
-function getNextContactColor() {
-    const colors = ['bg-orange', 'bg-purple', 'bg-blue'];
-    return colors[contacts.length % colors.length];
-}
 
 /**
  * Finds a contact by id.
- * @param {number} contactId
- * @returns {Object | undefined}
+ * @param {string} contactId
+ * @returns {Promise<{ id: string, name: string, email: string, phone: string } | undefined>}
  */
-function getContactById(contactId) {
-    for (let i = 0; i < contacts.length; i++) {
-        if (contacts[i].id === contactId) {
-            return contacts[i];
-        }
-    }
+async function getContactById(contactId) {
+    const contacts = (await getContacts()) || {};
+    return contacts[contactId] ? { id: contactId, ...contacts[contactId] } : undefined;
 }
 
-/**
- * Finds the index of a contact by id.
- * @param {number} contactId
- * @returns {number}
- */
-function getContactIndexById(contactId) {
-    for (let i = 0; i < contacts.length; i++) {
-        if (contacts[i].id === contactId) {
-            return i;
-        }
-    }
-
-    return -1;
-}
 
 /** Restores the empty contact details panel. */
 function resetContactDetails() {
@@ -474,10 +421,12 @@ function resetContactDetails() {
     document.getElementById('contactsList').classList.remove('d-none');
 }
 
+
 /** Closes the mobile menu only when it exists in the DOM. */
 function closeMenuContactIfRendered() {
     if (document.getElementById('contactMenu')) closeMenuContact();
 }
+
 
 /**
  * Escapes text before inserting it as HTML.
@@ -494,6 +443,7 @@ function escapeHtml(value) {
     })[char]);
 }
 
+
 /**
  * Escapes text before inserting it into an HTML attribute.
  * @param {string} value
@@ -503,11 +453,13 @@ function escapeAttribute(value) {
     return escapeHtml(value);
 }
 
+
 /** Shows the contacts list panel and hides details (mobile). */
 function showContactsList() {
     document.getElementById('contactDetails').classList.add('d-none');
     document.getElementById('contactsList').classList.remove('d-none');
 }
+
 
 /** Toggles the mobile contact action menu open/closed. */
 function toggleMenuContact() {
@@ -515,6 +467,7 @@ function toggleMenuContact() {
     document.getElementById('menuContactBtn').classList.toggle('menu_contact_btn_active');
     document.getElementById('contactMenuBackdrop').classList.toggle('contact_menu_backdrop_open');
 }
+
 
 /** Closes the mobile contact action menu. */
 function closeMenuContact() {
