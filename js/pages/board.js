@@ -28,6 +28,7 @@ async function updateHtml() {
     renderColumn('done', todos);
 }
 
+
 /**
  * Converts a raw Firebase task into the display shape used for rendering.
  * @param {string} id
@@ -53,6 +54,7 @@ function toDisplayTodo(id, task, contacts) {
     };
 }
 
+
 /**
  * Renders all tasks for a given category into its column container.
  * @param {string} category
@@ -68,6 +70,7 @@ function renderColumn(category, todos) {
     }
     column.forEach((todo) => { container.innerHTML += generateTodoHtml(todo); });
 }
+
 
 /**
  * Returns avatar markup for a task's assigned contacts.
@@ -117,6 +120,7 @@ function generateTodoHtml(todo) {
     </div>`;
 }
 
+
 /**
  * Returns the priority icon markup for a task card.
  * @param {string} priority - 'urgent' | 'medium' | 'low'
@@ -126,6 +130,7 @@ function buildPriorityIconHtml(priority) {
     const meta = PRIORITY_META[priority] ?? PRIORITY_META.medium;
     return `<img src="${meta.icon}" alt="${meta.label}" width="18" height="14">`;
 }
+
 
 /**
  * Moves a task by id to a category (Klick statt Drag&Drop) and persists it.
@@ -137,10 +142,16 @@ async function moveToFromNav(category, id) {
     await updateHtml();
 }
 
+
+/**
+ * Toggles the "Move To" category nav open/closed for a task card on mobile.
+ * @param {MouseEvent} event
+ */
 function toggleCategoryNav(event) {
     let nav = event.target.nextElementSibling;
     nav.style.display = nav.style.display === 'block' ? 'inherit' : 'block';
 }
+
 
 /**
  * Stores the dragged task id and applies the tilt animation to the card.
@@ -152,20 +163,24 @@ function startDragging(event, id) {
     event.currentTarget.classList.add('dragging');
 }
 
+
 /**
  * Removes the tilt animation from the released card.
  * @param {DragEvent} event
  */
 function stopDragging(event) { event.currentTarget.classList.remove('dragging'); }
 
+
 /** @param {DragEvent} event */
 function allowDrop(event) { event.preventDefault(); }
+
 
 /**
  * Highlights a column when a dragged card enters it.
  * @param {string} id
  */
 function highlightColumn(id) { document.getElementById(id).classList.add('drag-over'); }
+
 
 /**
  * Removes the column highlight, only when truly leaving (not entering a child element).
@@ -177,6 +192,7 @@ function unhighlightColumn(event, id) {
     if (!container.contains(event.relatedTarget)) container.classList.remove('drag-over');
 }
 
+
 /**
  * Persists the dragged task's new column and re-renders.
  * @param {string} category
@@ -186,6 +202,7 @@ async function moveTo(category) {
     await updateTask(currentDraggedElement, { column: category });
     await updateHtml();
 }
+
 
 /**
  * Saves a new task to Firebase for the given column and refreshes the board.
@@ -247,9 +264,7 @@ window.moveTo = moveTo;
 window.moveToFromNav = moveToFromNav;
 window.toggleCategoryNav = toggleCategoryNav;
 
-document.addEventListener('DOMContentLoaded', () => {
-    initNavbar();
-    updateHtml();
-    initAddTaskButtons();
-    initCardDetailClick();
-});
+initNavbar();
+updateHtml();
+initAddTaskButtons();
+initCardDetailClick();

@@ -44,12 +44,14 @@ function updateInCache(key, id, data) {
     memory[key][id] = { ...memory[key][id], ...data };
 }
 
+
 /** @returns {Promise<Object|null>} */
 export const getTasks    = () => cached('tasks');
 /** @returns {Promise<Object|null>} */
 export const getContacts = () => cached('contacts');
 /** @returns {Promise<Object|null>} */
 export const getUsers    = () => cached('users');
+
 
 /**
  * Persists a new task and updates the cache.
@@ -62,6 +64,7 @@ export async function saveTask(data) {
     return id;
 }
 
+
 /**
  * Partially updates a task in Firebase and syncs the cache.
  * @param {string} id @param {Object} data
@@ -71,11 +74,13 @@ export async function updateTask(id, data) {
     updateInCache('tasks', id, data);
 }
 
+
 /** @param {string} id */
 export async function removeTask(id) {
     await remove('tasks', id);
     removeFromCache('tasks', id);
 }
+
 
 /**
  * Persists a new contact and updates the cache.
@@ -88,6 +93,7 @@ export async function saveContact(data) {
     return id;
 }
 
+
 /**
  * Partially updates a contact in Firebase and syncs the cache.
  * @param {string} id @param {Object} data
@@ -96,6 +102,7 @@ export async function updateContact(id, data) {
     await update('contacts', id, data);
     updateInCache('contacts', id, data);
 }
+
 
 /** @param {string} id */
 export async function removeContact(id) {

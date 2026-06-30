@@ -11,6 +11,7 @@ function closeModal(dialog) {
     setTimeout(finish, 350);
 }
 
+
 /**
  * Closes the modal on Escape (native 'cancel' event) or on a click that
  * lands on the dialog itself rather than its content (i.e. the backdrop).
@@ -21,6 +22,7 @@ function attachDismissHandlers(dialog, close) {
     dialog.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
     dialog.addEventListener('click', (e) => { if (e.target === dialog) close(); });
 }
+
 
 /**
  * Opens a modal dialog with the given content and slide-in animation.

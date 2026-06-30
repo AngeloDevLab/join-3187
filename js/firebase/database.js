@@ -11,6 +11,7 @@ function assertOk(res, action) {
     if (!res.ok) throw new Error(`Firebase request failed (${action}): ${res.status} ${res.statusText}`);
 }
 
+
 /**
  * Fetches all entries from a collection. Returns null if the collection is empty.
  * @param {string} collection
@@ -21,6 +22,7 @@ export async function getAll(collection) {
     assertOk(res, `getAll ${collection}`);
     return res.json();
 }
+
 
 /**
  * Creates a new entry in a collection and returns the Firebase-generated ID.
@@ -38,6 +40,7 @@ export async function create(collection, data) {
     return id;
 }
 
+
 /**
  * Partially updates an existing entry in a collection (PATCH — merges fields).
  * @param {string} collection
@@ -52,6 +55,7 @@ export async function update(collection, id, data) {
     });
     assertOk(res, `update ${collection}/${id}`);
 }
+
 
 /**
  * Deletes a single entry from a collection by ID.

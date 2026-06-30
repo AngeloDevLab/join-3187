@@ -8,6 +8,7 @@ export function isValidEmail(value) {
     return EMAIL_RE.test(value.trim());
 }
 
+
 /**
  * Marks a field as invalid and shows an error message.
  * @param {HTMLElement|null} wrapper - input-wrapper element, or null (e.g. checkbox)
@@ -19,6 +20,7 @@ export function setError(wrapper, errorEl, message) {
     errorEl.textContent = message;
 }
 
+
 /**
  * Resets a field to its valid state and clears the error message.
  * @param {HTMLElement|null} wrapper
@@ -28,6 +30,7 @@ export function clearError(wrapper, errorEl) {
     if (wrapper) wrapper.classList.remove('error');
     errorEl.textContent = '';
 }
+
 
 /**
  * Validates a single field and updates its error state.

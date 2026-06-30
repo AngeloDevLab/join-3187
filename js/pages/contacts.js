@@ -471,7 +471,5 @@ window.saveEditedContact = saveEditedContact;
 window.createContact = createContact;
 window.deleteContact = deleteContact;
 
-document.addEventListener('DOMContentLoaded', () => {
-    initNavbar();
-    init();
-});
+initNavbar();
+init();
