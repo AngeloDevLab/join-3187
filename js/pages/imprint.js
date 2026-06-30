@@ -5,7 +5,6 @@ function updateNavForAuthStatus() {
     const user = getCurrentUser();
     const navList = document.querySelector('.nav-list');
     const userBar = document.querySelector('.header-user');
-
     userBar.innerHTML = user ? getUserBarHTML(user) : '';
     navList.innerHTML = getNavListHTML(!!user);
     navList.style.visibility = 'visible'; 
