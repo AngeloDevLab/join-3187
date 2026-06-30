@@ -1,5 +1,6 @@
 import { initNavbar } from '../components/navbar.js';
 import { getCurrentUser } from '../firebase/auth.js';
+import { escapeHtml } from '../utils/helpers.js';
 
 function updateNavForAuthStatus() {
     const user = getCurrentUser();
@@ -13,7 +14,7 @@ function updateNavForAuthStatus() {
 
 function getUserBarHTML(user) {
     return `<a href="help.html" class="header-help"><img src="../assets/icons/help.svg" alt="Help"></a>
-        <button type="button" class="header-avatar" id="headerAvatarBtn">${user.initials}</button>
+        <button type="button" class="header-avatar" id="headerAvatarBtn">${escapeHtml(user.initials)}</button>
         <nav class="header-dropdown" id="headerDropdown">
             <ul>
                 <li class="header-help-mobile"><a href="help.html">Help</a></li>

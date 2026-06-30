@@ -4,7 +4,7 @@ import { openModal } from '../components/modal.js';
 import { initAddTaskForm, toFirebaseTask } from '../components/add-task-form.js';
 import { openTaskDetailModal } from '../components/task-detail-modal.js';
 import { getTasks, getContacts, saveTask, updateTask } from '../firebase/cache.js';
-import { getAvatarColorForId, getInitials, PRIORITY_META } from '../utils/helpers.js';
+import { getAvatarColorForId, getInitials, PRIORITY_META, escapeHtml } from '../utils/helpers.js';
 
 const CATEGORY_LABEL = { userStory: 'User Story', technicalTask: 'Technical Task' };
 
@@ -76,7 +76,7 @@ function renderColumn(category, todos) {
  */
 function buildAvatarsHtml(todo) {
     return todo.assigned
-        .map((c) => `<span class="avatar" style="background:${c.color}">${c.initials}</span>`)
+        .map((c) => `<span class="avatar" style="background:${c.color}">${escapeHtml(c.initials)}</span>`)
         .join('');
 }
 
@@ -88,6 +88,8 @@ function buildAvatarsHtml(todo) {
  */
 function generateTodoHtml(todo) {
     const categoryClass = todo.type === 'User Story' ? 'user-story' : 'technical';
+    const title = escapeHtml(todo.title);
+    const description = escapeHtml(todo.description);
     const subtasksHtml = todo.subtasks
         ? `<div class="progress-row"><div class="progress-bar"><div></div></div><span>${todo.subtasks}</span></div>`
         : '';
@@ -105,8 +107,8 @@ function generateTodoHtml(todo) {
                     </ul>
                 </nav>
         </div>
-        <h4>${todo.title}</h4>
-        <p>${todo.description}</p>
+        <h4>${title}</h4>
+        <p>${description}</p>
         ${subtasksHtml}
         <div class="card-bottom">
             <div>${buildAvatarsHtml(todo)}</div>

@@ -61,3 +61,20 @@ export function getInitials(name) {
 
     return initials;
 }
+
+
+/**
+ * Escapes HTML-special characters so a value can be safely inserted
+ * into innerHTML without being interpreted as markup.
+ * @param {string} value
+ * @returns {string}
+ */
+export function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+    })[char]);
+}

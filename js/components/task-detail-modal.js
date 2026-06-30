@@ -1,5 +1,5 @@
 import { openModal } from './modal.js';
-import { PRIORITY_META } from '../utils/helpers.js';
+import { PRIORITY_META, escapeHtml } from '../utils/helpers.js';
 
 
 /**
@@ -34,12 +34,14 @@ function buildPriorityHtml(priority) {
  */
 function buildAssignedHtml(assigned) {
     if (!assigned?.length) return '<p class="task-detail-muted">No contacts assigned</p>';
-    return assigned.map((c) =>
-        `<div class="task-detail-contact">
-            <span class="avatar" style="background:${c.color}">${c.initials}</span>
-            <span>${c.name ?? c.initials}</span>
-        </div>`
-    ).join('');
+    return assigned.map((c) => {
+        const initials = escapeHtml(c.initials);
+        const name = escapeHtml(c.name ?? c.initials);
+        return `<div class="task-detail-contact">
+            <span class="avatar" style="background:${c.color}">${initials}</span>
+            <span>${name}</span>
+        </div>`;
+    }).join('');
 }
 
 
@@ -51,8 +53,8 @@ function buildAssignedHtml(assigned) {
 function buildDetailTop(todo) {
     const cls = todo.type === 'User Story' ? 'user-story' : 'technical';
     return `<span class="task-category ${cls}">${todo.type}</span>
-        <h2 class="task-detail-title">${todo.title}</h2>
-        <p class="task-detail-description">${todo.description}</p>`;
+        <h2 class="task-detail-title">${escapeHtml(todo.title)}</h2>
+        <p class="task-detail-description">${escapeHtml(todo.description)}</p>`;
 }
 
 

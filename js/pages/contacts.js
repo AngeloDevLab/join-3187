@@ -1,7 +1,7 @@
 import '../utils/auth-guard.js';
 import { initNavbar } from '../components/navbar.js';
 import { getCurrentUser } from '../firebase/auth.js';
-import { getAvatarColorForId, getInitials } from '../utils/helpers.js';
+import { getAvatarColorForId, getInitials, escapeHtml } from '../utils/helpers.js';
 import { getContacts, saveContact, updateContact, removeContact } from '../firebase/cache.js';
 
 let activeContactId = null;
@@ -107,9 +107,13 @@ function renderGroupedContacts(grouped, container) {
  * @returns {string}
  */
 function getContactTemplate(contact) {
+    const name = escapeHtml(contact.name);
+    const email = escapeHtml(contact.email);
+    const initials = escapeHtml(getInitials(contact.name));
+
     return `<div id="contact-card-${contact.id}" class="contact-card" onclick="showContactDetails('${contact.id}')">
-        <div class="contact-avatar" style="background:${getAvatarColorForId(contact.id)}">${getInitials(contact.name)}</div>
-        <div><h4>${contact.name}</h4><a href="mailto:${contact.email}">${contact.email}</a></div>
+        <div class="contact-avatar" style="background:${getAvatarColorForId(contact.id)}">${initials}</div>
+        <div><h4>${name}</h4><a href="mailto:${email}">${email}</a></div>
     </div>`;
 }
 
@@ -157,6 +161,11 @@ function showContactDetailsCard() {
  * @returns {string}
  */
 function getContactDetailsTemplate(contact) {
+    const name = escapeHtml(contact.name);
+    const email = escapeHtml(contact.email);
+    const phone = escapeHtml(contact.phone);
+    const initials = escapeHtml(getInitials(contact.name));
+
     return `<div class="contact-details-header">
         <div class="contact-details-title-row">
             <h1>Contacts</h1>
@@ -166,9 +175,9 @@ function getContactDetailsTemplate(contact) {
     </div>
     <div id="contactDetailsCard" class="contact-details-card d-none">
         <div class="contact-details-profile">
-            <div class="contact-details-avatar" style="background:${getAvatarColorForId(contact.id)}">${getInitials(contact.name)}</div>
+            <div class="contact-details-avatar" style="background:${getAvatarColorForId(contact.id)}">${initials}</div>
             <div class="contact-details-name-actions">
-                <h2>${contact.name}</h2>
+                <h2>${name}</h2>
                 <div class="desktop-contact-actions">
                     <button onclick="openEditContactOverlay('${contact.id}')"><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
                     <button onclick="openDeleteContactOverlay('${contact.id}')"><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
@@ -178,9 +187,9 @@ function getContactDetailsTemplate(contact) {
         <div class="contact-information-title">Contact Information</div>
         <div class="contact-information">
             <h4>Email</h4>
-            <a href="mailto:${contact.email}">${contact.email}</a>
+            <a href="mailto:${email}">${email}</a>
             <h4>Phone</h4>
-            <p>${contact.phone}</p>
+            <p>${phone}</p>
             <button id="menuContactBtn" class="menu_contact_btn" onclick="toggleMenuContact()" aria-label="Contact menu">
                 <img src="../assets/icons/menu_contact.svg" alt="">
             </button>
@@ -293,9 +302,9 @@ function getAddContactOverlayTemplate() {
  * @returns {string}
  */
 function getEditContactOverlayTemplate(contact) {
-    const name = escapeAttribute(contact.name);
-    const email = escapeAttribute(contact.email);
-    const phone = escapeAttribute(contact.phone);
+    const name = escapeHtml(contact.name);
+    const email = escapeHtml(contact.email);
+    const phone = escapeHtml(contact.phone);
 
     return `<div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
         <section class="contact-overlay contact-edit-overlay" onclick="event.stopPropagation()">
@@ -425,32 +434,6 @@ function resetContactDetails() {
 /** Closes the mobile menu only when it exists in the DOM. */
 function closeMenuContactIfRendered() {
     if (document.getElementById('contactMenu')) closeMenuContact();
-}
-
-
-/**
- * Escapes text before inserting it as HTML.
- * @param {string} value
- * @returns {string}
- */
-function escapeHtml(value) {
-    return value.replace(/[&<>"']/g, (char) => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;',
-    })[char]);
-}
-
-
-/**
- * Escapes text before inserting it into an HTML attribute.
- * @param {string} value
- * @returns {string}
- */
-function escapeAttribute(value) {
-    return escapeHtml(value);
 }
 
 

@@ -2,7 +2,7 @@ import { validateField, clearError } from '../utils/form-validation.js';
 import { getCurrentUser } from '../firebase/auth.js';
 import { showToast } from '../components/toast.js';
 import { getContacts } from '../firebase/cache.js';
-import { getAvatarColor, getInitials } from '../utils/helpers.js';
+import { getAvatarColor, getInitials, escapeHtml } from '../utils/helpers.js';
 import { initSubtaskInput, getSubtasks } from './subtask.js';
 
 
@@ -196,8 +196,8 @@ function initCategoryDropdown(root) {
  * @returns {HTMLLIElement}
  */
 function buildAssignedItem(contact, color, isYou) {
-    const initials = getInitials(contact.name);
-    const displayName = isYou ? `${contact.name} (You)` : contact.name;
+    const initials = escapeHtml(getInitials(contact.name));
+    const displayName = escapeHtml(isYou ? `${contact.name} (You)` : contact.name);
     const li = document.createElement('li');
     Object.assign(li.dataset, { id: contact.id, name: contact.name, initials, color });
     li.className = 'dropdown-option assigned-option';

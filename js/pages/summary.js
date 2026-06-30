@@ -2,6 +2,7 @@ import '../utils/auth-guard.js';
 import { initNavbar } from '../components/navbar.js';
 import { getCurrentUser } from '../firebase/auth.js';
 import { getTasks } from '../firebase/cache.js';
+import { escapeHtml } from '../utils/helpers.js';
 
 document.querySelectorAll('.summary-card').forEach(element => {
   element.addEventListener('click', () => {
@@ -37,7 +38,7 @@ function initGreetingOverlay() {
 function setGreetingName(overlay) {
     let user = getCurrentUser();
     let greeting = getGreetingDate();
-    overlay.querySelector('p').innerHTML = `${greeting}, <span  class="username">${user.name}</span>`;
+    overlay.querySelector('p').innerHTML = `${greeting}, <span  class="username">${escapeHtml(user.name)}</span>`;
     if (user.name === 'Guest') {
      overlay.querySelector('p').textContent = `${greeting}!`;
     }

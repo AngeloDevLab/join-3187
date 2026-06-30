@@ -1,3 +1,6 @@
+import { escapeHtml } from '../utils/helpers.js';
+
+
 /**
  * Creates a subtask list item with bullet, text, and edit/delete buttons.
  * The left button shows a trash icon and the right one a check icon while editing.
@@ -9,7 +12,7 @@ function buildSubtaskItem(text) {
     li.className = 'subtask-item';
     li.innerHTML = `
         <span class="subtask-bullet">•</span>
-        <span class="subtask-text">${text}</span>
+        <span class="subtask-text">${escapeHtml(text)}</span>
         <div class="subtask-item-actions">
             <button type="button" class="subtask-item-btn subtask-btn-left" aria-label="Edit">
                 <img class="icon-default" src="../assets/icons/edit.svg" alt="" width="18" height="18">
