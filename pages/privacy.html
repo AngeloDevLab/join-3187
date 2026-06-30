@@ -20,10 +20,14 @@
         <aside id="app-sidebar" class="app-sidebar">
             <img src="../assets/icons/join_logo.svg" alt="Join" class="nav-logo">
             <ul class="nav-list" style="visibility: hidden;">
-                <li class="nav-item"><a href="summary.html" class="nav-link" data-page="summary.html"><img src="../assets/icons/summary.svg" class="nav-icon" alt="">Summary</a></li>
-                <li class="nav-item"><a href="add-task.html" class="nav-link" data-page="add-task.html"><img src="../assets/icons/edit_square.svg" class="nav-icon" alt="">Add Task</a></li>
-                <li class="nav-item"><a href="board.html" class="nav-link" data-page="board.html"><img src="../assets/icons/board.svg" class="nav-icon" alt="">Board</a></li>
-                <li class="nav-item"><a href="contacts.html" class="nav-link" data-page="contacts.html"><img src="../assets/icons/contact.svg" class="nav-icon" alt="">Contacts</a></li>
+                <li class="nav-item"><a href="summary.html" class="nav-link" data-page="summary.html"><img
+                            src="../assets/icons/summary.svg" class="nav-icon" alt="">Summary</a></li>
+                <li class="nav-item"><a href="add-task.html" class="nav-link" data-page="add-task.html"><img
+                            src="../assets/icons/edit_square.svg" class="nav-icon" alt="">Add Task</a></li>
+                <li class="nav-item"><a href="board.html" class="nav-link" data-page="board.html"><img
+                            src="../assets/icons/board.svg" class="nav-icon" alt="">Board</a></li>
+                <li class="nav-item"><a href="contacts.html" class="nav-link" data-page="contacts.html"><img
+                            src="../assets/icons/contact.svg" class="nav-icon" alt="">Contacts</a></li>
             </ul>
             <div class="nav-legal">
                 <a href="privacy.html">Privacy Policy</a>
@@ -50,13 +54,97 @@
 
         <main class="app-main">
             <section class="content">
-            
-                    <h1>Privacy Policy</h1>
-      
+
+                <h1>Privacy Policy</h1>
+
+                <h2>1. Data Controller</h2>
+                <p>
+                    Angelo Pietsch, Louis Juchem, Mahad Yussuf Nur, Christian Mulugeta<br>
+                    Haydnstraße 45<br>
+                    02708 Löbau<br>
+                    Email: apietsch94@gmail.com
+                </p>
+
+                <h2>2. Overview of Processing</h2>
+                <p>This app processes personal data to provide a Kanban board (JOIN). No cookies, tracking, or analytics
+                    tools are used.</p>
+
+                <h2>3. Registration</h2>
+                <p>During registration we collect:</p>
+                <ul>
+                    <li>Name</li>
+                    <li>Email address</li>
+                </ul>
+                <p>This data is permanently stored in the Firebase Realtime Database (collection <code>users</code>).
+                    The entered password is checked client-side only and is never transmitted to or stored on the
+                    backend.</p>
+                <p><strong>Legal basis:</strong> Art. 6(1)(b) GDPR (performance of a contract / pre-contractual
+                    measures).</p>
+
+                <h2>4. Login</h2>
+                <p>The email address is used for identification during login. After a successful login, the following
+                    data is stored in the browser's <code>sessionStorage</code>:</p>
+                <ul>
+                    <li>ID, name, initials, email address</li>
+                </ul>
+                <p>This data is automatically deleted when the browser tab is closed. This is not a cookie.</p>
+                <p><strong>Guest login:</strong> No data is stored in the database; all information remains local in
+                    <code>sessionStorage</code>.</p>
+                <p><strong>Legal basis:</strong> Art. 6(1)(b) GDPR.</p>
+
+                <h2>5. Use of the App (Contacts and Tasks)</h2>
+                <p>While using the app, the following data is stored in the Firebase Realtime Database:</p>
+                <p><strong>Contacts</strong> (collection <code>contacts</code>): Name, email address, phone number</p>
+                <p><strong>Tasks</strong> (collection <code>tasks</code>): Title, description, due date, priority,
+                    category, subtasks, assigned contacts</p>
+                <p>This data is visible to all users of the app (no per-user data separation).</p>
+                <p><strong>Legal basis:</strong> Art. 6(1)(b) GDPR.</p>
+
+                <h2>6. Hosting and Processing by Third Parties</h2>
+                <p>We use <strong>Firebase Realtime Database</strong> by Google to store all data mentioned above.</p>
+                <p>Provider: Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland</p>
+                <p>It cannot be ruled out that data is also processed on servers outside the EU. Google uses EU Standard
+                    Contractual Clauses as a safeguard for an adequate level of data protection.</p>
+                <p>Database location: Belgium (europe-west1).</p>
+                <p>More information: Firebase Privacy Policy by Google.</p>
+
+                <h2>7. No Cookies, No Tracking</h2>
+                <p>This app does not use cookies, analytics tools (e.g. Google Analytics), or tracking. Fonts and icons
+                    are loaded locally; there is no connection to external CDNs (e.g. Google Fonts).</p>
+
+                <h2>8. Storage Duration</h2>
+                <p>Data in the Firebase Realtime Database (users, contacts, tasks) is stored until manually deleted. There is no automatic deletion or retention period.</p>
+
+                <h2>9. Rights of Data Subjects</h2>
+                <p>You have the right to:</p>
+                <ul>
+                    <li>Access (Art. 15 GDPR)</li>
+                    <li>Rectification (Art. 16 GDPR)</li>
+                    <li>Erasure (Art. 17 GDPR)</li>
+                    <li>Restriction of processing (Art. 18 GDPR)</li>
+                    <li>Data portability (Art. 20 GDPR)</li>
+                    <li>Objection (Art. 21 GDPR)</li>
+                    <li>Lodge a complaint with a supervisory authority (Art. 77 GDPR)</li>
+                </ul>
+                <p>To exercise these rights, contact: apietsch94@gmail.com</p>
+
+                <h2>10. Data Security</h2>
+                <p>Data transmission is encrypted via HTTPS.</p>
+                <p>The Firebase Realtime Database is not secured by Firebase Security Rules based on user identity.
+                    All app data (contacts, tasks) is readable and writable by any user of the app, including guests,
+                    without server-side access control differentiating between individual accounts. This is a deliberate
+                    design decision for this shared project management environment.</p>
+
+                <h2>11. Changes to this Privacy Policy</h2>
+                <p>We reserve the right to update this privacy policy as the app's functionality changes.</p>
+
+                <p><em>Last updated: 30.06.2026</em></p>
+
+            </section>
         </main>
 
     </div>
-   <script type="module" src="../js/pages/imprint.js"></script>
+    <script type="module" src="../js/pages/imprint.js"></script>
 </body>
 
 </html>
