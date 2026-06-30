@@ -241,6 +241,20 @@ function initTaskForm(root, onSubmitSuccess, onCancel) {
     const submitBtn = form.querySelector('[type="submit"]');
     fields.dueDateInput.min = getTodayDateString();
     updateTaskBtn(submitBtn, fields);
+    wireTaskFormEvents(root, form, fields, submitBtn, onSubmitSuccess, onCancel);
+}
+
+
+/**
+ * Attaches all event listeners for input feedback, submit and cancel to the task form.
+ * @param {ParentNode} root
+ * @param {HTMLFormElement} form
+ * @param {ReturnType<typeof getFormFields>} fields
+ * @param {HTMLButtonElement} submitBtn
+ * @param {Function} [onSubmitSuccess]
+ * @param {Function} [onCancel]
+ */
+function wireTaskFormEvents(root, form, fields, submitBtn, onSubmitSuccess, onCancel) {
     fields.titleInput.addEventListener('input', () => updateTaskBtn(submitBtn, fields));
     fields.categorySelect.addEventListener('input', () => updateTaskBtn(submitBtn, fields));
     fields.dueDateInput.addEventListener('change', () => {

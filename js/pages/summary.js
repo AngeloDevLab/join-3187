@@ -11,18 +11,21 @@ document.querySelectorAll('.summary-card').forEach(element => {
 });
 
 
-/** Disables pointer events on the greeting overlay after its fade-out animation ends. */
+/** Shows the greeting overlay on mobile (on first login) or sets the name directly on desktop. */
 function initGreetingOverlay() {
-    let overlay = document.querySelector('.greeting-overlay');
-    let isMobile = window.matchMedia('(max-width: 768px)').matches
-    if (!isMobile) {
-        setGreetingName(overlay);
-        return;
-    } // for Desktop
-    if (sessionStorage.getItem('justLoggedIn') !== 'true') {
-        overlay.style.display = 'none';
-        return;
-    } // for Mobile
+    const overlay = document.querySelector('.greeting-overlay');
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (!isMobile) { setGreetingName(overlay); return; }
+    if (sessionStorage.getItem('justLoggedIn') !== 'true') { overlay.style.display = 'none'; return; }
+    playMobileGreeting(overlay);
+}
+
+
+/**
+ * Fills the greeting name and disables pointer events after the mobile overlay animation ends.
+ * @param {HTMLElement} overlay
+ */
+function playMobileGreeting(overlay) {
     sessionStorage.removeItem('justLoggedIn');
     setGreetingName(overlay);
     overlay.addEventListener('animationend', (e) => {

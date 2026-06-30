@@ -62,20 +62,12 @@ async function renderContacts() {
  * @returns {Object}
  */
 function groupByFirstLetter(list) {
-    const groupedContacts = {};
-
-    for (let i = 0; i < list.length; i++) {
-        const contact = list[i];
+    return list.reduce((groups, contact) => {
         const letter = contact.name.charAt(0);
-
-        if (!groupedContacts[letter]) {
-            groupedContacts[letter] = [];
-        }
-
-        groupedContacts[letter].push(contact);
-    }
-
-    return groupedContacts;
+        if (!groups[letter]) groups[letter] = [];
+        groups[letter].push(contact);
+        return groups;
+    }, {});
 }
 
 
@@ -106,14 +98,18 @@ function buildContactCardNode(contact) {
     const node = document.getElementById('contactCardTemplate').content.cloneNode(true);
     const card = node.querySelector('.contact-card');
     const avatar = card.querySelector('.contact-avatar');
+    const emailEl = card.querySelector('.contact-card-email');
+
     card.id = `contact-card-${contact.id}`;
     card.setAttribute('onclick', `showContactDetails('${contact.id}')`);
+    card.querySelector('.contact-card-name').textContent = contact.name;
+
     avatar.style.background = getAvatarColorForId(contact.id);
     avatar.textContent = getInitials(contact.name);
-    card.querySelector('.contact-card-name').textContent = contact.name;
-    const emailEl = card.querySelector('.contact-card-email');
+
     emailEl.textContent = contact.email;
     emailEl.href = `mailto:${contact.email}`;
+
     return card;
 }
 
@@ -379,6 +375,7 @@ function closeMenuContact() {
     document.getElementById('contactMenuBackdrop').classList.remove('contact_menu_backdrop_open');
 }
 
+
 window.showContactDetails = showContactDetails;
 window.showContactsList = showContactsList;
 window.toggleMenuContact = toggleMenuContact;
@@ -390,6 +387,7 @@ window.closeContactOverlay = closeContactOverlay;
 window.saveEditedContact = saveEditedContact;
 window.createContact = createContact;
 window.deleteContact = deleteContact;
+
 
 initNavbar();
 init();
