@@ -1,7 +1,7 @@
 import '../utils/auth-guard.js';
 import { initNavbar } from '../components/navbar.js';
 import { getCurrentUser } from '../firebase/auth.js';
-import { getAvatarColorForId, getInitials, escapeHtml } from '../utils/helpers.js';
+import { getAvatarColorForId, getInitials } from '../utils/helpers.js';
 import { getContacts, saveContact, updateContact, removeContact } from '../firebase/cache.js';
 
 let activeContactId = null;
@@ -80,41 +80,41 @@ function groupByFirstLetter(list) {
 
 
 /**
- * Appends grouped contact HTML into the container.
+ * Appends grouped contact cards into the container.
  * @param {Object} grouped
  * @param {HTMLElement} container
  */
 function renderGroupedContacts(grouped, container) {
-    let contactsHTML = '';
-
     for (const letter in grouped) {
-        contactsHTML += `<div class="contact-group"><h3>${letter}</h3>`;
-
-        for (let i = 0; i < grouped[letter].length; i++) {
-            contactsHTML += getContactTemplate(grouped[letter][i]);
-        }
-
-        contactsHTML += '</div>';
+        const group = document.createElement('div');
+        group.className = 'contact-group';
+        const heading = document.createElement('h3');
+        heading.textContent = letter;
+        group.appendChild(heading);
+        grouped[letter].forEach((contact) => group.appendChild(buildContactCardNode(contact)));
+        container.appendChild(group);
     }
-
-    container.innerHTML = contactsHTML;
 }
 
 
 /**
- * Returns the card HTML for a single contact.
+ * Builds a contact card element from the card template, filled with this contact's data.
  * @param {{ id: string, name: string, email: string }} contact
- * @returns {string}
+ * @returns {HTMLElement}
  */
-function getContactTemplate(contact) {
-    const name = escapeHtml(contact.name);
-    const email = escapeHtml(contact.email);
-    const initials = escapeHtml(getInitials(contact.name));
-
-    return `<div id="contact-card-${contact.id}" class="contact-card" onclick="showContactDetails('${contact.id}')">
-        <div class="contact-avatar" style="background:${getAvatarColorForId(contact.id)}">${initials}</div>
-        <div><h4>${name}</h4><a href="mailto:${email}">${email}</a></div>
-    </div>`;
+function buildContactCardNode(contact) {
+    const node = document.getElementById('contactCardTemplate').content.cloneNode(true);
+    const card = node.querySelector('.contact-card');
+    const avatar = card.querySelector('.contact-avatar');
+    card.id = `contact-card-${contact.id}`;
+    card.setAttribute('onclick', `showContactDetails('${contact.id}')`);
+    avatar.style.background = getAvatarColorForId(contact.id);
+    avatar.textContent = getInitials(contact.name);
+    card.querySelector('.contact-card-name').textContent = contact.name;
+    const emailEl = card.querySelector('.contact-card-email');
+    emailEl.textContent = contact.email;
+    emailEl.href = `mailto:${contact.email}`;
+    return card;
 }
 
 
@@ -128,7 +128,8 @@ async function showContactDetails(contactId) {
     setActiveContactCard(contactId);
     const details = document.getElementById('contactDetails');
     details.classList.remove('d-none');
-    details.innerHTML = getContactDetailsTemplate(contact);
+    details.innerHTML = '';
+    details.appendChild(buildContactDetailsNode(contact));
     showContactDetailsCard();
     if (window.innerWidth < 1024) {
         document.getElementById('contactsList').classList.add('d-none');
@@ -156,50 +157,36 @@ function showContactDetailsCard() {
 
 
 /**
- * Returns the detail panel HTML for a contact.
+ * Builds the contact details panel from the template, filled with this contact's data.
  * @param {{ id: string, name: string, email: string, phone: string }} contact
- * @returns {string}
+ * @returns {DocumentFragment}
  */
-function getContactDetailsTemplate(contact) {
-    const name = escapeHtml(contact.name);
-    const email = escapeHtml(contact.email);
-    const phone = escapeHtml(contact.phone);
-    const initials = escapeHtml(getInitials(contact.name));
+function buildContactDetailsNode(contact) {
+    const node = document.getElementById('contactDetailsTemplate').content.cloneNode(true);
+    fillContactDetailsNode(node, contact);
+    return node;
+}
 
-    return `<div class="contact-details-header">
-        <div class="contact-details-title-row">
-            <h1>Contacts</h1>
-            <button class="back-to-contacts-btn" onclick="showContactsList()">←</button>
-        </div>
-        <p>Better with a team</p>
-    </div>
-    <div id="contactDetailsCard" class="contact-details-card d-none">
-        <div class="contact-details-profile">
-            <div class="contact-details-avatar" style="background:${getAvatarColorForId(contact.id)}">${initials}</div>
-            <div class="contact-details-name-actions">
-                <h2>${name}</h2>
-                <div class="desktop-contact-actions">
-                    <button onclick="openEditContactOverlay('${contact.id}')"><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
-                    <button onclick="openDeleteContactOverlay('${contact.id}')"><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
-                </div>
-            </div>
-        </div>
-        <div class="contact-information-title">Contact Information</div>
-        <div class="contact-information">
-            <h4>Email</h4>
-            <a href="mailto:${email}">${email}</a>
-            <h4>Phone</h4>
-            <p>${phone}</p>
-            <button id="menuContactBtn" class="menu_contact_btn" onclick="toggleMenuContact()" aria-label="Contact menu">
-                <img src="../assets/icons/menu_contact.svg" alt="">
-            </button>
-            <div id="contactMenuBackdrop" class="contact_menu_backdrop" onclick="closeMenuContact()"></div>
-            <div id="contactMenu" class="contact_menu" onclick="closeMenuContact()">
-                <button class="contact_menu_option" onclick="event.stopPropagation(); openEditContactOverlay('${contact.id}')"><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
-                <button class="contact_menu_option" onclick="event.stopPropagation(); openDeleteContactOverlay('${contact.id}')"><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
-            </div>
-        </div>
-    </div>`;
+
+/**
+ * Fills the avatar/name/email/phone fields and wires the edit/delete action buttons
+ * (desktop and mobile menu copies) in a cloned contact details node.
+ * @param {DocumentFragment} node
+ * @param {{ id: string, name: string, email: string, phone: string }} contact
+ */
+function fillContactDetailsNode(node, contact) {
+    const avatar = node.querySelector('.contact-details-avatar');
+    avatar.style.background = getAvatarColorForId(contact.id);
+    avatar.textContent = getInitials(contact.name);
+    node.querySelector('.contact-details-name').textContent = contact.name;
+    const emailEl = node.querySelector('.contact-details-email');
+    emailEl.textContent = contact.email;
+    emailEl.href = `mailto:${contact.email}`;
+    node.querySelector('.contact-details-phone').textContent = contact.phone;
+    node.querySelectorAll('.contact-details-edit-btn').forEach((btn) =>
+        btn.setAttribute('onclick', `event.stopPropagation(); openEditContactOverlay('${contact.id}')`));
+    node.querySelectorAll('.contact-details-delete-btn').forEach((btn) =>
+        btn.setAttribute('onclick', `event.stopPropagation(); openDeleteContactOverlay('${contact.id}')`));
 }
 
 
@@ -207,7 +194,7 @@ function getContactDetailsTemplate(contact) {
  * Opens the add contact overlay.
  */
 function openAddContactOverlay() {
-    renderContactOverlay(getAddContactOverlayTemplate());
+    renderContactOverlay(buildAddContactOverlayNode());
 }
 
 
@@ -219,7 +206,7 @@ async function openEditContactOverlay(contactId) {
     closeMenuContactIfRendered();
     const contact = await getContactById(contactId);
     if (!contact) return;
-    renderContactOverlay(getEditContactOverlayTemplate(contact));
+    renderContactOverlay(buildEditContactOverlayNode(contact));
 }
 
 
@@ -231,17 +218,17 @@ async function openDeleteContactOverlay(contactId) {
     closeMenuContactIfRendered();
     const contact = await getContactById(contactId);
     if (!contact) return;
-    renderContactOverlay(getDeleteContactOverlayTemplate(contact));
+    renderContactOverlay(buildDeleteContactOverlayNode(contact));
 }
 
 
 /**
  * Renders and animates a contact overlay.
- * @param {string} template
+ * @param {Node} node
  */
-function renderContactOverlay(template) {
+function renderContactOverlay(node) {
     closeContactOverlay();
-    document.getElementById('contactOverlayContainer').innerHTML = template;
+    document.getElementById('contactOverlayContainer').appendChild(node);
     requestAnimationFrame(() => {
         document.getElementById('contactOverlay').classList.add('contact-overlay-open');
     });
@@ -255,104 +242,40 @@ function closeContactOverlay() {
 
 
 /**
- * Returns the add contact overlay HTML.
- * @returns {string}
+ * Builds the add-contact overlay node by cloning its template (fully static, no data to fill).
+ * @returns {DocumentFragment}
  */
-function getAddContactOverlayTemplate() {
-    return `<div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
-        <section class="contact-overlay contact-add-overlay" onclick="event.stopPropagation()">
-            <button class="contact-overlay-close" onclick="closeContactOverlay()" aria-label="Close">&times;</button>
-            <div class="contact-overlay-brand">
-                <img src="../assets/icons/join_logo.svg" alt="Join">
-                <h2>Add contact</h2>
-                <p>Tasks are better with a team!</p>
-                <div></div>
-            </div>
-            <form class="contact-edit-form contact-add-form" onsubmit="createContact(event)">
-                <div class="contact-add-avatar" aria-hidden="true">
-                    <img src="../assets/icons/person.svg" alt="">
-                </div>
-                <div class="contact-add-fields">
-                    <label class="contact-input-wrapper">
-                        <input id="addContactName" type="text" placeholder="Name" autocomplete="name" required>
-                        <img src="../assets/icons/person.svg" alt="">
-                    </label>
-                    <label class="contact-input-wrapper">
-                        <input id="addContactEmail" type="email" placeholder="Email" autocomplete="email" required>
-                        <img src="../assets/icons/mail.svg" alt="">
-                    </label>
-                    <label class="contact-input-wrapper">
-                        <input id="addContactPhone" type="tel" placeholder="Phone" autocomplete="tel" required>
-                        <span aria-hidden="true">&#9742;</span>
-                    </label>
-                    <div class="contact-overlay-actions contact-add-actions">
-                        <button type="button" class="contact-secondary-btn" onclick="closeContactOverlay()">Cancel &times;</button>
-                        <button type="submit" class="contact-primary-btn">Create contact &#10003;</button>
-                    </div>
-                </div>
-            </form>
-        </section>
-    </div>`;
+function buildAddContactOverlayNode() {
+    return document.getElementById('addContactOverlayTemplate').content.cloneNode(true);
 }
 
 
 /**
- * Returns the edit overlay HTML.
+ * Builds the edit-contact overlay node from the template, prefilled with this contact's data.
  * @param {{ id: string, name: string, email: string, phone: string }} contact
- * @returns {string}
+ * @returns {DocumentFragment}
  */
-function getEditContactOverlayTemplate(contact) {
-    const name = escapeHtml(contact.name);
-    const email = escapeHtml(contact.email);
-    const phone = escapeHtml(contact.phone);
-
-    return `<div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
-        <section class="contact-overlay contact-edit-overlay" onclick="event.stopPropagation()">
-            <button class="contact-overlay-close" onclick="closeContactOverlay()" aria-label="Close">&times;</button>
-            <div class="contact-overlay-brand">
-                <img src="../assets/icons/join_logo.svg" alt="Join">
-                <h2>Edit contact</h2>
-                <div></div>
-            </div>
-            <form class="contact-edit-form" onsubmit="saveEditedContact(event, '${contact.id}')">
-                <input id="editContactName" type="text" value="${name}" placeholder="Name" autocomplete="name" required>
-                <input id="editContactEmail" type="email" value="${email}" placeholder="Email" autocomplete="email" required>
-                <input id="editContactPhone" type="tel" value="${phone}" placeholder="Phone" autocomplete="tel" required>
-                <div class="contact-overlay-actions">
-                    <button type="button" class="contact-secondary-btn" onclick="deleteContact('${contact.id}')">Delete</button>
-                    <button type="submit" class="contact-primary-btn">Save</button>
-                </div>
-            </form>
-        </section>
-    </div>`;
+function buildEditContactOverlayNode(contact) {
+    const node = document.getElementById('editContactOverlayTemplate').content.cloneNode(true);
+    node.querySelector('.contact-edit-name-input').value = contact.name;
+    node.querySelector('.contact-edit-email-input').value = contact.email;
+    node.querySelector('.contact-edit-phone-input').value = contact.phone;
+    node.querySelector('form').setAttribute('onsubmit', `saveEditedContact(event, '${contact.id}')`);
+    node.querySelector('.contact-edit-delete-btn').setAttribute('onclick', `deleteContact('${contact.id}')`);
+    return node;
 }
 
 
 /**
- * Returns the delete confirmation overlay HTML.
+ * Builds the delete-confirmation overlay node from the template for this contact.
  * @param {{ id: string, name: string }} contact
- * @returns {string}
+ * @returns {DocumentFragment}
  */
-function getDeleteContactOverlayTemplate(contact) {
-    const name = escapeHtml(contact.name);
-
-    return `<div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
-        <section class="contact-overlay contact-delete-overlay" onclick="event.stopPropagation()">
-            <button class="contact-overlay-close" onclick="closeContactOverlay()" aria-label="Close">&times;</button>
-            <div class="contact-overlay-brand">
-                <img src="../assets/icons/join_logo.svg" alt="Join">
-                <h2>Delete contact</h2>
-                <div></div>
-            </div>
-            <div class="contact-delete-content">
-                <p>Delete ${name}?</p>
-                <div class="contact-overlay-actions">
-                    <button type="button" class="contact-secondary-btn" onclick="closeContactOverlay()">Cancel</button>
-                    <button type="button" class="contact-primary-btn" onclick="deleteContact('${contact.id}')">Delete</button>
-                </div>
-            </div>
-        </section>
-    </div>`;
+function buildDeleteContactOverlayNode(contact) {
+    const node = document.getElementById('deleteContactOverlayTemplate').content.cloneNode(true);
+    node.querySelector('.contact-delete-message').textContent = `Delete ${contact.name}?`;
+    node.querySelector('.contact-delete-confirm-btn').setAttribute('onclick', `deleteContact('${contact.id}')`);
+    return node;
 }
 
 
@@ -422,11 +345,8 @@ async function getContactById(contactId) {
 function resetContactDetails() {
     const details = document.getElementById('contactDetails');
     details.classList.add('d-none');
-    details.innerHTML = `<div class="desktop-contact-placeholder">
-        <h1>Contacts</h1>
-        <div></div>
-        <p>Better with a team</p>
-    </div>`;
+    details.innerHTML = '';
+    details.appendChild(document.getElementById('contactDetailsPlaceholderTemplate').content.cloneNode(true));
     document.getElementById('contactsList').classList.remove('d-none');
 }
 
