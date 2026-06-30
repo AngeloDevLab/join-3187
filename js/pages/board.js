@@ -3,7 +3,8 @@ import { initNavbar } from '../components/navbar.js';
 import { openModal } from '../components/modal.js';
 import { initAddTaskForm, toFirebaseTask } from '../components/add-task-form.js';
 import { openTaskDetailModal } from '../components/task-detail-modal.js';
-import { getTasks, getContacts, saveTask, updateTask } from '../firebase/cache.js';
+import { showToast } from '../components/toast.js';
+import { getTasks, getContacts, saveTask, updateTask, removeTask } from '../firebase/cache.js';
 import { getAvatarColorForId, getInitials, PRIORITY_META, escapeHtml } from '../utils/helpers.js';
 
 const CATEGORY_LABEL = { userStory: 'User Story', technicalTask: 'Technical Task' };
@@ -230,6 +231,17 @@ function openAddTaskModal(status) {
 
 
 /**
+ * Deletes a task from Firebase, refreshes the board and notifies the user.
+ * @param {string} id
+ */
+async function handleDeleteTask(id) {
+    await removeTask(id);
+    await updateHtml();
+    showToast('Task deleted');
+}
+
+
+/**
  * Delegates card clicks to open the task detail modal, skipping drag controls.
  */
 function initCardDetailClick() {
@@ -242,7 +254,7 @@ function initCardDetailClick() {
             const task = tasks[card.dataset.id];
             if (!task) return;
             const contacts = (await getContacts()) || {};
-            openTaskDetailModal(toDisplayTodo(card.dataset.id, task, contacts));
+            openTaskDetailModal(toDisplayTodo(card.dataset.id, task, contacts), { onDelete: handleDeleteTask });
         });
     });
 }

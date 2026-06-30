@@ -101,7 +101,7 @@ function buildDetailSections(todo) {
  */
 function buildDetailActions() {
     return `<div class="task-detail-actions">
-        <button type="button" class="task-detail-action">
+        <button type="button" class="task-detail-action task-detail-delete">
             <img src="../assets/icons/delete.svg" alt="" width="16"> Delete
         </button>
         <div class="task-detail-action-divider"></div>
@@ -131,10 +131,15 @@ function buildDetailHtml(todo) {
 /**
  * Opens a right-slide modal showing the detail view of the given task.
  * @param {object} todo
+ * @param {{ onDelete?: (id: string) => void|Promise<void> }} [options]
  */
-export function openTaskDetailModal(todo) {
+export function openTaskDetailModal(todo, { onDelete } = {}) {
     const div = document.createElement('div');
     div.innerHTML = buildDetailHtml(todo);
     const { dialog, close } = openModal(div, { animation: 'center' });
     dialog.querySelector('.task-detail-close').addEventListener('click', close);
+    dialog.querySelector('.task-detail-delete').addEventListener('click', async () => {
+        await onDelete?.(todo.id);
+        close();
+    });
 }
