@@ -254,7 +254,8 @@ function initCardDetailClick() {
             const task = tasks[card.dataset.id];
             if (!task) return;
             const contacts = (await getContacts()) || {};
-            openTaskDetailModal(toDisplayTodo(card.dataset.id, task, contacts), { onDelete: handleDeleteTask });
+            const todo = toDisplayTodo(card.dataset.id, task, contacts);
+            openTaskDetailModal(todo, { onDelete: handleDeleteTask, onEdit: (t) => openAddTaskModal(t.column) });
         });
     });
 }
