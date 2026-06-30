@@ -9,10 +9,6 @@ body {
     background-color: var(--color-bg);
 }
 
-h1 {
-    font-size: clamp(2rem, 6vw, 4rem);
-}
-
 .board-top {
     display: flex;
     align-items: center;

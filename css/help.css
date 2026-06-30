@@ -12,10 +12,6 @@
     margin-bottom: var(--space-lg);
 }
 
-.help-head h1 {
-    font-size: clamp(2rem, 6vw, 4rem);
-}
-
 .back-button {
     display: inline-flex;
     align-items: center;
@@ -51,7 +47,6 @@
 }
 
 .help-section h2 {
-    font-size: clamp(1.5rem, 6vw, 2.5rem);
     margin-bottom: var(--space-sm);
 }
 
