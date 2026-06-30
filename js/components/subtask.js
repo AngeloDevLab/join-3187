@@ -5,11 +5,13 @@ import { escapeHtml } from '../utils/helpers.js';
  * Creates a subtask list item with bullet, text, and edit/delete buttons.
  * The left button shows a trash icon and the right one a check icon while editing.
  * @param {string} text
+ * @param {boolean} [done]
  * @returns {HTMLLIElement}
  */
-function buildSubtaskItem(text) {
+function buildSubtaskItem(text, done = false) {
     const li = document.createElement('li');
     li.className = 'subtask-item';
+    li.dataset.done = String(done);
     li.innerHTML = `
         <span class="subtask-bullet">•</span>
         <span class="subtask-text">${escapeHtml(text)}</span>
@@ -118,12 +120,28 @@ function handleSubtaskListMousedown(e) {
 
 
 /**
- * Returns the current subtask texts for use when saving the task.
+ * Returns the current subtasks (title + done state) for use when saving the task.
  * @param {ParentNode} root
- * @returns {string[]}
+ * @returns {{ title: string, done: boolean }[]}
  */
 export function getSubtasks(root) {
-    return [...root.querySelectorAll('.subtask-text')].map((el) => el.textContent);
+    return [...root.querySelectorAll('.subtask-item')].map((li) => ({
+        title: li.querySelector('.subtask-text').textContent,
+        done: li.dataset.done === 'true',
+    }));
+}
+
+
+/**
+ * Replaces the subtask list with the given subtasks, preserving their done state.
+ * @param {ParentNode} root
+ * @param {{ title: string, done: boolean }[]} subtasks
+ */
+export function setSubtasks(root, subtasks) {
+    const list = root.querySelector('#subtaskList');
+    if (!list) return;
+    list.innerHTML = '';
+    subtasks.forEach((s) => list.appendChild(buildSubtaskItem(s.title, s.done)));
 }
 
 

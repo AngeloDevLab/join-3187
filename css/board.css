@@ -189,7 +189,7 @@ body {
 }
 
 .progress-bar div {
-    width: 50%;
+    width: 0%;
     height: 100%;
     background-color: #4589ff;
     /* TODO: var(--color-progress) */
@@ -296,6 +296,43 @@ body {
 
 .add-task-modal h1 {
     margin: 0 0 32px;
+}
+
+.add-task-modal--edit {
+    width: 525px;
+    padding: 0;
+}
+
+.add-task-modal--edit h1,
+.add-task-modal--edit .form-columns {
+    padding: 0 clamp(var(--space-sm), 4vw, var(--space-xl));
+}
+
+.add-task-modal--edit h1 {
+    padding-top: clamp(var(--space-sm), 4vw, var(--space-xl));
+}
+
+.add-task-modal--edit .form-columns {
+    flex-direction: column;
+}
+
+.add-task-modal--edit .form-divider {
+    display: none;
+}
+
+.add-task-modal--edit .form-col {
+    padding: 0;
+}
+
+.add-task-modal--edit .form-footer {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: var(--space-md);
+    padding: var(--space-md) clamp(var(--space-sm), 4vw, var(--space-xl));
+    background: var(--color-white);
+    border-top: 1px solid var(--color-border);
 }
 
 .add-task-modal-close {
@@ -532,6 +569,20 @@ body {
     color: var(--color-text-muted);
     font-size: 14px;
     margin: 0;
+}
+
+.task-detail-subtask-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.task-detail-subtask .checkbox {
+    padding: 4px 0;
+    font-size: 14px;
 }
 
 .priority-chip {

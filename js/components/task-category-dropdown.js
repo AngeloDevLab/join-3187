@@ -62,6 +62,21 @@ export function initDropdownAutoClose() {
 
 
 /**
+ * Programmatically selects a category option, e.g. when prefilling for an edit.
+ * @param {ParentNode} root
+ * @param {string} value
+ * @param {string} label
+ */
+export function setCategoryOption(root, value, label) {
+    const els = getCategoryEls(root);
+    if (!els.dropdown) return;
+    els.hiddenInput.value = value;
+    els.valueEl.textContent = label;
+    els.valueEl.classList.remove('dropdown-placeholder');
+}
+
+
+/**
  * Sets up the category dropdown — toggle and option selection.
  * @param {ParentNode} root
  */

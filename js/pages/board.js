@@ -5,7 +5,7 @@ import { initAddTaskForm, toFirebaseTask } from '../components/add-task-form.js'
 import { openTaskDetailModal } from '../components/task-detail-modal.js';
 import { showToast } from '../components/toast.js';
 import { getTasks, getContacts, saveTask, updateTask, removeTask } from '../firebase/cache.js';
-import { getAvatarColorForId, getInitials, PRIORITY_META, escapeHtml } from '../utils/helpers.js';
+import { getAvatarColorForId, getInitials, PRIORITY_META, escapeHtml, getSubtaskProgress } from '../utils/helpers.js';
 
 const CATEGORY_LABEL = { userStory: 'User Story', technicalTask: 'Technical Task' };
 
@@ -38,8 +38,7 @@ async function updateHtml() {
  * @returns {Object}
  */
 function toDisplayTodo(id, task, contacts) {
-    const subtasksList = Object.values(task.subtasks ?? {});
-    const done = subtasksList.filter((s) => s.done).length;
+    const subtasksList = Object.entries(task.subtasks ?? {}).map(([key, s]) => ({ key, title: s.title, done: !!s.done }));
     return {
         id,
         column: task.column,
@@ -48,10 +47,11 @@ function toDisplayTodo(id, task, contacts) {
         type: CATEGORY_LABEL[task.category] ?? task.category,
         priority: task.priority,
         dueDate: task.dueDate,
-        subtasks: subtasksList.length ? `${done}/${subtasksList.length} Subtasks` : '',
+        subtasks: subtasksList,
         assigned: (task.assignedTo ?? [])
             .filter((cid) => contacts[cid])
             .map((cid) => ({ name: contacts[cid].name, initials: getInitials(contacts[cid].name), color: getAvatarColorForId(cid) })),
+        raw: task,
     };
 }
 
@@ -86,17 +86,27 @@ function buildAvatarsHtml(todo) {
 
 
 /**
+ * Returns the subtasks progress row markup for a task card, or '' when there are none.
+ * @param {{ done: boolean }[]} subtasks
+ * @returns {string}
+ */
+function buildSubtasksRowHtml(subtasks) {
+    if (!subtasks.length) return '';
+    const { done, total, percent } = getSubtaskProgress(subtasks);
+    return `<div class="progress-row"><div class="progress-bar"><div style="width:${percent}%"></div></div><span>${done}/${total} Subtasks</span></div>`;
+}
+
+
+/**
  * Returns the HTML markup for a single task card.
- * @param {{ id: string, title: string, description: string, type: string, subtasks: string, priority: string }} todo
+ * @param {{ id: string, title: string, description: string, type: string, subtasks: object[], priority: string }} todo
  * @returns {string}
  */
 function generateTodoHtml(todo) {
     const categoryClass = todo.type === 'User Story' ? 'user-story' : 'technical';
     const title = escapeHtml(todo.title);
     const description = escapeHtml(todo.description);
-    const subtasksHtml = todo.subtasks
-        ? `<div class="progress-row"><div class="progress-bar"><div></div></div><span>${todo.subtasks}</span></div>`
-        : '';
+    const subtasksHtml = buildSubtasksRowHtml(todo.subtasks);
     return `<div class="task-card" data-id="${todo.id}" draggable="true" ondragstart="startDragging(event, '${todo.id}')" ondragend="stopDragging(event)">
     <div class="card-header">
         <span class="task-category ${categoryClass}">${todo.type}</span>
@@ -231,6 +241,29 @@ function openAddTaskModal(status) {
 
 
 /**
+ * Persists edited task data to Firebase, keeping its column and creation date, then refreshes the board.
+ * @param {string} id
+ * @param {Object} task
+ * @param {Parameters<typeof toFirebaseTask>[0]} data
+ */
+async function handleSaveTask(id, task, data) {
+    await updateTask(id, toFirebaseTask(data, task.column, task.createdAt));
+    await updateHtml();
+}
+
+
+/**
+ * Persists a toggled subtask's done state to Firebase and refreshes the board.
+ * @param {string} id
+ * @param {Object} subtasks
+ */
+async function handleToggleSubtask(id, subtasks) {
+    await updateTask(id, { subtasks });
+    await updateHtml();
+}
+
+
+/**
  * Deletes a task from Firebase, refreshes the board and notifies the user.
  * @param {string} id
  */
@@ -255,7 +288,11 @@ function initCardDetailClick() {
             if (!task) return;
             const contacts = (await getContacts()) || {};
             const todo = toDisplayTodo(card.dataset.id, task, contacts);
-            openTaskDetailModal(todo, { onDelete: handleDeleteTask, onEdit: (t) => openAddTaskModal(t.column) });
+            openTaskDetailModal(todo, {
+                onDelete: handleDeleteTask,
+                onSave: handleSaveTask,
+                onToggleSubtask: handleToggleSubtask,
+            });
         });
     });
 }

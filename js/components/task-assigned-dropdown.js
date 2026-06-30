@@ -105,12 +105,27 @@ export function getSelectedContacts(root) {
 
 
 /**
+ * Selects the given contact ids in an already-loaded assigned dropdown, e.g. when prefilling for an edit.
+ * @param {ParentNode} root
+ * @param {string[]} ids
+ */
+export function selectAssignedContacts(root, ids) {
+    const idSet = new Set(ids);
+    root.querySelectorAll('.assigned-option').forEach((opt) => {
+        if (idSet.has(opt.dataset.id)) toggleAssignedContact(opt);
+    });
+    updateAssignedTrigger(root);
+}
+
+
+/**
  * Sets up the assigned-to dropdown with event delegation for multi-select.
  * @param {ParentNode} root
+ * @returns {Promise<void>} Resolves once contacts have been loaded into the list.
  */
 export function initAssignedDropdown(root) {
     const dropdown = root.querySelector('#assignedDropdown');
-    if (!dropdown) return;
+    if (!dropdown) return Promise.resolve();
     const trigger = root.querySelector('#assignedTrigger');
     const list = root.querySelector('#assignedList');
     trigger.addEventListener('click', () =>
@@ -119,5 +134,5 @@ export function initAssignedDropdown(root) {
         const opt = e.target.closest('.assigned-option');
         if (opt) { toggleAssignedContact(opt); updateAssignedTrigger(root); }
     });
-    loadAssignedContacts(root);
+    return loadAssignedContacts(root);
 }

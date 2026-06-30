@@ -64,6 +64,18 @@ export function getInitials(name) {
 
 
 /**
+ * Computes the done/total count and percentage for a list of subtasks.
+ * @param {{ done: boolean }[]} subtasks
+ * @returns {{ done: number, total: number, percent: number }}
+ */
+export function getSubtaskProgress(subtasks) {
+    const total = subtasks.length;
+    const done = subtasks.filter((s) => s.done).length;
+    return { done, total, percent: total ? Math.round((done / total) * 100) : 0 };
+}
+
+
+/**
  * Escapes HTML-special characters so a value can be safely inserted
  * into innerHTML without being interpreted as markup.
  * @param {string} value

@@ -1,8 +1,14 @@
 import { validateField, clearError } from '../utils/form-validation.js';
 import { showToast } from '../components/toast.js';
-import { initSubtaskInput, getSubtasks } from './subtask.js';
-import { initCategoryDropdown, initDropdownAutoClose } from './task-category-dropdown.js';
-import { initAssignedDropdown, resetAssignedDropdown, getSelectedContacts } from './task-assigned-dropdown.js';
+import { initSubtaskInput, getSubtasks, setSubtasks } from './subtask.js';
+import { initCategoryDropdown, initDropdownAutoClose, setCategoryOption } from './task-category-dropdown.js';
+import { initAssignedDropdown, resetAssignedDropdown, getSelectedContacts, selectAssignedContacts } from './task-assigned-dropdown.js';
+
+
+const CATEGORY_OPTION = {
+    userStory: { value: 'user-story', label: 'User Story' },
+    technicalTask: { value: 'technical-task', label: 'Technical Task' },
+};
 
 
 // ── Priority ─────────────────────────────────────────────
@@ -171,7 +177,7 @@ function clearTaskForm(fields, root) {
  * Builds a plain task-data object from the current form state.
  * @param {ReturnType<typeof getFormFields>} fields
  * @param {ParentNode} root
- * @returns {{ title: string, description: string, dueDate: string, priority: string, type: string, assigned: object[], subtasks: string[] }}
+ * @returns {{ title: string, description: string, dueDate: string, priority: string, type: string, assigned: object[], subtasks: { title: string, done: boolean }[] }}
  */
 function collectTaskData(fields, root) {
     return {
@@ -190,11 +196,12 @@ function collectTaskData(fields, root) {
  * Maps collected form data to a Firebase-ready task object for the given column.
  * @param {ReturnType<typeof collectTaskData>} data
  * @param {string} column
+ * @param {string} [createdAt] - Keeps the original creation date when editing; defaults to today.
  * @returns {Object}
  */
-export function toFirebaseTask(data, column) {
+export function toFirebaseTask(data, column, createdAt = getTodayDateString()) {
     const subtasks = {};
-    data.subtasks.forEach((title, i) => { subtasks[`subtask${i + 1}`] = { title, done: false }; });
+    data.subtasks.forEach((s, i) => { subtasks[`subtask${i + 1}`] = { title: s.title, done: s.done }; });
     return {
         title: data.title,
         description: data.description,
@@ -203,7 +210,7 @@ export function toFirebaseTask(data, column) {
         column,
         assignedTo: data.assigned.map((c) => c.id),
         dueDate: data.dueDate,
-        createdAt: getTodayDateString(),
+        createdAt,
         subtasks,
     };
 }
@@ -217,12 +224,13 @@ export function toFirebaseTask(data, column) {
  * @param {ReturnType<typeof getFormFields>} fields
  * @param {ParentNode} root
  * @param {(data: ReturnType<typeof collectTaskData>) => void} [onSubmitSuccess]
+ * @param {string} successMessage
  */
-function handleSubmit(e, fields, root, onSubmitSuccess) {
+function handleSubmit(e, fields, root, onSubmitSuccess, successMessage) {
     e.preventDefault();
     if (!validateTaskForm(fields)) return;
     onSubmitSuccess?.(collectTaskData(fields, root));
-    showToast('Task added to board');
+    showToast(successMessage);
     clearTaskForm(fields, root);
     updateTaskBtn(e.submitter, fields);
 }
@@ -233,15 +241,16 @@ function handleSubmit(e, fields, root, onSubmitSuccess) {
  * @param {ParentNode} root
  * @param {(data: ReturnType<typeof collectTaskData>) => void} [onSubmitSuccess]
  * @param {() => void} [onCancel]
+ * @param {string} successMessage
  */
-function initTaskForm(root, onSubmitSuccess, onCancel) {
+function initTaskForm(root, onSubmitSuccess, onCancel, successMessage) {
     const form = root.querySelector('.task-form');
     if (!form) return;
     const fields = getFormFields(root);
     const submitBtn = form.querySelector('[type="submit"]');
     fields.dueDateInput.min = getTodayDateString();
     updateTaskBtn(submitBtn, fields);
-    wireTaskFormEvents(root, form, fields, submitBtn, onSubmitSuccess, onCancel);
+    wireTaskFormEvents(root, form, fields, submitBtn, onSubmitSuccess, onCancel, successMessage);
 }
 
 
@@ -253,17 +262,52 @@ function initTaskForm(root, onSubmitSuccess, onCancel) {
  * @param {HTMLButtonElement} submitBtn
  * @param {Function} [onSubmitSuccess]
  * @param {Function} [onCancel]
+ * @param {string} successMessage
  */
-function wireTaskFormEvents(root, form, fields, submitBtn, onSubmitSuccess, onCancel) {
+function wireTaskFormEvents(root, form, fields, submitBtn, onSubmitSuccess, onCancel, successMessage) {
     fields.titleInput.addEventListener('input', () => updateTaskBtn(submitBtn, fields));
     fields.categorySelect.addEventListener('input', () => updateTaskBtn(submitBtn, fields));
     fields.dueDateInput.addEventListener('change', () => {
         fields.dueDateInput.classList.toggle('has-value', !!fields.dueDateInput.value);
         updateTaskBtn(submitBtn, fields);
     });
-    form.addEventListener('submit', (e) => handleSubmit(e, fields, root, onSubmitSuccess));
-    form.querySelector('.clear-btn').addEventListener('click', () =>
+    form.addEventListener('submit', (e) => handleSubmit(e, fields, root, onSubmitSuccess, successMessage));
+    form.querySelector('.clear-btn')?.addEventListener('click', () =>
         onCancel ? onCancel() : clearTaskForm(fields, root));
+}
+
+
+/**
+ * Relabels the modal for edit mode: heading, a single "Ok" submit button, no cancel button.
+ * @param {ParentNode} root
+ */
+function relabelForEdit(root) {
+    const heading = root.querySelector('h1');
+    if (heading) heading.textContent = 'Edit Task';
+    const submitBtn = root.querySelector('.task-form [type="submit"]');
+    if (submitBtn?.firstChild) submitBtn.firstChild.textContent = 'Ok ';
+    root.querySelector('.clear-btn')?.remove();
+}
+
+
+/**
+ * Fills the form with an existing task's data for editing (all fields except
+ * assigned contacts, which are selected once the dropdown finishes loading).
+ * @param {ParentNode} root
+ * @param {Object} task
+ */
+function prefillTaskForm(root, task) {
+    const fields = getFormFields(root);
+    fields.titleInput.value = task.title;
+    root.querySelector('#task-description').value = task.description ?? '';
+    fields.dueDateInput.value = task.dueDate;
+    fields.dueDateInput.classList.add('has-value');
+    const priorityBtn = root.querySelector(`.priority-btn[data-priority="${task.priority}"]`);
+    if (priorityBtn) selectPriorityBtn(root, priorityBtn);
+    const opt = CATEGORY_OPTION[task.category] ?? CATEGORY_OPTION.userStory;
+    setCategoryOption(root, opt.value, opt.label);
+    setSubtasks(root, Object.values(task.subtasks ?? {}));
+    relabelForEdit(root);
 }
 
 
@@ -271,13 +315,16 @@ function wireTaskFormEvents(root, form, fields, submitBtn, onSubmitSuccess, onCa
  * Initializes the add-task form within the given root (the document for the
  * standalone page, or a modal's dialog element when reused inside one).
  * @param {ParentNode} root
- * @param {{ onSubmitSuccess?: (data: ReturnType<typeof collectTaskData>) => void, onCancel?: () => void }} [options]
+ * @param {{ onSubmitSuccess?: (data: ReturnType<typeof collectTaskData>) => void, onCancel?: () => void, editTask?: Object }} [options]
  */
-export function initAddTaskForm(root, { onSubmitSuccess, onCancel } = {}) {
+export function initAddTaskForm(root, { onSubmitSuccess, onCancel, editTask } = {}) {
     initDropdownAutoClose();
     initPriorityButtons(root);
     initCategoryDropdown(root);
-    initAssignedDropdown(root);
+    const assignedReady = initAssignedDropdown(root);
     initSubtaskInput(root);
-    initTaskForm(root, onSubmitSuccess, onCancel);
+    if (editTask) prefillTaskForm(root, editTask);
+    const successMessage = editTask ? 'Task updated' : 'Task added to board';
+    initTaskForm(root, onSubmitSuccess, onCancel, successMessage);
+    if (editTask) assignedReady.then(() => selectAssignedContacts(root, editTask.assignedTo ?? []));
 }
