@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
   <diagram name="Auth &amp; App Data Flow" id="auth-app-flow">
-    <mxGraphModel dx="3537" dy="2195" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1180" pageHeight="900" math="0" shadow="0">
+    <mxGraphModel dx="4008" dy="2454" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1180" pageHeight="900" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -219,6 +219,9 @@
         </mxCell>
         <mxCell id="n_config" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;verticalAlign=middle;spacing=8;fontSize=11;" value="js/firebase/config.js — DB_URL" vertex="1">
           <mxGeometry height="40" width="240" x="40" y="-50" as="geometry" />
+        </mxCell>
+        <mxCell id="Q0CCF3e28I7D-0UfYfZI-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;verticalAlign=top;spacing=8;fontSize=11;" value="&lt;b&gt;&lt;u&gt;memory&lt;/u&gt; &lt;/b&gt;spart Reparsing innerhalb einer Seite&lt;div&gt;&lt;b&gt;&lt;u&gt;sessionStorage&lt;/u&gt; &lt;/b&gt;spart Netzwerk-Calls zwischen Seiten.&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="480" x="-180" y="390" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
