@@ -117,7 +117,7 @@ body {
     /* TODO: var(--color-text-muted) */
     text-align: center;
     padding: 16px;
-    border-radius: 10px;
+    border-radius: var(--border-radius-md);
     pointer-events: none;
 }
 
@@ -130,7 +130,7 @@ body {
 
 .task-card {
     background-color: white;
-    border-radius: 24px;
+    border-radius: var(--border-radius-xl);
     padding: 16px;
     margin-bottom: 16px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
@@ -144,17 +144,37 @@ body {
 }
 
 .task-card.dragging {
-    transform: rotate(3deg) scale(1.04);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
-    opacity: 0.85;
+    background-color: transparent;
+    border: 2px dashed var(--color-border);
+    box-shadow: none;
     cursor: grabbing;
 }
 
+.task-card.dragging * {
+    visibility: hidden;
+}
+
+.task-card.drag-image {
+    transform: rotate(3deg) scale(1.04);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    pointer-events: none;
+    z-index: 1000;
+    margin: 0;
+}
+
+.drop-indicator {
+    border-radius: var(--border-radius-xl);
+    border: 2px dashed var(--color-accent);
+    background: rgba(41, 171, 226, 0.08);
+    margin-bottom: 16px;
+}
+
 .task-category {
+    max-width: fit-content;
     display: inline-block;
     color: white;
     padding: 5px 16px;
-    border-radius: 8px;
+    border-radius: var(--border-radius-sm);
     font-size: 14px;
     margin-bottom: 16px;
 }
@@ -191,7 +211,7 @@ body {
     flex: 1;
     height: 8px;
     background-color: #f4f4f4;
-    border-radius: 8px;
+    border-radius: var(--border-radius-sm);
     overflow: hidden;
 }
 
@@ -374,7 +394,7 @@ body {
 
 .drag-area.drag-over {
     background-color: #e7f3ff;
-    border-radius: 16px;
+    border-radius: var(--border-radius-xl);
     border: 2px dashed #4589ff;
     transition: background-color 0.2s ease;
 }

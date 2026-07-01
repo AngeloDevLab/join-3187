@@ -5,7 +5,10 @@ import { initAddTaskForm, toFirebaseTask } from '../components/add-task-form.js'
 import { openTaskDetailModal } from '../components/task-detail-modal.js';
 import { showToast } from '../components/toast.js';
 import { getTasks, getContacts, saveTask, updateTask, removeTask } from '../firebase/cache.js';
-import { getAvatarColorForId, getInitials, PRIORITY_META, escapeHtml, getSubtaskProgress } from '../utils/helpers.js';
+import { getAvatarColorForId, getInitials, computeOrderBetween } from '../utils/helpers.js';
+import { startDragGhost, stopDragGhost } from '../components/drag-ghost.js';
+import { updateDropIndicator, clearDropIndicator, getDropNeighbors } from '../components/drop-indicator.js';
+import { generateTodoHtml } from '../components/task-card.js';
 
 const CATEGORY_LABEL = { userStory: 'User Story', technicalTask: 'Technical Task' };
 
@@ -52,6 +55,7 @@ function toDisplayTodo(id, task, contacts) {
     return {
         id,
         column: task.column,
+        order: task.order ?? 0,
         title: task.title,
         description: task.description,
         type: CATEGORY_LABEL[task.category] ?? task.category,
@@ -98,7 +102,7 @@ function updateSearchMessage(resultCount) {
  * @param {Array} todos
  */
 function renderColumn(category, todos) {
-    const column = todos.filter((t) => t.column === category);
+    const column = todos.filter((t) => t.column === category).sort((a, b) => a.order - b.order);
     const container = document.getElementById(category);
     container.innerHTML = '';
     if (column.length === 0) {
@@ -111,82 +115,12 @@ function renderColumn(category, todos) {
 
 
 /**
- * Returns avatar markup for a task's assigned contacts.
- * @param {{ assigned: { initials: string, color: string }[] }} todo
- * @returns {string}
- */
-function buildAvatarsHtml(todo) {
-    return todo.assigned
-        .map((c) => `<span class="avatar" style="background:${c.color}">${escapeHtml(c.initials)}</span>`)
-        .join('');
-}
-
-
-/**
- * Returns the subtasks progress row markup for a task card, or '' when there are none.
- * @param {{ done: boolean }[]} subtasks
- * @returns {string}
- */
-function buildSubtasksRowHtml(subtasks) {
-    if (!subtasks.length) return '';
-    const { done, total, percent } = getSubtaskProgress(subtasks);
-    return `<div class="progress-row"><div class="progress-bar"><div style="width:${percent}%"></div></div><span>${done}/${total} Subtasks</span></div>`;
-}
-
-
-/**
- * Returns the HTML markup for a single task card.
- * @param {{ id: string, title: string, description: string, type: string, subtasks: object[], priority: string }} todo
- * @returns {string}
- */
-function generateTodoHtml(todo) {
-    const categoryClass = todo.type === 'User Story' ? 'user-story' : 'technical';
-    const title = escapeHtml(todo.title);
-    const description = escapeHtml(todo.description);
-    const subtasksHtml = buildSubtasksRowHtml(todo.subtasks);
-    return `<div class="task-card" data-id="${todo.id}" draggable="true" ondragstart="startDragging(event, '${todo.id}')" ondragend="stopDragging(event)">
-    <div class="card-header">
-        <span class="task-category ${categoryClass}">${todo.type}</span>
-        <img src="../assets/icons/move.svg" alt="Move Icon Mobile" class="move-button" onclick="toggleCategoryNav(event)" tabindex="0">
-                <nav class="category-nav">
-                 <h3>Move To</h3>
-                    <ul>
-                        <li onclick="moveToFromNav('todo', '${todo.id}')">Todo</li>
-                        <li onclick="moveToFromNav('inProgress', '${todo.id}')">In Progress</li>
-                        <li onclick="moveToFromNav('awaitFeedback', '${todo.id}')">Await Feedback</li>
-                        <li onclick="moveToFromNav('done', '${todo.id}')">Done</li>
-                    </ul>
-                </nav>
-        </div>
-        <h4>${title}</h4>
-        <p>${description}</p>
-        ${subtasksHtml}
-        <div class="card-bottom">
-            <div>${buildAvatarsHtml(todo)}</div>
-            <span class="priority">${buildPriorityIconHtml(todo.priority)}</span>
-        </div>
-    </div>`;
-}
-
-
-/**
- * Returns the priority icon markup for a task card.
- * @param {string} priority - 'urgent' | 'medium' | 'low'
- * @returns {string}
- */
-function buildPriorityIconHtml(priority) {
-    const meta = PRIORITY_META[priority] ?? PRIORITY_META.medium;
-    return `<img src="${meta.icon}" alt="${meta.label}" width="18" height="14">`;
-}
-
-
-/**
  * Moves a task by id to a category (Klick statt Drag&Drop) and persists it.
  * @param {string} category
  * @param {string} id
  */
 async function moveToFromNav(category, id) {
-    await updateTask(id, { column: category });
+    await updateTask(id, { column: category, order: Date.now() });
     await updateHtml();
 }
 
@@ -202,25 +136,35 @@ function toggleCategoryNav(event) {
 
 
 /**
- * Stores the dragged task id and applies the tilt animation to the card.
+ * Stores the dragged task id, marks the card as dragging and starts the floating drag ghost.
  * @param {DragEvent} event
  * @param {string} id
  */
 function startDragging(event, id) {
     currentDraggedElement = id;
+    startDragGhost(event, event.currentTarget);
     event.currentTarget.classList.add('dragging');
 }
 
 
 /**
- * Removes the tilt animation from the released card.
+ * Restores the released card and removes the floating drag ghost.
  * @param {DragEvent} event
  */
-function stopDragging(event) { event.currentTarget.classList.remove('dragging'); }
+function stopDragging(event) {
+    event.currentTarget.classList.remove('dragging');
+    stopDragGhost();
+}
 
 
-/** @param {DragEvent} event */
-function allowDrop(event) { event.preventDefault(); }
+/**
+ * Allows the drop and moves the insertion indicator to the closest position.
+ * @param {DragEvent} event
+ */
+function allowDrop(event) {
+    event.preventDefault();
+    updateDropIndicator(event.currentTarget, event.clientY);
+}
 
 
 /**
@@ -237,17 +181,29 @@ function highlightColumn(id) { document.getElementById(id).classList.add('drag-o
  */
 function unhighlightColumn(event, id) {
     const container = document.getElementById(id);
-    if (!container.contains(event.relatedTarget)) container.classList.remove('drag-over');
+    if (!container.contains(event.relatedTarget)) {
+        container.classList.remove('drag-over');
+        clearDropIndicator();
+    }
 }
 
 
 /**
- * Persists the dragged task's new column and re-renders.
+ * Persists the dragged task's new column and order (from the drop indicator position), then re-renders.
+ * Does nothing if the card was dropped back onto its original position.
  * @param {string} category
  */
 async function moveTo(category) {
     document.getElementById(category).classList.remove('drag-over');
-    await updateTask(currentDraggedElement, { column: category });
+    const neighbors = getDropNeighbors();
+    clearDropIndicator();
+    if (!neighbors) return;
+    const before = allTodos.find((t) => t.id === neighbors.beforeId)?.order;
+    const after = allTodos.find((t) => t.id === neighbors.afterId)?.order;
+    const order = computeOrderBetween(before, after);
+    const todo = allTodos.find((t) => t.id === currentDraggedElement);
+    if (todo) { todo.column = category; todo.order = order; renderBoard(); }
+    await updateTask(currentDraggedElement, { column: category, order });
     await updateHtml();
 }
 
@@ -259,7 +215,7 @@ async function moveTo(category) {
  * @param {() => void} close
  */
 async function handleNewTask(data, status, close) {
-    await saveTask(toFirebaseTask(data, status));
+    await saveTask({ ...toFirebaseTask(data, status), order: Date.now() });
     await updateHtml();
     close();
 }
