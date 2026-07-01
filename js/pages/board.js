@@ -17,12 +17,22 @@ let categoryMessages = {
 };
 
 let currentDraggedElement;
+let allTodos = [];
+let currentSearchTerm = '';
 
 /** Loads tasks and contacts from Firebase, then renders all four board columns. */
 async function updateHtml() {
     const tasks = (await getTasks()) || {};
     const contacts = (await getContacts()) || {};
-    const todos = Object.entries(tasks).map(([id, task]) => toDisplayTodo(id, task, contacts));
+    allTodos = Object.entries(tasks).map(([id, task]) => toDisplayTodo(id, task, contacts));
+    renderBoard();
+}
+
+
+/** Renders the board with the currently active search term. */
+function renderBoard() {
+    const todos = filterTodos(allTodos, currentSearchTerm);
+    updateSearchMessage(todos.length);
     renderColumn('todo', todos);
     renderColumn('inProgress', todos);
     renderColumn('awaitFeedback', todos);
@@ -57,6 +67,32 @@ function toDisplayTodo(id, task, contacts) {
 
 
 /**
+ * Returns tasks whose title or description contains the search term.
+ * @param {Array} todos
+ * @param {string} searchTerm
+ * @returns {Array}
+ */
+function filterTodos(todos, searchTerm) {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return todos;
+    return todos.filter((todo) =>
+        (todo.title ?? '').toLowerCase().includes(term) ||
+        (todo.description ?? '').toLowerCase().includes(term));
+}
+
+
+/**
+ * Shows a message when an active search has no results.
+ * @param {number} resultCount
+ */
+function updateSearchMessage(resultCount) {
+    const message = document.getElementById('boardSearchMessage');
+    if (!message) return;
+    message.hidden = !currentSearchTerm.trim() || resultCount > 0;
+}
+
+
+/**
  * Renders all tasks for a given category into its column container.
  * @param {string} category
  * @param {Array} todos
@@ -66,7 +102,8 @@ function renderColumn(category, todos) {
     const container = document.getElementById(category);
     container.innerHTML = '';
     if (column.length === 0) {
-        container.innerHTML = `<div class="empty-task">${categoryMessages[category]}</div>`
+        const message = currentSearchTerm.trim() ? 'No matching tasks' : categoryMessages[category];
+        container.innerHTML = `<div class="empty-task">${message}</div>`;
         return;
     }
     column.forEach((todo) => { container.innerHTML += generateTodoHtml(todo); });
@@ -298,6 +335,17 @@ function initCardDetailClick() {
 }
 
 
+/** Wires the board search input to filter tasks while typing. */
+function initBoardSearch() {
+    const searchInput = document.getElementById('boardSearch');
+    if (!searchInput) return;
+    searchInput.addEventListener('input', () => {
+        currentSearchTerm = searchInput.value;
+        renderBoard();
+    });
+}
+
+
 /** Wires every "+" trigger on the board to open the Add Task modal for its column. */
 function initAddTaskButtons() {
     document.querySelectorAll('[data-status]').forEach((btn) =>
@@ -316,5 +364,6 @@ window.toggleCategoryNav = toggleCategoryNav;
 
 initNavbar();
 updateHtml();
+initBoardSearch();
 initAddTaskButtons();
 initCardDetailClick();
