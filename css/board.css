@@ -134,6 +134,7 @@ body {
         transform 0.15s ease,
         box-shadow 0.15s ease,
         opacity 0.15s ease;
+        word-break: break-word;
 }
 
 .task-card.dragging {
