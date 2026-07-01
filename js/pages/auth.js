@@ -91,7 +91,7 @@ function updatePasswordToggle(input, button, icon) {
     if (!input.value) {
         input.type = 'password';
         button.disabled = true;
-        button.removeAttribute('aria-label');
+        button.setAttribute('aria-label', PASSWORD_ICON.hidden.label);
         icon.src = PASSWORD_ICON.static;
         return;
     }
