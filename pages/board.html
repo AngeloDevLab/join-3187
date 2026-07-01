@@ -61,7 +61,7 @@
                     <h1>Board</h1>
 
                     <div class="search-wrapper">
-                        <input type="text" placeholder="Find Task" />
+                        <input type="text" id="boardSearch" placeholder="Find Task" />
                         <div class="linediv"></div>
                         <img src="../assets/icons/search.svg" alt="search" class="search-icon" />
                     </div>
@@ -70,6 +70,8 @@
                         <span class="add-task-trigger-label">Add task</span> +
                     </button>
                 </div>
+
+                <p class="board-search-message" id="boardSearchMessage" hidden>No matching tasks found.</p>
 
                 <div class="board-columns">
                     <div class="board-column">
