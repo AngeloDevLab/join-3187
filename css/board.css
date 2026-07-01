@@ -500,6 +500,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
+    word-break: break-word;
 }
 
 .task-detail-close {
