@@ -370,13 +370,41 @@ body {
     background-color: #29abe2;
 }
 
-.contact-edit-form,
 .contact-delete-content {
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 24px;
     padding: 72px 48px 48px;
+}
+
+.contact-edit-form {
+    position: relative;
+    display: grid;
+    grid-template-columns: 100px minmax(280px, 1fr);
+    align-items: center;
+    gap: 32px;
+    padding: 72px 48px 48px;
+}
+
+.contact-edit-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    color: white;
+    border: 3px solid white;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    flex-shrink: 0;
+}
+
+.contact-edit-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
 .contact-edit-form input {
@@ -397,6 +425,10 @@ body {
     grid-template-columns: minmax(280px, 370px) minmax(420px, 1fr);
     width: min(960px, 100%);
     min-height: 468px;
+}
+
+.contact-edit-overlay {
+    width: min(1000px, 100%);
 }
 
 .contact-add-overlay .contact-overlay-brand {
@@ -542,6 +574,14 @@ body {
         transform: translateY(120px);
     }
 
+    .contact-overlay-backdrop:has(.contact-edit-overlay) {
+        align-items: center;
+    }
+
+    .contact-edit-overlay {
+        width: min(440px, 100%);
+    }
+
     .contact-overlay-open .contact-overlay,
     .contact-overlay-open .contact-add-overlay,
     .contact-overlay-open .contact-edit-overlay,
@@ -565,9 +605,29 @@ body {
         color: white;
     }
 
-    .contact-edit-form,
     .contact-delete-content {
         padding: 32px 24px;
+    }
+
+    .contact-edit-form {
+        display: flex;
+        flex-direction: column;
+        padding: 82px 24px 32px;
+    }
+
+    .contact-edit-avatar {
+        position: absolute;
+        top: -55px;
+        left: 50%;
+        width: 104px;
+        height: 104px;
+        font-size: 34px;
+        transform: translateX(-50%);
+    }
+
+    .contact-edit-fields {
+        width: 100%;
+        gap: 14px;
     }
 
     .contact-add-overlay .contact-overlay-brand {
