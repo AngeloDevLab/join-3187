@@ -440,7 +440,8 @@ body {
     }
 
     .task-card {
-        max-width: 280px;
+        width: 280px;
+        max-width: 100%;
         min-height: 170px;
     }
 
