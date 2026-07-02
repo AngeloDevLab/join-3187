@@ -143,6 +143,10 @@ body {
         word-break: break-word;
 }
 
+.task-card:hover {
+       transform: scale(1.05);
+    }
+
 .task-card.dragging {
     transform: rotate(3deg) scale(1.04);
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
@@ -450,6 +454,8 @@ body {
         max-width: 100%;
         min-height: 170px;
     }
+
+  
 
     .board-column {
         width: 100%;
