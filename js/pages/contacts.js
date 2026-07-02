@@ -63,7 +63,7 @@ async function renderContacts() {
  */
 function groupByFirstLetter(list) {
     return list.reduce((groups, contact) => {
-        const letter = contact.name.charAt(0);
+        const letter = contact.name.charAt(0).toUpperCase();;
         if (!groups[letter]) groups[letter] = [];
         groups[letter].push(contact);
         return groups;
