@@ -11,7 +11,7 @@ document.querySelectorAll('.summary-card').forEach(element => {
     window.location.href = './board.html';
   });
   element.addEventListener('keydown', (event) => { 
-    if (event.key === 'Enter' || event.key === ' ') {   
+    if (event.key === 'Enter') {   
       event.preventDefault();                        
       window.location.href = './board.html';     
     }
