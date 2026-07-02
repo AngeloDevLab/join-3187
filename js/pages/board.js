@@ -144,19 +144,12 @@ function generateTodoHtml(todo) {
     const title = escapeHtml(todo.title);
     const description = escapeHtml(todo.description);
     const subtasksHtml = buildSubtasksRowHtml(todo.subtasks);
+    const navHtml = buildMoveNavHtml(todo);
     return `<div class="task-card" data-id="${todo.id}" draggable="true" ondragstart="startDragging(event, '${todo.id}')" ondragend="stopDragging(event)">
     <div class="card-header">
         <span class="task-category ${categoryClass}">${todo.type}</span>
         <img src="../assets/icons/move.svg" alt="Move Icon Mobile" class="move-button" onclick="toggleCategoryNav(event)" tabindex="0">
-                <nav class="category-nav">
-                 <h3>Move To</h3>
-                    <ul>
-                        <li onclick="moveToFromNav('todo', '${todo.id}')">Todo</li>
-                        <li onclick="moveToFromNav('inProgress', '${todo.id}')">In Progress</li>
-                        <li onclick="moveToFromNav('awaitFeedback', '${todo.id}')">Await Feedback</li>
-                        <li onclick="moveToFromNav('done', '${todo.id}')">Done</li>
-                    </ul>
-                </nav>
+                ${navHtml}
         </div>
         <h4>${title}</h4>
         <p>${description}</p>
@@ -166,6 +159,16 @@ function generateTodoHtml(todo) {
             <span class="priority">${buildPriorityIconHtml(todo.priority)}</span>
         </div>
     </div>`;
+}
+
+// Filters the actual Category in the Move menu
+function buildMoveNavHtml(todo) {
+    let options = { todo: 'Todo', inProgress: 'In Progress', awaitFeedback: 'Await Feedback', done: 'Done' };
+    let items = Object.entries(options)
+        .filter(([key]) => key !== todo.column)
+        .map(([key, label]) => `<li onclick="moveToFromNav('${key}', '${todo.id}')">${label}</li>`)
+        .join('');
+    return `<nav class="category-nav"><h3>Move To</h3><ul>${items}</ul></nav>`;
 }
 
 
@@ -197,7 +200,21 @@ async function moveToFromNav(category, id) {
  */
 function toggleCategoryNav(event) {
     let nav = event.target.nextElementSibling;
-    nav.style.display = nav.style.display === 'block' ? 'inherit' : 'block';
+    let isOpen = nav.style.display === 'block';
+    closeAllNavs();
+    nav.style.display = isOpen ? 'none' : 'block';
+    event.stopPropagation();
+}
+
+// NEU: zentrale Close-Funktion
+function closeAllNavs() {
+    document.querySelectorAll('.category-nav').forEach(nav => {
+        nav.style.display = 'none';
+    });
+}
+
+function initNavListeners() {
+    document.addEventListener('click', closeAllNavs); // NEU: einmalige Registrierung
 }
 
 
@@ -367,3 +384,4 @@ updateHtml();
 initBoardSearch();
 initAddTaskButtons();
 initCardDetailClick();
+initNavListeners();
