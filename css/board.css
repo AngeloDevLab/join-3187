@@ -155,6 +155,7 @@ body {
 }
 
 .task-category {
+    max-width: fit-content;
     display: inline-block;
     color: white;
     padding: 5px 16px;
@@ -225,38 +226,6 @@ body {
     margin-right: -8px;
     border: 1px solid white;
 }
-
-/* TODO: add avatar color variables to variables.css */
-.orange {
-    background-color: #ff7a00;
-}
-
-.green {
-    background-color: #1fd7c1;
-}
-
-/* TODO: same as var(--category-technical-task) */
-.purple {
-    background-color: #462f8a;
-}
-
-.priority {
-    color: #ffb800;
-    font-weight: bold;
-    font-size: 22px;
-}
-
-.green-text {
-    color: #7ae229;
-}
-
-/* TODO: var(--priority-low) */
-.red-text {
-    color: #ff3d00;
-}
-
-/* TODO: var(--priority-urgent) */
-
 
 .move-button {
     display: none;
@@ -455,8 +424,6 @@ body {
         min-height: 170px;
     }
 
-  
-
     .board-column {
         width: 100%;
     }
@@ -503,25 +470,25 @@ body {
 /* ── Task Detail Modal ───────────────────────────────────── */
 
 .task-detail {
-    width: 525px;
-    max-width: 90vw;
+    width: 460px;
     max-height: 90vh;
-    padding: clamp(var(--space-sm), 4vw, var(--space-xl));
+    padding: clamp(var(--space-sm), 4vw, var(--space-lg));
     overflow-y: auto;
-    box-sizing: border-box;
-    position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
     word-break: break-word;
 }
 
+.task-header{
+    display: flex;
+    justify-content: space-between;
+}
+
 .task-detail-close {
-    position: absolute;
-    top: 24px;
-    right: 24px;
     width: 32px;
     height: 32px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -539,20 +506,20 @@ body {
 }
 
 .task-detail-title {
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    color: var(--color-primary);
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    color: var(--color-text);
     margin: 0;
 }
 
 .task-detail-description {
-    color: var(--color-text-muted);
-    font-size: 15px;
+    color: var(--color-text);
+    font-size: 1rem;
     line-height: 1.5;
     margin: 0;
 }
 
 .task-detail-label {
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-regular);
     color: var(--color-primary);
     margin: 0;
 }
@@ -610,10 +577,6 @@ body {
     font-weight: var(--font-weight-medium);
 }
 
-.priority-chip--urgent { background: #fff1ee; color: var(--priority-urgent); }
-.priority-chip--medium { background: #fff8e7; color: var(--priority-medium); }
-.priority-chip--low    { background: #f0faeb; color: var(--priority-low); }
-
 .task-detail-actions {
     display: flex;
     align-items: center;
@@ -621,7 +584,6 @@ body {
     gap: var(--space-sm);
     margin-top: auto;
     padding-top: var(--space-md);
-    border-top: 1px solid var(--color-border);
 }
 
 .task-detail-action {
