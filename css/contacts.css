@@ -354,13 +354,13 @@ body {
 
 .contact-overlay-brand h2 {
     margin: 0;
-    font-size: clamp(36px, 5vw, 61px);
+    font-size: clamp(2rem, 6vw, 2.5rem);
     line-height: 1.05;
 }
 
 .contact-overlay-brand p {
     margin: 12px 0 0;
-    font-size: clamp(18px, 2vw, 24px);
+    font-size: clamp(18px, 2vw, 18px);
 }
 
 .contact-overlay-brand div {
