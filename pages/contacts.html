@@ -154,7 +154,7 @@
                         </label>
                         <label class="contact-input-wrapper">
                             <input id="addContactPhone" type="tel" placeholder="Phone" autocomplete="tel" required>
-                            <span aria-hidden="true">&#9742;</span>
+                            <img src="../assets/icons/call.svg" alt="">
                         </label>
                         <div class="contact-overlay-actions contact-add-actions">
                             <button type="button" class="contact-secondary-btn" onclick="closeContactOverlay()">Cancel &times;</button>
@@ -178,12 +178,23 @@
                 <form class="contact-edit-form">
                     <div class="contact-edit-avatar"></div>
                     <div class="contact-edit-fields">
-                        <input id="editContactName" class="contact-edit-name-input" type="text" placeholder="Name" autocomplete="name" required>
-                        <input id="editContactEmail" class="contact-edit-email-input" type="email" placeholder="Email" autocomplete="email" required>
-                        <input id="editContactPhone" class="contact-edit-phone-input" type="tel" placeholder="Phone" autocomplete="tel" required>
+                        
+                      
+                             <label class="contact-input-wrapper">
+                           <input id="editContactName" class="contact-edit-name-input" type="text" placeholder="Name" autocomplete="name" required>
+                            <img src="../assets/icons/person.svg" alt="">
+                        </label>
+                        <label class="contact-input-wrapper">
+                           <input id="editContactEmail" class="contact-edit-email-input" type="email" placeholder="Email" autocomplete="email" required>
+                            <img src="../assets/icons/mail.svg" alt="">
+                        </label>
+                        <label class="contact-input-wrapper">
+                              <input id="editContactPhone" class="contact-edit-phone-input" type="tel" placeholder="Phone" autocomplete="tel" required>
+                            <img src="../assets/icons/call.svg" alt="">
+                        </label>
                         <div class="contact-overlay-actions">
                             <button type="button" class="contact-secondary-btn contact-edit-delete-btn">Delete</button>
-                            <button type="submit" class="contact-primary-btn">Save</button>
+                            <button type="submit" class="contact-primary-btn">Save &#10003;</button>
                         </div>
                     </div>
                 </form>
