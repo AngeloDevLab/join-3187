@@ -18,7 +18,7 @@
     justify-content: center;
     width: 32px;
     height: 32px;
-    padding: 4px;
+    padding: var(--space-xs);
     border: none;
     border-radius: 50%;
     background: none;
@@ -79,7 +79,6 @@
 }
 
 .help-step-body h3 {
-    font-size: clamp(1.25rem, 6vw, 1.75rem);
     line-height: 1.2;
     margin: 0 0 var(--space-xs);
 }

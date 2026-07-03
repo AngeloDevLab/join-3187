@@ -3,6 +3,7 @@ import { initNavbar } from '../components/navbar.js';
 import { getCurrentUser } from '../firebase/auth.js';
 import { getAvatarColorForId, getInitials } from '../utils/helpers.js';
 import { getContacts, saveContact, updateContact, removeContact } from '../firebase/cache.js';
+import { getAddContactFields, getEditContactFields, validateContactFields } from '../components/contact-form.js';
 
 let activeContactId = null;
 
@@ -284,12 +285,14 @@ function buildDeleteContactOverlayNode(contact) {
  */
 async function createContact(event) {
     event.preventDefault();
-    const name = document.getElementById('addContactName').value.trim();
-    const email = document.getElementById('addContactEmail').value.trim();
-    const phone = document.getElementById('addContactPhone').value.trim();
-    if (!name || !email || !phone) return;
+    const fields = getAddContactFields();
+    if (!validateContactFields(fields)) return;
 
-    const id = await saveContact({ name, email, phone });
+    const id = await saveContact({
+        name: fields.nameInput.value.trim(),
+        email: fields.emailInput.value.trim(),
+        phone: fields.phoneInput.value.trim(),
+    });
     closeContactOverlay();
     await renderContacts();
     await showContactDetails(id);
@@ -303,13 +306,14 @@ async function createContact(event) {
  */
 async function saveEditedContact(event, contactId) {
     event.preventDefault();
-    const data = {
-        name: document.getElementById('editContactName').value.trim(),
-        email: document.getElementById('editContactEmail').value.trim(),
-        phone: document.getElementById('editContactPhone').value.trim(),
-    };
+    const fields = getEditContactFields();
+    if (!validateContactFields(fields)) return;
 
-    await updateContact(contactId, data);
+    await updateContact(contactId, {
+        name: fields.nameInput.value.trim(),
+        email: fields.emailInput.value.trim(),
+        phone: fields.phoneInput.value.trim(),
+    });
     closeContactOverlay();
     await renderContacts();
     await showContactDetails(contactId);

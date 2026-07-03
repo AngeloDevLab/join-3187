@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="../css/global/layout.css">
     <link rel="stylesheet" href="../css/global/navbar.css">
     <link rel="stylesheet" href="../css/global/buttons.css">
+    <link rel="stylesheet" href="../css/global/avatar.css">
+    <link rel="stylesheet" href="../css/global/inputs.css">
     <link rel="stylesheet" href="../css/contacts.css">
 </head>
 <body>
@@ -76,7 +78,7 @@
 
     <template id="contactCardTemplate">
         <div class="contact-card">
-            <div class="contact-avatar"></div>
+            <div class="contact-avatar avatar-circle"></div>
             <div>
                 <h4 class="contact-card-name"></h4>
                 <a class="contact-card-email"></a>
@@ -94,7 +96,7 @@
         </div>
         <div id="contactDetailsCard" class="contact-details-card d-none">
             <div class="contact-details-profile">
-                <div class="contact-details-avatar"></div>
+                <div class="contact-details-avatar avatar-circle"></div>
                 <div class="contact-details-name-actions">
                     <h2 class="contact-details-name"></h2>
                     <div class="desktop-contact-actions">
@@ -138,27 +140,36 @@
                     <p>Tasks are better with a team!</p>
                     <div></div>
                 </div>
-                <form class="contact-edit-form contact-add-form" onsubmit="createContact(event)">
-                    <div class="contact-add-avatar" aria-hidden="true">
+                <form class="contact-edit-form contact-add-form" onsubmit="createContact(event)" novalidate>
+                    <div class="contact-add-avatar avatar-circle" aria-hidden="true">
                         <img src="../assets/icons/person.svg" alt="">
                     </div>
                     <div class="contact-add-fields">
                         <button type="button" class="close-btn" aria-label="Close" onclick="closeContactOverlay()">✕</button>
-                        <label class="contact-input-wrapper">
-                            <input id="addContactName" type="text" placeholder="Name" autocomplete="name" required>
-                            <img src="../assets/icons/person.svg" alt="">
-                        </label>
-                        <label class="contact-input-wrapper">
-                            <input id="addContactEmail" type="email" placeholder="Email" autocomplete="email" required>
-                            <img src="../assets/icons/mail.svg" alt="">
-                        </label>
-                        <label class="contact-input-wrapper">
-                            <input id="addContactPhone" type="tel" placeholder="Phone" autocomplete="tel" required>
-                            <img src="../assets/icons/call.svg" alt="">
-                        </label>
+                        <div class="input-field">
+                            <label class="input-wrapper">
+                                <input id="addContactName" type="text" placeholder="Name" autocomplete="name" required>
+                                <img src="../assets/icons/person.svg" alt="" class="input-icon">
+                            </label>
+                            <p class="input-error-msg" id="addContactNameError"></p>
+                        </div>
+                        <div class="input-field">
+                            <label class="input-wrapper">
+                                <input id="addContactEmail" type="email" placeholder="Email" autocomplete="email" required>
+                                <img src="../assets/icons/mail.svg" alt="" class="input-icon">
+                            </label>
+                            <p class="input-error-msg" id="addContactEmailError"></p>
+                        </div>
+                        <div class="input-field">
+                            <label class="input-wrapper">
+                                <input id="addContactPhone" type="tel" placeholder="Phone" autocomplete="tel" required>
+                                <img src="../assets/icons/call.svg" alt="" class="input-icon">
+                            </label>
+                            <p class="input-error-msg" id="addContactPhoneError"></p>
+                        </div>
                         <div class="contact-overlay-actions contact-add-actions">
-                            <button type="button" class="contact-secondary-btn" onclick="closeContactOverlay()">Cancel &times;</button>
-                            <button type="submit" class="contact-primary-btn">Create contact &#10003;</button>
+                            <button type="button" class="btn btn-secondary" onclick="closeContactOverlay()">Cancel &times;</button>
+                            <button type="submit" class="btn btn-primary">Create contact &#10003;</button>
                         </div>
                     </div>
                 </form>
@@ -175,25 +186,34 @@
                     <h2>Edit contact</h2>
                     <div></div>
                 </div>
-                <form class="contact-edit-form">
-                    <div class="contact-edit-avatar"></div>
+                <form class="contact-edit-form" novalidate>
+                    <div class="contact-edit-avatar avatar-circle"></div>
                     <div class="contact-edit-fields">
                         <button type="button" class="close-btn" aria-label="Close" onclick="closeContactOverlay()">✕</button>
-                             <label class="contact-input-wrapper">
-                           <input id="editContactName" class="contact-edit-name-input" type="text" placeholder="Name" autocomplete="name" required>
-                            <img src="../assets/icons/person.svg" alt="">
-                        </label>
-                        <label class="contact-input-wrapper">
-                           <input id="editContactEmail" class="contact-edit-email-input" type="email" placeholder="Email" autocomplete="email" required>
-                            <img src="../assets/icons/mail.svg" alt="">
-                        </label>
-                        <label class="contact-input-wrapper">
-                              <input id="editContactPhone" class="contact-edit-phone-input" type="tel" placeholder="Phone" autocomplete="tel" required>
-                            <img src="../assets/icons/call.svg" alt="">
-                        </label>
+                        <div class="input-field">
+                            <label class="input-wrapper">
+                                <input id="editContactName" class="contact-edit-name-input" type="text" placeholder="Name" autocomplete="name" required>
+                                <img src="../assets/icons/person.svg" alt="" class="input-icon">
+                            </label>
+                            <p class="input-error-msg" id="editContactNameError"></p>
+                        </div>
+                        <div class="input-field">
+                            <label class="input-wrapper">
+                                <input id="editContactEmail" class="contact-edit-email-input" type="email" placeholder="Email" autocomplete="email" required>
+                                <img src="../assets/icons/mail.svg" alt="" class="input-icon">
+                            </label>
+                            <p class="input-error-msg" id="editContactEmailError"></p>
+                        </div>
+                        <div class="input-field">
+                            <label class="input-wrapper">
+                                <input id="editContactPhone" class="contact-edit-phone-input" type="tel" placeholder="Phone" autocomplete="tel" required>
+                                <img src="../assets/icons/call.svg" alt="" class="input-icon">
+                            </label>
+                            <p class="input-error-msg" id="editContactPhoneError"></p>
+                        </div>
                         <div class="contact-overlay-actions">
-                            <button type="button" class="contact-secondary-btn contact-edit-delete-btn">Delete</button>
-                            <button type="submit" class="contact-primary-btn">Save &#10003;</button>
+                            <button type="button" class="btn btn-secondary contact-edit-delete-btn">Delete</button>
+                            <button type="submit" class="btn btn-primary">Save &#10003;</button>
                         </div>
                     </div>
                 </form>
@@ -204,7 +224,7 @@
     <template id="deleteContactOverlayTemplate">
         <div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
             <section class="contact-overlay contact-delete-overlay" onclick="event.stopPropagation()">
-                <button class="contact-overlay-close" onclick="closeContactOverlay()" aria-label="Close">&times;</button>
+                <button type="button" class="close-btn" aria-label="Close" onclick="closeContactOverlay()">✕</button>
                 <div class="contact-overlay-brand">
                     <img src="../assets/icons/join_logo.svg" alt="Join">
                     <h2>Delete contact</h2>
@@ -213,8 +233,8 @@
                 <div class="contact-delete-content">
                     <p class="contact-delete-message"></p>
                     <div class="contact-overlay-actions">
-                        <button type="button" class="contact-secondary-btn" onclick="closeContactOverlay()">Cancel</button>
-                        <button type="button" class="contact-primary-btn contact-delete-confirm-btn">Delete</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeContactOverlay()">Cancel</button>
+                        <button type="button" class="btn btn-primary contact-delete-confirm-btn">Delete</button>
                     </div>
                 </div>
             </section>
