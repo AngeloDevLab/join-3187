@@ -1,0 +1,8 @@
+.avatar-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--color-white);
+    flex-shrink: 0;
+}

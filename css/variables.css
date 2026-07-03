@@ -1,8 +1,17 @@
+/*
+ * Breakpoint convention (documented here since plain CSS custom properties
+ * cannot be referenced inside @media conditions):
+ * 1024px — primary desktop/tablet split (contacts, add-task, layout, navbar, summary)
+ * 768px  — secondary tier (auth, summary)
+ * 530px  — auth-specific fine breakpoint
+ * 700px  — shared modal full-screen breakpoint (global/modal.css + board.css)
+ */
 :root {
     /* Brand */
     --color-primary: #2a3647;
     --color-primary-dark: #091931;
     --color-accent: #29abe2;
+    --color-accent-rgb: 41, 171, 226;
 
     /* Backgrounds */
     --color-bg: #f6f7f8;
@@ -38,6 +47,8 @@
 
     /* Spacing */
     --space-xs: 4px;
+    /* sits between xs and sm — name isn't strictly size-ordered */
+    --space-2xs: 8px;
     --space-sm: 16px;
     --space-md: 24px;
     --space-lg: 32px;
@@ -66,6 +77,8 @@
     /* Border Radius */
     --border-radius-sm: 8px;
     --border-radius-md: 10px;
+    /* pixel-named since the scale is already non-monotonic (xl < lg) */
+    --border-radius-20: 20px;
     --border-radius-xl: 24px;
     --border-radius-lg: 30px;
 

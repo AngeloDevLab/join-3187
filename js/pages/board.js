@@ -243,7 +243,7 @@ function openAddTaskModal(status) {
     const node = document.getElementById('addTaskTemplate').content.cloneNode(true);
     const { dialog, close } = openModal(node, { animation: 'right' });
     initAddTaskForm(dialog, { onSubmitSuccess: (data) => handleNewTask(data, status, close), onCancel: close });
-    dialog.querySelector('.add-task-modal-close')?.addEventListener('click', close);
+    dialog.querySelector('.close-btn')?.addEventListener('click', close);
 }
 
 

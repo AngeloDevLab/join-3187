@@ -8,7 +8,7 @@ import { PRIORITY_META, escapeHtml, getSubtaskProgress } from '../utils/helpers.
  */
 function buildAvatarsHtml(todo) {
     return todo.assigned
-        .map((c) => `<span class="avatar" style="background:${c.color}">${escapeHtml(c.initials)}</span>`)
+        .map((c) => `<span class="avatar avatar-circle" style="background:${c.color}">${escapeHtml(c.initials)}</span>`)
         .join('');
 }
 

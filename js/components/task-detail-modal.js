@@ -39,7 +39,7 @@ function buildAssignedHtml(assigned) {
         const initials = escapeHtml(c.initials);
         const name = escapeHtml(c.name ?? c.initials);
         return `<div class="task-detail-contact">
-            <span class="avatar" style="background:${c.color}">${initials}</span>
+            <span class="avatar avatar-circle" style="background:${c.color}">${initials}</span>
             <span>${name}</span>
         </div>`;
     }).join('');

@@ -19,7 +19,7 @@ function buildAssignedItem(contact, color, isYou) {
     li.className = 'dropdown-option assigned-option';
     li.setAttribute('role', 'option');
     li.setAttribute('aria-selected', 'false');
-    li.innerHTML = `<span class="contact-avatar" style="background:${color}">${initials}</span>`
+    li.innerHTML = `<span class="contact-avatar avatar-circle" style="background:${color}">${initials}</span>`
         + `<span class="contact-name">${displayName}</span>`
         + `<img src="../assets/icons/default-box.svg" class="contact-checkbox" alt="">`;
     return li;
@@ -46,7 +46,7 @@ function toggleAssignedContact(option) {
 function updateAssignedTrigger(root) {
     const selected = root.querySelectorAll('.assigned-option.selected');
     root.querySelector('#assignedChipsDisplay').innerHTML = [...selected]
-        .map((opt) => `<span class="contact-avatar" style="background:${opt.dataset.color}">${opt.dataset.initials}</span>`)
+        .map((opt) => `<span class="contact-avatar avatar-circle" style="background:${opt.dataset.color}">${opt.dataset.initials}</span>`)
         .join('');
 }
 
