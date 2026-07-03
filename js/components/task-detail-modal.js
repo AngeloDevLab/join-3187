@@ -55,7 +55,7 @@ function buildDetailTop(todo) {
     const cls = todo.type === 'User Story' ? 'user-story' : 'technical';
     return `<div class="task-header">
                 <span class="task-category ${cls}">${todo.type}</span>
-                <button type="button" class="task-detail-close" aria-label="Close">✕</button>
+                <button type="button" class="close-btn" aria-label="Close">✕</button>
             </div>
                 <h2 class="task-detail-title">${escapeHtml(todo.title)}</h2>
             <p class="task-detail-description">${escapeHtml(todo.description)}</p>`;
@@ -219,7 +219,7 @@ function switchToEditMode(dialog, todo, { onSave, onClose }) {
         onSubmitSuccess: (data) => { onSave?.(todo.id, todo.raw, data); onClose(); },
         onCancel: onClose,
     });
-    dialog.querySelector('.add-task-modal-close')?.addEventListener('click', onClose);
+    dialog.querySelector('.close-btn')?.addEventListener('click', onClose);
 }
 
 
@@ -233,7 +233,7 @@ export function openTaskDetailModal(todo, { onDelete, onSave, onToggleSubtask } 
     const template = document.createElement('template');
     template.innerHTML = buildDetailHtml(todo);
     const { dialog, close } = openModal(template.content, { animation: 'center' });
-    dialog.querySelector('.task-detail-close').addEventListener('click', close);
+    dialog.querySelector('.close-btn').addEventListener('click', close);
     dialog.querySelector('.task-detail-delete').addEventListener('click', async () => {
         await onDelete?.(todo.id);
         close();

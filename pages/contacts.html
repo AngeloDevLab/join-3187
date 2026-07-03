@@ -132,7 +132,6 @@
     <template id="addContactOverlayTemplate">
         <div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
             <section class="contact-overlay contact-add-overlay" onclick="event.stopPropagation()">
-                <button class="contact-overlay-close" onclick="closeContactOverlay()" aria-label="Close">&times;</button>
                 <div class="contact-overlay-brand">
                     <img src="../assets/icons/join_logo.svg" alt="Join">
                     <h2>Add contact</h2>
@@ -144,6 +143,7 @@
                         <img src="../assets/icons/person.svg" alt="">
                     </div>
                     <div class="contact-add-fields">
+                        <button type="button" class="close-btn" aria-label="Close" onclick="closeContactOverlay()">✕</button>
                         <label class="contact-input-wrapper">
                             <input id="addContactName" type="text" placeholder="Name" autocomplete="name" required>
                             <img src="../assets/icons/person.svg" alt="">
@@ -169,7 +169,7 @@
     <template id="editContactOverlayTemplate">
         <div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
             <section class="contact-overlay contact-edit-overlay" onclick="event.stopPropagation()">
-                <button class="contact-overlay-close" onclick="closeContactOverlay()" aria-label="Close">&times;</button>
+              
                 <div class="contact-overlay-brand">
                     <img src="../assets/icons/join_logo.svg" alt="Join">
                     <h2>Edit contact</h2>
@@ -178,8 +178,7 @@
                 <form class="contact-edit-form">
                     <div class="contact-edit-avatar"></div>
                     <div class="contact-edit-fields">
-                        
-                      
+                        <button type="button" class="close-btn" aria-label="Close" onclick="closeContactOverlay()">✕</button>
                              <label class="contact-input-wrapper">
                            <input id="editContactName" class="contact-edit-name-input" type="text" placeholder="Name" autocomplete="name" required>
                             <img src="../assets/icons/person.svg" alt="">

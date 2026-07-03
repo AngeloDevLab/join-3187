@@ -132,7 +132,6 @@
 .priority-btn:not(.selected):hover {
     box-shadow: var(--shadow-btn-hover);
 }
-
 /* ── Form Footer ──────────────────────────────────────────── */
 
 .form-footer {

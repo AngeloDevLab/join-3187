@@ -325,15 +325,14 @@ body {
 }
 
 .contact-overlay-close {
-    position: absolute;
-    top: 24px;
-    right: 24px;
     z-index: 1;
     border: unset;
     background: transparent;
     font-size: 32px;
     line-height: 1;
     cursor: pointer;
+    align-self: end;
+
 }
 
 .contact-overlay-brand {
