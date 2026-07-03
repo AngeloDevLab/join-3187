@@ -63,7 +63,7 @@ async function renderContacts() {
  */
 function groupByFirstLetter(list) {
     return list.reduce((groups, contact) => {
-        const letter = contact.name.charAt(0);
+        const letter = contact.name.charAt(0).toUpperCase();;
         if (!groups[letter]) groups[letter] = [];
         groups[letter].push(contact);
         return groups;
@@ -253,6 +253,9 @@ function buildAddContactOverlayNode() {
  */
 function buildEditContactOverlayNode(contact) {
     const node = document.getElementById('editContactOverlayTemplate').content.cloneNode(true);
+    const avatar = node.querySelector('.contact-edit-avatar');
+    avatar.style.background = getAvatarColorForId(contact.id);
+    avatar.textContent = getInitials(contact.name);
     node.querySelector('.contact-edit-name-input').value = contact.name;
     node.querySelector('.contact-edit-email-input').value = contact.email;
     node.querySelector('.contact-edit-phone-input').value = contact.phone;

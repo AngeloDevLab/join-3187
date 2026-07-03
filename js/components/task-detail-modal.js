@@ -53,9 +53,12 @@ function buildAssignedHtml(assigned) {
  */
 function buildDetailTop(todo) {
     const cls = todo.type === 'User Story' ? 'user-story' : 'technical';
-    return `<span class="task-category ${cls}">${todo.type}</span>
-        <h2 class="task-detail-title">${escapeHtml(todo.title)}</h2>
-        <p class="task-detail-description">${escapeHtml(todo.description)}</p>`;
+    return `<div class="task-header">
+                <span class="task-category ${cls}">${todo.type}</span>
+                <button type="button" class="task-detail-close" aria-label="Close">✕</button>
+            </div>
+                <h2 class="task-detail-title">${escapeHtml(todo.title)}</h2>
+            <p class="task-detail-description">${escapeHtml(todo.description)}</p>`;
 }
 
 
@@ -150,7 +153,7 @@ function buildDetailActions() {
  */
 function buildDetailHtml(todo) {
     return `<div class="task-detail">
-        <button type="button" class="task-detail-close" aria-label="Close">✕</button>
+        
         ${buildDetailTop(todo)}
         ${buildDetailMeta(todo)}
         ${buildDetailSections(todo)}
@@ -227,9 +230,9 @@ function switchToEditMode(dialog, todo, { onSave, onClose }) {
  * @param {{ onDelete?: (id: string) => void|Promise<void>, onSave?: (id: string, task: Object, data: Object) => void, onToggleSubtask?: (id: string, subtasks: Object) => void }} [options]
  */
 export function openTaskDetailModal(todo, { onDelete, onSave, onToggleSubtask } = {}) {
-    const div = document.createElement('div');
-    div.innerHTML = buildDetailHtml(todo);
-    const { dialog, close } = openModal(div, { animation: 'center' });
+    const template = document.createElement('template');
+    template.innerHTML = buildDetailHtml(todo);
+    const { dialog, close } = openModal(template.content, { animation: 'center' });
     dialog.querySelector('.task-detail-close').addEventListener('click', close);
     dialog.querySelector('.task-detail-delete').addEventListener('click', async () => {
         await onDelete?.(todo.id);
