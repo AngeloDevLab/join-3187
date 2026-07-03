@@ -90,3 +90,17 @@ export function escapeHtml(value) {
         "'": '&#39;',
     })[char]);
 }
+
+
+/**
+ * Returns a task order value placed between two neighboring order values.
+ * @param {number} [before] - order of the preceding task, or undefined to insert first
+ * @param {number} [after] - order of the following task, or undefined to insert last
+ * @returns {number}
+ */
+export function computeOrderBetween(before, after) {
+    if (before === undefined && after === undefined) return Date.now();
+    if (before === undefined) return after - 1000;
+    if (after === undefined) return before + 1000;
+    return (before + after) / 2;
+}

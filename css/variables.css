@@ -66,6 +66,7 @@
     /* Border Radius */
     --border-radius-sm: 8px;
     --border-radius-md: 10px;
+    --border-radius-xl: 24px;
     --border-radius-lg: 30px;
 
     /* Transitions */

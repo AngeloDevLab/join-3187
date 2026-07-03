@@ -23,7 +23,7 @@ function formatDate(dateStr) {
 function buildPriorityHtml(priority) {
     const meta = PRIORITY_META[priority] ?? PRIORITY_META.medium;
     return `<span class="priority-chip priority-chip--${meta.cls}">
-        ${meta.label} <img src="${meta.icon}" alt="" width="18" height="14">
+        ${meta.label} <img src="${meta.icon}" alt="" width="18" height="18">
     </span>`;
 }
 
