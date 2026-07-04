@@ -1,7 +1,7 @@
 import { toggleDropdown } from './task-category-dropdown.js';
 import { getCurrentUser } from '../firebase/auth.js';
 import { getContacts } from '../firebase/cache.js';
-import { getAvatarColor, getInitials, escapeHtml } from '../utils/helpers.js';
+import { getAvatarColorForId, getInitials, escapeHtml } from '../utils/helpers.js';
 
 
 /**
@@ -89,7 +89,7 @@ async function loadAssignedContacts(root) {
     const entries = Object.entries(contacts)
         .map(([id, data]) => ({ id, ...data }))
         .sort((a, b) => (isCurrentUser(a, currentUser) ? -1 : isCurrentUser(b, currentUser) ? 1 : 0));
-    entries.forEach((c, i) => list.appendChild(buildAssignedItem(c, getAvatarColor(i), isCurrentUser(c, currentUser))));
+    entries.forEach((c) => list.appendChild(buildAssignedItem(c, getAvatarColorForId(c.id), isCurrentUser(c, currentUser))));
 }
 
 
