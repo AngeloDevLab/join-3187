@@ -1,4 +1,5 @@
 import { getCurrentUser, logoutUser } from '../firebase/auth.js';
+import { toggleDropdown, initDropdownAutoClose } from './task-category-dropdown.js';
 
 
 /**
@@ -20,13 +21,17 @@ function initHeaderAvatar() {
 }
 
 
-/** Toggles the user dropdown open/closed. */
+/** Toggles the user dropdown open/closed, using the shared dropdown pattern. */
 function initHeaderDropdown() {
     const btn = document.getElementById('headerAvatarBtn');
     const nav = document.getElementById('headerDropdown');
     if (!btn || !nav) return;
-    btn.addEventListener('click', (e) => { e.stopPropagation(); nav.classList.toggle('open'); });
-    document.addEventListener('click', () => nav.classList.remove('open'));
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleDropdown({ dropdown: nav, trigger: btn }, !nav.classList.contains('is-open'));
+    });
+    nav.querySelectorAll('a, button').forEach((el) =>
+        el.addEventListener('click', () => toggleDropdown({ dropdown: nav, trigger: btn }, false)));
 }
 
 
@@ -46,4 +51,5 @@ export function initNavbar() {
     initHeaderAvatar();
     initHeaderDropdown();
     initLogoutBtn();
+    initDropdownAutoClose();
 }

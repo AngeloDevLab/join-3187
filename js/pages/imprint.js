@@ -23,7 +23,7 @@ function updateNavForAuthStatus() {
 function getUserBarHTML(user) {
     return `<a href="help.html" class="header-help"><img src="../assets/icons/help.svg" alt="Help"></a>
         <button type="button" class="header-avatar" id="headerAvatarBtn">${escapeHtml(user.initials)}</button>
-        <nav class="header-dropdown" id="headerDropdown">
+        <nav class="header-dropdown popup-menu dropdown" id="headerDropdown">
             <ul>
                 <li class="header-help-mobile"><a href="help.html">Help</a></li>
                 <li><a href="imprint.html">Legal Notice</a></li>

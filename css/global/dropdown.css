@@ -1,3 +1,12 @@
+/* ── Popup Menu (dark popup shell shared by board move-nav + header avatar menu) ── */
+
+.popup-menu {
+    background: var(--color-primary);
+    border-radius: var(--border-radius-lg) 0 var(--border-radius-lg) var(--border-radius-lg);
+    min-width: 190px;
+    color: var(--color-white);
+}
+
 /* ── Custom Dropdown ───────────────────────────────────────── */
 
 .dropdown {

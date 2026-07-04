@@ -148,10 +148,7 @@
     position: absolute;
     top: calc(100% + var(--space-xs));
     right: 0;
-    background: var(--color-primary);
-    border-radius: var(--border-radius-lg) 0 var(--border-radius-lg) var(--border-radius-lg);
     padding: var(--space-sm);
-    min-width: 190px;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);
@@ -162,7 +159,14 @@
     z-index: 100;
 }
 
-.header-dropdown.open {
+/* Higher specificity than .dropdown's position:relative/width:100% (global/dropdown.css),
+   since navbar.css loads before dropdown.css in every page's import order. */
+.header-dropdown.dropdown {
+    position: absolute;
+    width: auto;
+}
+
+.header-dropdown.is-open {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);

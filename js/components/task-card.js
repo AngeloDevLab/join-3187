@@ -47,7 +47,7 @@ function buildMoveNavHtml(todo) {
         .filter(([key]) => key !== todo.column)
         .map(([key, label]) => `<li onclick="moveToFromNav('${key}', '${todo.id}')">${label}</li>`)
         .join('');
-    return `<nav class="category-nav"><h3>Move To</h3><ul>${items}</ul></nav>`;
+    return `<nav class="category-nav popup-menu dropdown"><h3>Move To</h3><ul>${items}</ul></nav>`;
 }
 
 
@@ -65,7 +65,7 @@ export function generateTodoHtml(todo) {
     return `<div class="task-card" data-id="${todo.id}" draggable="true" ondragstart="startDragging(event, '${todo.id}')" ondragend="stopDragging(event)">
     <div class="card-header">
         <span class="task-category ${categoryClass}">${todo.type}</span>
-        <img src="../assets/icons/move.svg" alt="Move Icon Mobile" class="move-button" onclick="toggleCategoryNav(event)" tabindex="0">
+        <img src="../assets/icons/move.svg" alt="Move Icon Mobile" class="move-button" onclick="toggleMoveDropdown(event)" tabindex="0">
                 ${navHtml}
         </div>
         <h4>${title}</h4>

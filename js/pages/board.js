@@ -9,6 +9,7 @@ import { getAvatarColorForId, getInitials, computeOrderBetween } from '../utils/
 import { startDragGhost, stopDragGhost } from '../components/drag-ghost.js';
 import { updateDropIndicator, clearDropIndicator, getDropNeighbors } from '../components/drop-indicator.js';
 import { generateTodoHtml } from '../components/task-card.js';
+import { toggleDropdown, initDropdownAutoClose } from '../components/task-category-dropdown.js';
 
 const CATEGORY_LABEL = { userStory: 'User Story', technicalTask: 'Technical Task' };
 
@@ -126,26 +127,15 @@ async function moveToFromNav(category, id) {
 
 
 /**
- * Toggles the "Move To" category nav open/closed for a task card on mobile.
+ * Toggles the "Move To" dropdown open/closed for a task card on mobile, using the shared dropdown pattern.
  * @param {MouseEvent} event
  */
-function toggleCategoryNav(event) {
-    let nav = event.target.nextElementSibling;
-    let isOpen = nav.style.display === 'block';
-    closeAllNavs();
-    nav.style.display = isOpen ? 'none' : 'block';
+function toggleMoveDropdown(event) {
     event.stopPropagation();
-}
-
-// NEU: zentrale Close-Funktion
-function closeAllNavs() {
-    document.querySelectorAll('.category-nav').forEach(nav => {
-        nav.style.display = 'none';
-    });
-}
-
-function initNavListeners() {
-    document.addEventListener('click', closeAllNavs); // NEU: einmalige Registrierung
+    const nav = event.currentTarget.nextElementSibling;
+    const open = !nav.classList.contains('is-open');
+    document.querySelectorAll('.category-nav.is-open').forEach((other) => other.classList.remove('is-open'));
+    toggleDropdown({ dropdown: nav, trigger: event.currentTarget }, open);
 }
 
 
@@ -330,11 +320,11 @@ window.highlightColumn = highlightColumn;
 window.unhighlightColumn = unhighlightColumn;
 window.moveTo = moveTo;
 window.moveToFromNav = moveToFromNav;
-window.toggleCategoryNav = toggleCategoryNav;
+window.toggleMoveDropdown = toggleMoveDropdown;
 
 initNavbar();
 updateHtml();
 initBoardSearch();
 initAddTaskButtons();
 initCardDetailClick();
-initNavListeners();
+initDropdownAutoClose();

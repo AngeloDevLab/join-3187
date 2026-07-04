@@ -235,12 +235,18 @@
     display: none;
     position: absolute;
     right: 0px;
-    background: var(--color-primary);
-    border-radius: var(--border-radius-lg) 0 var(--border-radius-lg) var(--border-radius-lg);
-    min-width: 190px;
-    color: #fff;
     padding-left: 0px;
     z-index: 1;
+}
+
+/* Higher specificity than .dropdown's width:100% (global/dropdown.css) so it wins
+   regardless of import order. */
+.category-nav.dropdown {
+    width: auto;
+}
+
+.category-nav.is-open {
+    display: block;
 }
 
 .category-nav li {
