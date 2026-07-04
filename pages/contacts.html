@@ -51,7 +51,7 @@
             <div class="contacts-main">
                 <section id="contactsList" class="contacts-list">
                     <div class="desktop-add-contact-wrapper">
-                        <button class="btn btn-primary desktop-add-contact-btn" onclick="openAddContactOverlay()">
+                        <button class="btn btn-primary desktop-add-contact-btn">
                             Add new contact
                             <img src="../assets/icons/add_contact.svg" alt="">
                         </button>
@@ -59,7 +59,7 @@
 
                     <div id="contactsContainer" class="contacts-scroll-container"></div>
 
-                    <button class="add-contact-btn" onclick="openAddContactOverlay()" aria-label="Add contact">
+                    <button class="add-contact-btn" aria-label="Add contact">
                         <img src="../assets/icons/add_contact.svg" alt="">
                     </button>
                 </section>
@@ -91,7 +91,7 @@
         <div class="contact-details-header">
             <div class="contact-details-title-row">
                 <h1>Contacts</h1>
-                <button class="back-to-contacts-btn" onclick="showContactsList()">←</button>
+                <button class="back-to-contacts-btn">←</button>
             </div>
             <p>Better with a team</p>
         </div>
@@ -112,11 +112,11 @@
                 <a class="contact-details-email"></a>
                 <h4>Phone</h4>
                 <p class="contact-details-phone"></p>
-                <button id="menuContactBtn" class="menu_contact_btn" onclick="toggleMenuContact()" aria-label="Contact menu">
+                <button id="menuContactBtn" class="menu_contact_btn" aria-label="Contact menu">
                     <img src="../assets/icons/menu_contact.svg" alt="">
                 </button>
-                <div id="contactMenuBackdrop" class="contact_menu_backdrop" onclick="closeMenuContact()"></div>
-                <div id="contactMenu" class="contact_menu" onclick="closeMenuContact()">
+                <div id="contactMenuBackdrop" class="contact_menu_backdrop"></div>
+                <div id="contactMenu" class="contact_menu">
                     <button class="contact_menu_option contact-details-edit-btn"><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
                     <button class="contact_menu_option contact-details-delete-btn"><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
                 </div>
@@ -133,20 +133,20 @@
     </template>
 
     <template id="addContactOverlayTemplate">
-        <div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
-            <section class="contact-overlay contact-add-overlay" onclick="event.stopPropagation()">
+        <div id="contactOverlay" class="contact-overlay-backdrop">
+            <section class="contact-overlay contact-add-overlay">
                 <div class="contact-overlay-brand">
                     <img src="../assets/icons/join_logo.svg" alt="Join">
                     <h2>Add contact</h2>
                     <p>Tasks are better with a team!</p>
                     <div></div>
                 </div>
-                <form class="contact-edit-form contact-add-form" onsubmit="createContact(event)" novalidate>
+                <form class="contact-edit-form contact-add-form" novalidate>
                     <div class="contact-add-avatar avatar-circle" aria-hidden="true">
                         <img src="../assets/icons/person.svg" alt="">
                     </div>
                     <div class="contact-add-fields">
-                        <button type="button" class="close-btn" aria-label="Close" onclick="closeContactOverlay()">✕</button>
+                        <button type="button" class="close-btn" aria-label="Close">✕</button>
                         <div class="input-field">
                             <label class="input-wrapper">
                                 <input id="addContactName" type="text" placeholder="Name" autocomplete="name" required>
@@ -169,7 +169,7 @@
                             <p class="input-error-msg" id="addContactPhoneError"></p>
                         </div>
                         <div class="contact-overlay-actions contact-add-actions">
-                            <button type="button" class="btn btn-secondary" onclick="closeContactOverlay()">Cancel &times;</button>
+                            <button type="button" class="btn btn-secondary overlay-cancel-btn">Cancel &times;</button>
                             <button type="submit" class="btn btn-primary">Create contact &#10003;</button>
                         </div>
                     </div>
@@ -179,8 +179,8 @@
     </template>
 
     <template id="editContactOverlayTemplate">
-        <div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
-            <section class="contact-overlay contact-edit-overlay" onclick="event.stopPropagation()">
+        <div id="contactOverlay" class="contact-overlay-backdrop">
+            <section class="contact-overlay contact-edit-overlay">
               
                 <div class="contact-overlay-brand">
                     <img src="../assets/icons/join_logo.svg" alt="Join">
@@ -190,7 +190,7 @@
                 <form class="contact-edit-form" novalidate>
                     <div class="contact-edit-avatar avatar-circle"></div>
                     <div class="contact-edit-fields">
-                        <button type="button" class="close-btn" aria-label="Close" onclick="closeContactOverlay()">✕</button>
+                        <button type="button" class="close-btn" aria-label="Close">✕</button>
                         <div class="input-field">
                             <label class="input-wrapper">
                                 <input id="editContactName" class="contact-edit-name-input" type="text" placeholder="Name" autocomplete="name" required>
@@ -223,9 +223,9 @@
     </template>
 
     <template id="deleteContactOverlayTemplate">
-        <div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
-            <section class="contact-overlay contact-delete-overlay" onclick="event.stopPropagation()">
-                <button type="button" class="close-btn" aria-label="Close" onclick="closeContactOverlay()">✕</button>
+        <div id="contactOverlay" class="contact-overlay-backdrop">
+            <section class="contact-overlay contact-delete-overlay">
+                <button type="button" class="close-btn" aria-label="Close">✕</button>
                 <div class="contact-overlay-brand">
                     <img src="../assets/icons/join_logo.svg" alt="Join">
                     <h2>Delete contact</h2>
@@ -234,7 +234,7 @@
                 <div class="contact-delete-content">
                     <p class="contact-delete-message"></p>
                     <div class="contact-overlay-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeContactOverlay()">Cancel</button>
+                        <button type="button" class="btn btn-secondary overlay-cancel-btn">Cancel</button>
                         <button type="button" class="btn btn-primary contact-delete-confirm-btn">Delete</button>
                     </div>
                 </div>

@@ -128,14 +128,13 @@ async function moveToFromNav(category, id) {
 
 /**
  * Toggles the "Move To" dropdown open/closed for a task card on mobile, using the shared dropdown pattern.
- * @param {MouseEvent} event
+ * @param {HTMLElement} trigger - the clicked move-button element
  */
-function toggleMoveDropdown(event) {
-    event.stopPropagation();
-    const nav = event.currentTarget.nextElementSibling;
+function toggleMoveDropdown(trigger) {
+    const nav = trigger.nextElementSibling;
     const open = !nav.classList.contains('is-open');
     document.querySelectorAll('.category-nav.is-open').forEach((other) => other.classList.remove('is-open'));
-    toggleDropdown({ dropdown: nav, trigger: event.currentTarget }, open);
+    toggleDropdown({ dropdown: nav, trigger }, open);
 }
 
 
@@ -295,6 +294,19 @@ function initCardDetailClick() {
 }
 
 
+/** Delegates clicks on the move-button (toggles its dropdown) and "Move To" list items (moves the task). */
+function initMoveNavClicks() {
+    document.querySelectorAll('.drag-area').forEach((area) => {
+        area.addEventListener('click', (e) => {
+            const moveBtn = e.target.closest('.move-button');
+            if (moveBtn) { e.stopPropagation(); toggleMoveDropdown(moveBtn); return; }
+            const item = e.target.closest('.category-nav li');
+            if (item) moveToFromNav(item.dataset.category, item.dataset.id);
+        });
+    });
+}
+
+
 /** Wires the board search input to filter tasks while typing. */
 function initBoardSearch() {
     const searchInput = document.getElementById('boardSearch');
@@ -319,12 +331,11 @@ window.allowDrop = allowDrop;
 window.highlightColumn = highlightColumn;
 window.unhighlightColumn = unhighlightColumn;
 window.moveTo = moveTo;
-window.moveToFromNav = moveToFromNav;
-window.toggleMoveDropdown = toggleMoveDropdown;
 
 initNavbar();
 updateHtml();
 initBoardSearch();
 initAddTaskButtons();
 initCardDetailClick();
+initMoveNavClicks();
 initDropdownAutoClose();
