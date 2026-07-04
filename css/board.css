@@ -148,13 +148,14 @@
         box-shadow 0.15s ease,
         opacity 0.15s ease;
         word-break: break-word;
-    width: 280px;
-    max-width: 100%;
+    width: 220px;
+    max-width: 220px;
     min-height: 170px;
+    flex-shrink: 0;
 }
 
 .task-card:hover {
-       transform: scale(1.05);
+       transform: scale(1.02);
     }
 
 .task-card.dragging {
@@ -358,8 +359,9 @@
     cursor: pointer;
     min-height: 150px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 16px;
+    overflow-x: auto;
 }
 
 .drag-area.drag-over {
@@ -375,9 +377,11 @@
     bottom: 0;
 }
 
-/* 700px is intentional here (not 1024px like other pages) — must stay in sync
-   with the shared full-screen-modal breakpoint in global/modal.css and the
-   .task-detail/.add-task-modal overrides further down this file */
+/* 768px here (not the usual 1024px tier) — synced with the .task-detail block
+   further down and with global/modal.css's .modal--right, since both need to
+   flip to the same full-screen-vs-centered-dialog point. This is just the
+   modal's own breakpoint, independent of the board layout's own 1024px tier
+   below. */
 @media (min-width: 768px) {
     .add-task-modal {
         width: 1100px;
@@ -386,7 +390,13 @@
         max-height: 90vh;
         border-radius: var(--border-radius-lg);
     }
+}
 
+/* 1366px is intentional here (not the usual 1024px tier) — the board keeps its
+   mobile/tablet layout (stacked columns, horizontally-scrolling cards) all the
+   way through the most common laptop width, only switching to the 4-column
+   desktop grid once there's genuinely enough room for it. */
+@media (min-width: 1366px) {
     .board-top {
         flex-wrap: nowrap;
         gap: var(--space-md);
@@ -426,20 +436,21 @@
         grid-template-columns: repeat(4, 1fr);
     }
 
+    .drag-area {
+        flex-direction: column;
+        overflow-x: visible;
+    }
+
 
     .task-card {
         width: auto;
         max-width: none;
         min-height: auto;
+        flex-shrink: 1;
     }
 
     .board-column {
         width: auto;
-    }
-
-    .board-column:not(:first-child) {
-        display: block;
-        flex-wrap: nowrap;
     }
 
     .column-head {
@@ -606,8 +617,8 @@
     background: var(--color-border);
 }
 
-/* 700px synced with the block above and global/modal.css — see comment there */
-@media (min-width: 700px) {
+/* 768px synced with the block above and global/modal.css — see comment there */
+@media (min-width: 768px) {
     .task-detail {
         width: 460px;
         max-height: 90vh;

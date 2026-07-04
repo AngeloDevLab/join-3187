@@ -307,6 +307,18 @@ function initMoveNavClicks() {
 }
 
 
+/** Lets vertical mouse-wheel scrolling pan a card row that overflows horizontally. */
+function initDragAreaWheelScroll() {
+    document.querySelectorAll('.drag-area').forEach((area) => {
+        area.addEventListener('wheel', (e) => {
+            if (area.scrollWidth <= area.clientWidth) return;
+            e.preventDefault();
+            area.scrollLeft += e.deltaY;
+        });
+    });
+}
+
+
 /** Wires the board search input to filter tasks while typing. */
 function initBoardSearch() {
     const searchInput = document.getElementById('boardSearch');
@@ -338,4 +350,5 @@ initBoardSearch();
 initAddTaskButtons();
 initCardDetailClick();
 initMoveNavClicks();
+initDragAreaWheelScroll();
 initDropdownAutoClose();

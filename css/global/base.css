@@ -70,7 +70,7 @@ h3 {
 }
 
 h4 {
-    font-size: clamp(0.875rem, 3vw, 1.25rem);
+    font-size: 1.25rem;
 }
 
 a {

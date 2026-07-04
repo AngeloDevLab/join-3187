@@ -60,9 +60,9 @@
     transition: transform 280ms cubic-bezier(0.34, 1.2, 0.64, 1);
 }
 
-/* 700px is intentional here (not 1024px like other pages) — must stay in sync
+/* 768px is intentional here (not 1024px like other pages) — must stay in sync
    with board.css's .add-task-modal/.task-detail overrides. */
-@media (min-width: 700px) {
+@media (min-width: 768px) {
     .modal--right {
         width: auto;
         height: auto;

@@ -90,6 +90,9 @@ function renderGroupedContacts(grouped, container) {
         const heading = document.createElement('h3');
         heading.textContent = letter;
         group.appendChild(heading);
+        const divider = document.createElement('hr');
+        divider.className = 'contact-group-divider';
+        group.appendChild(divider);
         grouped[letter].forEach((contact) => group.appendChild(buildContactCardNode(contact)));
         container.appendChild(group);
     }
