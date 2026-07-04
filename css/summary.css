@@ -31,12 +31,17 @@
     fill: var(--color-primary);
 }
 
-.check-icon {
+.check-icon,
+.edit-icon,
+.urgent-icon {
     width: 50px;
     height: 50px;
-    background-color: var(--color-primary);
     padding: 10px;
     border-radius: 50%;
+}
+
+.check-icon {
+    background-color: var(--color-primary);
 }
 
 .check-icon svg {
@@ -47,11 +52,7 @@
 }
 
 .edit-icon {
-    width: 50px;
-    height: 50px;
     background-color: var(--color-primary);
-    padding: 10px;
-    border-radius: 50%;
 }
 
 .edit-icon svg {
@@ -59,11 +60,7 @@
 }
 
 .urgent-icon {
-    width: 50px;
-    height: 50px;
     background-color: var(--priority-urgent);
-    padding: 10px;
-    border-radius: 50%;
 }
 
 .urgent-icon svg {
