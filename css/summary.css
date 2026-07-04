@@ -2,15 +2,6 @@
     padding: var(--space-xl) clamp(var(--space-sm), 4vw, var(--space-xl));
 }
 
-.subline {
-    background: linear-gradient(var(--color-accent), var(--color-accent)) no-repeat bottom left;
-    background-size: 18% 2px;
-    padding-bottom: 10px;
-    font-size: 27px;
-    margin: 0px;
-    color: var(--color-primary);
-}
-
 .summary-card {
     background-color: var(--color-white);
     border-radius: 20px;
@@ -75,10 +66,6 @@ hr {
     background-color: var(--color-border);
     width: 2px;
     margin: 0;
-}
-
-.title-hr {
-    display: none;
 }
 
 .summary-card:hover .check-icon {

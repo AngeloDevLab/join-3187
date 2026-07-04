@@ -1,18 +1,17 @@
+/* ── Contacts List ─────────────────────────────────────────── */
+
 .contacts-main {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - var(--header-height) - var(--mobile-nav-height));
-    /* was: height: 100vh — now accounts for header (96px) + mobile nav (72px) */
     background-color: var(--color-bg);
 }
 
+/* No explicit height/overflow here — same natural page-scroll as board.css's
+   .board-section and summary.css's .content. padding-bottom clears the fixed
+   FAB button (.add-contact-btn) so it doesn't cover the last contact. */
 .contacts-list {
     position: relative;
-    padding: var(--space-xl) clamp(var(--space-sm), 4vw, var(--space-xl));
-    height: calc(100vh - var(--header-height) - var(--mobile-nav-height));
-    overflow-y: auto;
-    padding-top: 20px;
-    padding-bottom: 96px;
+    padding: 20px clamp(var(--space-sm), 4vw, var(--space-xl)) 96px;
 }
 
 .contact-group {
@@ -92,9 +91,10 @@
     display: none;
 }
 
+/* ── Contact Details ───────────────────────────────────────── */
+
 .contact-details {
-    padding-top: 30px;
-    padding-bottom: 96px;
+    padding: var(--space-xl) clamp(var(--space-sm), 4vw, var(--space-xl));
     background-color: var(--color-bg);
 }
 
@@ -179,6 +179,8 @@
     margin: 0;
 }
 
+/* ── Mobile Contact Menu ───────────────────────────────────── */
+
 .contact_menu {
     position: fixed;
     right: -140px;
@@ -224,6 +226,8 @@
     display: block;
 }
 
+/* ── Desktop-only Placeholders ─────────────────────────────── */
+
 .desktop-add-contact-wrapper,
 .desktop-contact-placeholder {
     display: none;
@@ -233,14 +237,16 @@
     display: none;
 }
 
+/* ── Contact Overlay (Add/Edit/Delete) ────────────────────── */
+
 .contact-overlay-backdrop {
     position: fixed;
     inset: 0;
     z-index: 30;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
-    padding: var(--space-md);
+    padding: 16px 16px calc(var(--mobile-nav-height) + 5px);
     background-color: rgba(0, 0, 0, 0.25);
     opacity: 0;
     transition: opacity 180ms ease-out;
@@ -250,22 +256,31 @@
     opacity: 1;
 }
 
+.contact-overlay-backdrop:has(.contact-edit-overlay) {
+    align-items: center;
+}
+
 .contact-overlay {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(220px, 320px) minmax(280px, 1fr);
-    width: min(900px, 100%);
-    min-height: 360px;
+    grid-template-columns: 1fr;
+    width: min(390px, 100%);
+    min-height: unset;
+    max-height: calc(100vh - var(--mobile-nav-height) - 112px);
     overflow: hidden;
+    overflow-y: auto;
     border-radius: var(--border-radius-lg);
     background-color: var(--color-white);
     box-shadow: 0 0 14px 3px rgba(0, 0, 0, 0.12);
-    transform: translateX(120px);
+    transform: translateY(120px);
     transition: transform 180ms ease-out;
 }
 
-.contact-overlay-open .contact-overlay {
-    transform: translateX(0);
+.contact-overlay-open .contact-overlay,
+.contact-overlay-open .contact-add-overlay,
+.contact-overlay-open .contact-edit-overlay,
+.contact-overlay-open .contact-delete-overlay {
+    transform: translateY(0);
 }
 
 .contact-delete-overlay > .close-btn {
@@ -278,7 +293,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 40px;
+    padding: var(--space-lg) var(--space-md);
     background-color: var(--color-primary);
     color: var(--color-white);
 }
@@ -288,6 +303,7 @@
     height: 68px;
     object-fit: contain;
     margin-bottom: var(--space-md);
+    display: none;
 }
 
 .contact-overlay-brand h2 {
@@ -306,35 +322,44 @@
     background-color: var(--color-accent);
 }
 
+.contact-overlay .close-btn {
+    color: var(--color-white);
+}
+
 .contact-delete-content {
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: var(--space-md);
-    padding: 72px 48px 48px;
+    padding: var(--space-lg) var(--space-md);
 }
 
 .contact-edit-form {
     position: relative;
-    display: grid;
-    grid-template-columns: 100px minmax(280px, 1fr);
     align-items: center;
     gap: var(--space-lg);
-    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    padding: 82px 24px 32px;
 }
 
 .contact-edit-avatar {
-    width: 100px;
-    height: 100px;
     border: 3px solid var(--color-white);
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
-    font-size: 32px;
+    position: absolute;
+    top: -55px;
+    left: 50%;
+    width: 104px;
+    height: 104px;
+    font-size: 34px;
+    transform: translateX(-50%);
 }
 
 .contact-edit-fields {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    width: 100%;
+    gap: 14px;
 }
 
 .contact-edit-fields > .close-btn,
@@ -342,35 +367,37 @@
     align-self: end;
 }
 
-.contact-add-overlay {
-    grid-template-columns: minmax(280px, 370px) minmax(420px, 1fr);
-    width: min(960px, 100%);
-    min-height: 468px;
-}
-
 .contact-edit-overlay {
-    width: min(1000px, 100%);
+    width: min(440px, 100%);
 }
 
 .contact-add-overlay .contact-overlay-brand {
-    padding: 64px 40px;
+    min-height: 305px;
+    padding: 86px 22px 104px;
+}
+
+.contact-add-overlay .contact-overlay-brand p {
+    font-size: 20px;
 }
 
 .contact-add-form {
     position: relative;
-    display: grid;
-    grid-template-columns: 120px minmax(280px, 1fr);
     align-items: center;
     gap: 56px;
-    padding: 72px 40px;
+    display: flex;
+    padding: 82px 14px 54px;
 }
 
 .contact-add-avatar {
-    width: 100px;
-    height: 100px;
     border: 3px solid var(--color-white);
     background-color: var(--color-border);
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+    position: absolute;
+    top: -55px;
+    left: 50%;
+    width: 104px;
+    height: 104px;
+    transform: translateX(-50%);
 }
 
 .contact-add-avatar img {
@@ -382,7 +409,8 @@
 .contact-add-fields {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    width: 100%;
+    gap: 14px;
 }
 
 .contact-add-fields .input-field,
@@ -390,11 +418,26 @@
     max-width: none;
 }
 
+.contact-add-actions {
+    justify-content: center;
+}
+
+.contact-add-actions .btn-secondary {
+    display: none;
+}
+
+.contact-add-actions .btn-primary {
+    min-height: 44px;
+    padding: var(--space-2xs) 12px;
+    font-size: 18px;
+}
+
 .contact-overlay-actions {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
     margin-top: var(--space-2xs);
+    flex-wrap: wrap;
 }
 
 .contact-overlay-actions .btn {
@@ -406,128 +449,120 @@
     font-size: 24px;
 }
 
-@media (max-width: 1023px) {
+@media (min-width: 1024px) {
+
     .contact-overlay-backdrop {
-        align-items: flex-end;
-        padding: 16px 16px calc(var(--mobile-nav-height) + 5px);
-    }
-
-    .contact-overlay,
-    .contact-add-overlay,
-    .contact-edit-overlay,
-    .contact-delete-overlay {
-        grid-template-columns: 1fr;
-        width: min(390px, 100%);
-        min-height: unset;
-        max-height: calc(100vh - var(--mobile-nav-height) - 112px);
-        overflow-y: auto;
-        border-radius: var(--border-radius-lg);
-        transform: translateY(120px);
-    }
-
-    .contact-overlay-backdrop:has(.contact-edit-overlay) {
         align-items: center;
+        padding: var(--space-md);
     }
 
-    .contact-edit-overlay {
-        width: min(440px, 100%);
+    .contact-overlay {
+        grid-template-columns: minmax(220px, 320px) minmax(280px, 1fr);
+        width: min(900px, 100%);
+        min-height: 360px;
+        max-height: none;
+        overflow-y: hidden;
+        transform: translateX(120px);
     }
 
-    .contact-overlay-open .contact-overlay,
-    .contact-overlay-open .contact-add-overlay,
-    .contact-overlay-open .contact-edit-overlay,
-    .contact-overlay-open .contact-delete-overlay {
-        transform: translateY(0);
+    .contact-overlay-open .contact-overlay {
+        transform: translateX(0);
     }
 
     .contact-overlay-brand {
-        padding: var(--space-lg) var(--space-md);
+        padding: 40px;
     }
 
     .contact-overlay-brand img {
-        display: none;
+        display: block;
     }
 
-
     .contact-overlay .close-btn {
-        color: var(--color-white);
+        color: inherit;
     }
 
     .contact-delete-content {
-        padding: var(--space-lg) var(--space-md);
+        padding: 72px 48px 48px;
     }
 
     .contact-edit-form {
-        display: flex;
-        flex-direction: column;
-        padding: 82px 24px 32px;
+        display: grid;
+        grid-template-columns: 100px minmax(280px, 1fr);
+        padding: var(--space-lg);
     }
 
     .contact-edit-avatar {
-        position: absolute;
-        top: -55px;
-        left: 50%;
-        width: 104px;
-        height: 104px;
-        font-size: 34px;
-        transform: translateX(-50%);
+        position: static;
+        top: auto;
+        left: auto;
+        width: 100px;
+        height: 100px;
+        font-size: 32px;
+        transform: none;
     }
 
     .contact-edit-fields {
-        width: 100%;
-        gap: 14px;
+        width: auto;
+        gap: var(--space-md);
+    }
+
+    .contact-add-overlay {
+        grid-template-columns: minmax(280px, 370px) minmax(420px, 1fr);
+        width: min(960px, 100%);
+        min-height: 468px;
+    }
+
+    .contact-edit-overlay {
+        width: min(1000px, 100%);
     }
 
     .contact-add-overlay .contact-overlay-brand {
-        min-height: 305px;
-        padding: 86px 22px 104px;
+        min-height: auto;
+        padding: 64px 40px;
     }
 
-
     .contact-add-overlay .contact-overlay-brand p {
-        font-size: 20px;
+        font-size: clamp(18px, 2vw, 18px);
     }
 
     .contact-add-form {
-        display: flex;
-        padding: 82px 14px 54px;
+        display: grid;
+        grid-template-columns: 120px minmax(280px, 1fr);
+        padding: 72px 40px;
     }
 
     .contact-add-avatar {
-        position: absolute;
-        top: -55px;
-        left: 50%;
-        width: 104px;
-        height: 104px;
-        transform: translateX(-50%);
+        position: static;
+        top: auto;
+        left: auto;
+        width: 100px;
+        height: 100px;
+        transform: none;
     }
 
     .contact-add-fields {
-        width: 100%;
-        gap: 14px;
+        width: auto;
+        gap: var(--space-md);
     }
 
     .contact-add-actions {
-        justify-content: center;
-        margin-top: var(--space-2xs);
+        justify-content: flex-start;
     }
 
     .contact-add-actions .btn-secondary {
-        display: none;
+        display: inline-block;
     }
 
     .contact-add-actions .btn-primary {
-        min-height: 44px;
-        padding: var(--space-2xs) 12px;
-        font-size: 18px;
+        min-height: 48px;
+        padding: 8px var(--space-md);
+        font-size: 16px;
     }
 
     .contact-overlay-actions {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
     }
-}
 
-@media (min-width: 1024px) {
 
     .contact-card.active {
         background-color: var(--color-primary);
@@ -572,23 +607,34 @@
         height: 20px;
     }
 
+    /* max-width intentionally left-aligned (no margin: auto like .max-content)
+       so the two-column layout stays flush against the sidebar on ultra-wide screens. */
     .contacts-main {
         display: grid;
         grid-template-columns: 430px 1fr;
         height: calc(100vh - var(--header-height));
-        padding-left: 0;
-        padding-top: 0;
-        padding-right: 0;
+        max-width: 1440px;
         background-color: var(--color-bg);
         overflow: hidden;
     }
 
+    /* flex column + .contacts-scroll-container's flex:1 replaces a hand-calculated
+       height, so the scroll area always fills exactly what's left, regardless of
+       how tall the add-contact button or padding above it end up being. */
     .contacts-list {
+        display: flex;
+        flex-direction: column;
         background-color: var(--color-white);
-        padding: var(--space-md) clamp(var(--space-sm), 4vw, var(--space-xl));
         height: calc(100vh - var(--header-height));
+        padding: var(--space-md) clamp(var(--space-sm), 4vw, var(--space-xl));
         overflow: hidden;
         box-shadow: 4px 0px 6px 0px #00000014;
+    }
+
+    /* Keep the list visible even if JS added .d-none for the mobile drill-down
+       view before the viewport grew past this breakpoint. */
+    .contacts-list.d-none {
+        display: flex;
     }
 
     .desktop-add-contact-wrapper {
@@ -612,7 +658,8 @@
     }
 
     .contacts-scroll-container {
-        height: calc(100vh - var(--header-height) - 96px);
+        flex: 1;
+        min-height: 0;
         overflow-y: auto;
     }
 
@@ -624,7 +671,6 @@
 
     .contact-details {
         display: block;
-        padding: 96px 64px;
         background-color: var(--color-bg);
     }
 
@@ -672,9 +718,16 @@
     .contact-details-card {
         max-width: 640px;
         margin-top: 48px;
-        padding: var(--space-lg);
         background: transparent;
         box-shadow: none;
+        opacity: 0;
+        transform: translateX(80px);
+        transition: opacity 225ms ease-out, transform 225ms ease-out;
+    }
+
+    .contact-details-card.is-open {
+        opacity: 1;
+        transform: translateX(0);
     }
 
     .contact-details-avatar {
@@ -691,32 +744,46 @@
         margin-top: 48px;
     }
 
+    /* Stacked look reuses global/base.css's shared .subline/.title-hr defaults
+       (gradient-underlined text, divider hidden) — same pattern as summary.css's
+       .title, just switching to the row layout at a different breakpoint since
+       this sits in the narrower 1fr detail column, not the full main content width. */
     .desktop-contact-placeholder {
         display: flex;
-        align-items: center;
-        gap: var(--space-md);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-xs);
     }
 
-    .desktop-contact-placeholder h1 {
-        margin: 0;
-    }
-
-    .desktop-contact-placeholder div {
-        width: 3px;
-        height: 59px;
-        background-color: var(--color-accent);
-    }
-
-    .desktop-contact-placeholder p {
+    .desktop-contact-placeholder .subline {
         font-size: clamp(18px, 2vw, 27px);
-        margin: 0;
-    }
-
-    .contact-details-card {
-        animation: flyInContactCard 225ms ease-out;
     }
 
     .contact_menu {
         display: none;
+    }
+}
+
+/* Own breakpoint (not 768/1024) — .desktop-contact-placeholder only has room
+   for "Contacts" + divider + "Better with a team" in one row from ~1200px up. */
+@media (min-width: 1200px) {
+    .desktop-contact-placeholder {
+        flex-direction: row;
+        align-items: center;
+        gap: var(--space-md);
+    }
+
+    .desktop-contact-placeholder .subline {
+        background: none;
+        padding-bottom: 0;
+    }
+
+    .desktop-contact-placeholder .title-hr {
+        height: 59px;
+        background-color: var(--color-accent);
+        width: 3px;
+        margin: 0;
+        border: none;
+        display: inherit;
     }
 }

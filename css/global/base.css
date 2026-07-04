@@ -89,3 +89,23 @@ a:hover {
     margin: 0 auto;
     padding: 0 clamp(var(--space-sm), 4vw, var(--space-xl));
 }
+
+/* ── Heading + Divider (shared by summary's page title and contacts'
+   empty-state placeholder) ───────────────────────────────────────
+   Stacked look (no divider, gradient-underlined subtext) is the shared
+   default here; each page's own CSS switches to the row layout (divider
+   visible, underline removed) at whatever breakpoint fits that page's
+   available width — summary.css at 768px, contacts.css at 1200px. */
+
+.subline {
+    background: linear-gradient(var(--color-accent), var(--color-accent)) no-repeat bottom left;
+    background-size: 18% 2px;
+    padding-bottom: 10px;
+    font-size: 27px;
+    margin: 0px;
+    color: var(--color-primary);
+}
+
+.title-hr {
+    display: none;
+}
