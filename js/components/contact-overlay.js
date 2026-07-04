@@ -1,4 +1,4 @@
-import { getAvatarColorForId, getInitials } from '../utils/helpers.js';
+import { getAvatarColorForId, getInitials, triggerTransitionIn } from '../utils/helpers.js';
 
 
 /**
@@ -21,9 +21,7 @@ function wireOverlayClose(node) {
 function renderContactOverlay(node) {
     closeContactOverlay();
     document.getElementById('contactOverlayContainer').appendChild(node);
-    requestAnimationFrame(() => {
-        document.getElementById('contactOverlay').classList.add('contact-overlay-open');
-    });
+    triggerTransitionIn(document.getElementById('contactOverlay'), 'contact-overlay-open');
 }
 
 

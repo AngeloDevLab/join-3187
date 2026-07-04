@@ -94,3 +94,14 @@ export function computeOrderBetween(before, after) {
     if (after === undefined) return before + 1000;
     return (before + after) / 2;
 }
+
+
+/**
+ * Adds a class after two animation frames, so a CSS transition reliably plays
+ * from the element's current style instead of jumping straight to the end state.
+ * @param {HTMLElement} el
+ * @param {string} className
+ */
+export function triggerTransitionIn(el, className) {
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add(className)));
+}

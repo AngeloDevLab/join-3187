@@ -1,7 +1,7 @@
 import '../utils/auth-guard.js';
 import { initNavbar } from '../components/navbar.js';
 import { getCurrentUser } from '../firebase/auth.js';
-import { getAvatarColorForId, getInitials } from '../utils/helpers.js';
+import { getAvatarColorForId, getInitials, triggerTransitionIn } from '../utils/helpers.js';
 import { getContacts, saveContact, updateContact, removeContact } from '../firebase/cache.js';
 import { getAddContactFields, getEditContactFields, validateContactFields } from '../components/contact-form.js';
 import {
@@ -153,9 +153,9 @@ function setActiveContactCard(contactId) {
 
 /** Shows the animated contact details card after it was rendered. */
 function showContactDetailsCard() {
-    requestAnimationFrame(() => {
-        document.getElementById('contactDetailsCard').classList.remove('d-none');
-    });
+    const card = document.getElementById('contactDetailsCard');
+    card.classList.remove('d-none');
+    triggerTransitionIn(card, 'is-open');
 }
 
 

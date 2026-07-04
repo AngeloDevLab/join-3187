@@ -1,3 +1,6 @@
+import { triggerTransitionIn } from '../utils/helpers.js';
+
+
 /**
  * Animates the modal out, then closes and removes it from the DOM.
  * Uses a setTimeout fallback in case transitionend does not fire.
@@ -37,7 +40,7 @@ export function openModal(content, { animation = 'right', duration = null } = {}
     else dialog.appendChild(content);
     document.body.appendChild(dialog);
     dialog.showModal();
-    requestAnimationFrame(() => requestAnimationFrame(() => dialog.classList.add('is-open')));
+    triggerTransitionIn(dialog, 'is-open');
     const close = () => closeModal(dialog);
     attachDismissHandlers(dialog, close);
     if (duration) setTimeout(close, duration);
