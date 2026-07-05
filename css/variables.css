@@ -4,7 +4,6 @@
  * 1024px — primary desktop/tablet split (contacts, add-task, layout, navbar, summary)
  * 768px  — secondary tier (auth, summary)
  * 530px  — auth-specific fine breakpoint
- * 700px  — shared modal full-screen breakpoint (global/modal.css + board.css)
  */
 :root {
     /* Brand */

@@ -1,33 +1,30 @@
-import { getAvatarColorForId, getInitials, triggerTransitionIn } from '../utils/helpers.js';
+import { openModal } from './modal.js';
+import { getAvatarColorForId, getInitials } from '../utils/helpers.js';
+
+let activeClose = null;
 
 
-/**
- * Wires the backdrop-click-to-close, panel-click-stop-propagation and the close/cancel
- * buttons shared by every contact overlay template.
- * @param {DocumentFragment} node
- */
-function wireOverlayClose(node) {
-    node.querySelector('.contact-overlay-backdrop').addEventListener('click', closeContactOverlay);
-    node.querySelector('.contact-overlay').addEventListener('click', (e) => e.stopPropagation());
-    node.querySelectorAll('.close-btn, .overlay-cancel-btn').forEach((btn) =>
-        btn.addEventListener('click', closeContactOverlay));
-}
-
-
-/**
- * Renders and animates a contact overlay.
- * @param {Node} node
- */
-function renderContactOverlay(node) {
-    closeContactOverlay();
-    document.getElementById('contactOverlayContainer').appendChild(node);
-    triggerTransitionIn(document.getElementById('contactOverlay'), 'contact-overlay-open');
-}
-
-
-/** Closes the active contact overlay. */
+/** Closes the active contact overlay, if one is open. */
 export function closeContactOverlay() {
-    document.getElementById('contactOverlayContainer').innerHTML = '';
+    activeClose?.();
+    activeClose = null;
+}
+
+
+/**
+ * Opens a contact overlay dialog from the given template and wires its close/cancel buttons.
+ * @param {string} templateId
+ * @returns {HTMLDialogElement}
+ */
+function openContactModal(templateId) {
+    closeContactOverlay();
+    const node = document.getElementById(templateId).content.cloneNode(true);
+    const { dialog, close } = openModal(node, { animation: 'contact' });
+    activeClose = close;
+    dialog.addEventListener('close', () => { if (activeClose === close) activeClose = null; });
+    dialog.querySelectorAll('.close-btn, .overlay-cancel-btn').forEach((btn) =>
+        btn.addEventListener('click', closeContactOverlay));
+    return dialog;
 }
 
 
@@ -36,10 +33,8 @@ export function closeContactOverlay() {
  * @param {(event: SubmitEvent) => void} onSubmit
  */
 export function openAddContactOverlay(onSubmit) {
-    const node = document.getElementById('addContactOverlayTemplate').content.cloneNode(true);
-    wireOverlayClose(node);
-    node.querySelector('form').addEventListener('submit', onSubmit);
-    renderContactOverlay(node);
+    const dialog = openContactModal('addContactOverlayTemplate');
+    dialog.querySelector('form').addEventListener('submit', onSubmit);
 }
 
 
@@ -50,17 +45,15 @@ export function openAddContactOverlay(onSubmit) {
  * @param {() => void} onDelete
  */
 export function openEditContactOverlay(contact, onSubmit, onDelete) {
-    const node = document.getElementById('editContactOverlayTemplate').content.cloneNode(true);
-    wireOverlayClose(node);
-    const avatar = node.querySelector('.contact-edit-avatar');
+    const dialog = openContactModal('editContactOverlayTemplate');
+    const avatar = dialog.querySelector('.contact-edit-avatar');
     avatar.style.background = getAvatarColorForId(contact.id);
     avatar.textContent = getInitials(contact.name);
-    node.querySelector('.contact-edit-name-input').value = contact.name;
-    node.querySelector('.contact-edit-email-input').value = contact.email;
-    node.querySelector('.contact-edit-phone-input').value = contact.phone;
-    node.querySelector('form').addEventListener('submit', onSubmit);
-    node.querySelector('.contact-edit-delete-btn').addEventListener('click', onDelete);
-    renderContactOverlay(node);
+    dialog.querySelector('.contact-edit-name-input').value = contact.name;
+    dialog.querySelector('.contact-edit-email-input').value = contact.email;
+    dialog.querySelector('.contact-edit-phone-input').value = contact.phone;
+    dialog.querySelector('form').addEventListener('submit', onSubmit);
+    dialog.querySelector('.contact-edit-delete-btn').addEventListener('click', onDelete);
 }
 
 
@@ -70,9 +63,7 @@ export function openEditContactOverlay(contact, onSubmit, onDelete) {
  * @param {() => void} onConfirm
  */
 export function openDeleteContactOverlay(contact, onConfirm) {
-    const node = document.getElementById('deleteContactOverlayTemplate').content.cloneNode(true);
-    wireOverlayClose(node);
-    node.querySelector('.contact-delete-message').textContent = `Delete ${contact.name}?`;
-    node.querySelector('.contact-delete-confirm-btn').addEventListener('click', onConfirm);
-    renderContactOverlay(node);
+    const dialog = openContactModal('deleteContactOverlayTemplate');
+    dialog.querySelector('.contact-delete-message').textContent = `Delete ${contact.name}?`;
+    dialog.querySelector('.contact-delete-confirm-btn').addEventListener('click', onConfirm);
 }

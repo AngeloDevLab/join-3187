@@ -147,6 +147,11 @@
     align-items: center;
     gap: var(--space-2xs);
     margin-top: 40px;
+    min-width: 0;
+}
+
+.contact-details-name {
+    overflow-wrap: break-word;
 }
 
 .contact-details-avatar {
@@ -154,11 +159,6 @@
     height: 70px;
     font-size: 27px;
     border: 3px solid var(--color-white);
-}
-
-.contact-details-profile h2 {
-    font-weight: var(--font-weight-bold);
-    margin: 0;
 }
 
 .contact-information-title {
@@ -244,25 +244,34 @@
 
 /* ── Contact Overlay (Add/Edit/Delete) ────────────────────── */
 
-.contact-overlay-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 30;
+.modal--contact {
     display: flex;
     align-items: flex-end;
     justify-content: center;
+    width: 100vw;
+    height: 100dvh;
+    max-width: 100vw;
+    max-height: 100dvh;
+    margin: 0;
     padding: 16px 16px calc(var(--mobile-nav-height) + 5px);
-    background-color: rgba(0, 0, 0, 0.25);
+    background: transparent;
+    overflow: visible;
+}
+
+.modal--contact::backdrop {
+    background: rgba(0, 0, 0, 0.25);
     opacity: 0;
     transition: opacity 180ms ease-out;
 }
 
-.contact-overlay-backdrop.contact-overlay-open {
+.modal--contact.is-open::backdrop {
     opacity: 1;
 }
 
-.contact-overlay-backdrop:has(.contact-edit-overlay) {
-    align-items: center;
+.modal--contact:has(.contact-edit-overlay) {
+    align-items: stretch;
+    padding-top: var(--header-height);
+    padding-bottom: var(--mobile-nav-height);
 }
 
 .contact-overlay {
@@ -281,17 +290,18 @@
     transition: transform 180ms ease-out;
 }
 
-.contact-overlay-open .contact-overlay,
-.contact-overlay-open .contact-add-overlay,
-.contact-overlay-open .contact-edit-overlay,
-.contact-overlay-open .contact-delete-overlay {
+.modal--contact.is-open .contact-overlay,
+.modal--contact.is-open .contact-add-overlay,
+.modal--contact.is-open .contact-edit-overlay,
+.modal--contact.is-open .contact-delete-overlay {
     transform: translateY(0);
 }
 
-.contact-delete-overlay > .close-btn {
+.contact-overlay > .close-btn {
     position: absolute;
     top: 24px;
     right: 24px;
+    color: var(--color-white);
 }
 
 .contact-overlay-brand {
@@ -327,9 +337,6 @@
     background-color: var(--color-accent);
 }
 
-.contact-overlay .close-btn {
-    color: var(--color-white);
-}
 
 .contact-delete-content {
     display: flex;
@@ -367,13 +374,16 @@
     gap: 14px;
 }
 
-.contact-edit-fields > .close-btn,
-.contact-add-fields > .close-btn {
-    align-self: end;
-}
-
 .contact-edit-overlay {
     width: min(440px, 100%);
+    max-height: none;
+}
+
+/* Extra bottom padding so the "Edit contact" heading (single line, no
+   subtitle unlike the add-overlay) doesn't collide with the avatar badge
+   floating in from the form below, on narrow screens. */
+.contact-edit-overlay .contact-overlay-brand {
+    padding-bottom: calc(var(--space-lg) + var(--space-sm));
 }
 
 .contact-add-overlay .contact-overlay-brand {
@@ -390,7 +400,7 @@
     align-items: center;
     gap: 56px;
     display: flex;
-    padding: 82px 14px 54px;
+    padding: 82px 14px 14px;
 }
 
 .contact-add-avatar {
@@ -456,7 +466,16 @@
 
 @media (min-width: 1024px) {
 
-    .contact-overlay-backdrop {
+    .modal--contact {
+        align-items: center;
+        padding: var(--space-md);
+    }
+
+    /* Reset the mobile full-height edit-overlay treatment (see the base
+       .modal--contact:has(.contact-edit-overlay) rule) back to the normal
+       centered dialog once the two-column desktop layout has its own sidebar
+       instead of a bottom navbar. */
+    .modal--contact:has(.contact-edit-overlay) {
         align-items: center;
         padding: var(--space-md);
     }
@@ -470,7 +489,7 @@
         transform: translateX(120px);
     }
 
-    .contact-overlay-open .contact-overlay {
+    .modal--contact.is-open .contact-overlay {
         transform: translateX(0);
     }
 
@@ -482,7 +501,7 @@
         display: block;
     }
 
-    .contact-overlay .close-btn {
+    .contact-overlay > .close-btn {
         color: inherit;
     }
 
@@ -581,7 +600,6 @@
        up — see the shared breakpoint block further down. */
     .desktop-contact-actions {
         display: flex;
-        flex-direction: column;
         gap: var(--space-sm);
         margin-top: var(--space-2xs);
     }
@@ -590,6 +608,7 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+        min-width: 0;
     }
 
     .contact-details-name-actions h2 {
@@ -619,7 +638,7 @@
        so the two-column layout stays flush against the sidebar on ultra-wide screens. */
     .contacts-main {
         display: grid;
-        grid-template-columns: 430px 1fr;
+        grid-template-columns: clamp(300px, 32vw, 430px) 1fr;
         height: calc(100vh - var(--header-height));
         max-width: 1440px;
         background-color: var(--color-bg);
@@ -634,7 +653,7 @@
         flex-direction: column;
         background-color: var(--color-white);
         height: calc(100vh - var(--header-height));
-        padding: var(--space-md) clamp(var(--space-sm), 4vw, var(--space-xl));
+        padding: var(--space-md) var(--space-md) 0 clamp(var(--space-sm), 4vw, var(--space-xl));
         overflow: hidden;
         box-shadow: 4px 0px 6px 0px #00000014;
     }
@@ -681,6 +700,7 @@
     .contact-details {
         display: block;
         background-color: var(--color-bg);
+        min-width: 0;
     }
 
     .contact-details.d-none {
