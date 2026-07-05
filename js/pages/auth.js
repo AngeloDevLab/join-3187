@@ -1,4 +1,4 @@
-import { validateField, setError, isValidEmail } from '../utils/form-validation.js';
+import { validateField, setError, clearError, isValidEmail } from '../utils/form-validation.js';
 import { loginUser, registerUser, loginAsGuest } from '../firebase/auth.js';
 import { showToast } from '../components/toast.js';
 
@@ -217,6 +217,22 @@ function updateSignupBtn(btn, fields) {
 
 
 /**
+ * Live-checks the confirm-password field against the password field, showing
+ * or clearing the mismatch error immediately as the user types.
+ * @param {ReturnType<typeof getSignupFields>} fields
+ */
+function checkPasswordMatch(fields) {
+    const { passwordInput, confirmInput, confirmError } = fields;
+    const wrapper = confirmInput.closest('.input-wrapper');
+    if (!confirmInput.value || confirmInput.value === passwordInput.value) {
+        clearError(wrapper, confirmError);
+        return;
+    }
+    setError(wrapper, confirmError, "Your passwords don't match. Please try again.");
+}
+
+
+/**
  * Validates all signup fields on submit and shows errors for any that fail.
  * @param {ReturnType<typeof getSignupFields>} fields
  * @returns {boolean}
@@ -259,6 +275,8 @@ function initSignupForm() {
     updateSignupBtn(submitBtn, fields);
     [fields.nameInput, fields.emailInput, fields.passwordInput, fields.confirmInput]
         .forEach((input) => input.addEventListener('input', () => updateSignupBtn(submitBtn, fields)));
+    [fields.passwordInput, fields.confirmInput]
+        .forEach((input) => input.addEventListener('input', () => checkPasswordMatch(fields)));
     fields.checkbox.addEventListener('change', () => updateSignupBtn(submitBtn, fields));
     form.addEventListener('submit', (e) => handleSignupSubmit(e, fields));
 }
