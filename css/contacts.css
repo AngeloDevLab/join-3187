@@ -540,6 +540,15 @@
         color: inherit;
     }
 
+    /* Only the mobile card sits over the dark brand panel (delete overlay
+       stays a direct .contact-overlay child there, unlike edit/add which
+       moved their desktop button into the fields column) — past this
+       breakpoint it's on the light background, so it needs the same default
+       hover as every other close button instead of the dark one. */
+    .contact-overlay > .close-btn:hover {
+        background: var(--color-bg);
+    }
+
     .contact-delete-content {
         padding: 72px 48px 48px;
     }

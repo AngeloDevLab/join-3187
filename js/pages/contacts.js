@@ -264,7 +264,7 @@ async function openEditContactOverlay(contactId) {
     closeMenuContactIfRendered();
     const contact = await getContactById(contactId);
     if (!contact) return;
-    showEditContactOverlay(contact, (e) => saveEditedContact(e, contactId), () => deleteContact(contactId));
+    showEditContactOverlay(contact, (e) => saveEditedContact(e, contactId), () => openDeleteContactOverlay(contactId));
 }
 
 
