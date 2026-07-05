@@ -213,6 +213,7 @@ function wireSubtaskCheckboxes(dialog, todo, onToggleSubtask) {
 function switchToEditMode(dialog, todo, { onSave, onClose }) {
     const node = document.getElementById('addTaskTemplate').content.cloneNode(true);
     node.querySelector('.add-task-modal')?.classList.add('add-task-modal--edit');
+    dialog.classList.replace('modal--center', 'modal--right');
     dialog.replaceChildren(node);
     initAddTaskForm(dialog, {
         editTask: todo.raw,
