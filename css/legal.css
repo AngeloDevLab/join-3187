@@ -1,0 +1,23 @@
+/* ── Privacy Policy & Imprint ─────────────────────────────────── */
+
+.legal-content {
+    padding: var(--space-xl) clamp(var(--space-sm), 4vw, var(--space-xl));
+}
+
+.legal-content h1 {
+    margin-bottom: var(--space-lg);
+}
+
+.legal-content h2 {
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-sm);
+}
+
+.legal-content p,
+.legal-content ul {
+    margin-bottom: var(--space-md);
+}
+
+.legal-content ul {
+    padding-left: var(--space-lg);
+}

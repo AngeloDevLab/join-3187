@@ -79,7 +79,7 @@
     <template id="contactCardTemplate">
         <div class="contact-card">
             <div class="contact-avatar avatar-circle"></div>
-            <div>
+            <div class="contact-card-info">
                 <h4 class="contact-card-name"></h4>
                 <a class="contact-card-email"></a>
             </div>
@@ -125,16 +125,16 @@
     </template>
 
     <template id="contactDetailsPlaceholderTemplate">
-        <div class="desktop-contact-placeholder">
+        <div class="desktop-contact-placeholder contact-panel-heading">
             <h1>Contacts</h1>
-            <div></div>
-            <p>Better with a team</p>
+            <hr class="title-hr">
+            <p class="subline">Better with a team</p>
         </div>
     </template>
 
     <template id="addContactOverlayTemplate">
         <section class="contact-overlay contact-add-overlay">
-            <button type="button" class="close-btn" aria-label="Close">✕</button>
+            <button type="button" class="close-btn contact-add-close-btn-mobile" aria-label="Close">✕</button>
             <div class="contact-overlay-brand">
                 <img src="../assets/icons/join_logo.svg" alt="Join">
                 <h2>Add contact</h2>
@@ -146,6 +146,7 @@
                     <img src="../assets/icons/person.svg" alt="">
                 </div>
                 <div class="contact-add-fields">
+                    <button type="button" class="close-btn contact-add-close-btn-desktop" aria-label="Close">✕</button>
                     <div class="input-field">
                         <label class="input-wrapper">
                             <input id="addContactName" type="text" placeholder="Name" autocomplete="name" required>
@@ -178,7 +179,7 @@
 
     <template id="editContactOverlayTemplate">
         <section class="contact-overlay contact-edit-overlay">
-            <button type="button" class="close-btn" aria-label="Close">✕</button>
+            <button type="button" class="close-btn contact-edit-close-btn-mobile" aria-label="Close">✕</button>
             <div class="contact-overlay-brand">
                 <img src="../assets/icons/join_logo.svg" alt="Join">
                 <h2>Edit contact</h2>
@@ -187,6 +188,7 @@
             <form class="contact-edit-form" novalidate>
                 <div class="contact-edit-avatar avatar-circle"></div>
                 <div class="contact-edit-fields">
+                    <button type="button" class="close-btn contact-edit-close-btn-desktop" aria-label="Close">✕</button>
                     <div class="input-field">
                         <label class="input-wrapper">
                             <input id="editContactName" class="contact-edit-name-input" type="text" placeholder="Name" autocomplete="name" required>

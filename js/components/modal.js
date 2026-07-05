@@ -1,5 +1,25 @@
 import { triggerTransitionIn } from '../utils/helpers.js';
 
+let openCount = 0;
+
+
+/**
+ * Locks page scroll on the first open modal, counting nested/stacked opens.
+ */
+function lockBackgroundScroll() {
+    openCount++;
+    document.documentElement.classList.add('modal-open');
+}
+
+
+/**
+ * Unlocks page scroll once the last open modal has closed.
+ */
+function unlockBackgroundScroll() {
+    openCount = Math.max(0, openCount - 1);
+    if (openCount === 0) document.documentElement.classList.remove('modal-open');
+}
+
 
 /**
  * Animates the modal out, then closes and removes it from the DOM.
@@ -9,7 +29,7 @@ import { triggerTransitionIn } from '../utils/helpers.js';
 function closeModal(dialog) {
     dialog.classList.remove('is-open');
     let done = false;
-    const finish = () => { if (done) return; done = true; dialog.close(); dialog.remove(); };
+    const finish = () => { if (done) return; done = true; dialog.close(); dialog.remove(); unlockBackgroundScroll(); };
     dialog.addEventListener('transitionend', (e) => { if (e.propertyName === 'transform') finish(); });
     setTimeout(finish, 350);
 }
@@ -40,6 +60,7 @@ export function openModal(content, { animation = 'right', duration = null } = {}
     else dialog.appendChild(content);
     document.body.appendChild(dialog);
     dialog.showModal();
+    lockBackgroundScroll();
     triggerTransitionIn(dialog, 'is-open');
     const close = () => closeModal(dialog);
     attachDismissHandlers(dialog, close);

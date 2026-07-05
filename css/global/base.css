@@ -49,6 +49,12 @@ body {
     margin: 0;
 }
 
+/* Applied to <html> while any modal is open (see js/components/modal.js),
+   so the page behind the dialog can't be scrolled with wheel/touch. */
+html.modal-open {
+    overflow: hidden;
+}
+
 p,
 h1,
 h2,

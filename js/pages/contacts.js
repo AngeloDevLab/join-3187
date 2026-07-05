@@ -111,7 +111,7 @@ function buildContactCardNode(contact) {
     const emailEl = card.querySelector('.contact-card-email');
 
     card.id = `contact-card-${contact.id}`;
-    card.addEventListener('click', () => showContactDetails(contact.id));
+    card.addEventListener('click', () => handleContactCardClick(contact.id));
     card.querySelector('.contact-card-name').textContent = contact.name;
 
     avatar.style.background = getAvatarColorForId(contact.id);
@@ -121,6 +121,28 @@ function buildContactCardNode(contact) {
     emailEl.href = `mailto:${contact.email}`;
 
     return card;
+}
+
+
+/**
+ * Handles a contact card click: on desktop, clicking the already-selected
+ * contact deselects it again; otherwise shows its details.
+ * @param {string} contactId
+ */
+function handleContactCardClick(contactId) {
+    if (activeContactId === contactId && window.innerWidth >= 1024) {
+        deselectContact();
+        return;
+    }
+    showContactDetails(contactId);
+}
+
+
+/** Deselects the active contact and resets the details panel to its placeholder. */
+function deselectContact() {
+    document.getElementById(`contact-card-${activeContactId}`)?.classList.remove('active');
+    activeContactId = null;
+    resetContactDetails();
 }
 
 
@@ -137,9 +159,7 @@ async function showContactDetails(contactId) {
     details.innerHTML = '';
     details.appendChild(buildContactDetailsNode(contact));
     showContactDetailsCard();
-    if (window.innerWidth < 1024) {
-        document.getElementById('contactsList').classList.add('d-none');
-    }
+    document.getElementById('contactsList').classList.add('d-none');
 }
 
 

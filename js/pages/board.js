@@ -166,7 +166,7 @@ function stopDragging(event) {
  */
 function allowDrop(event) {
     event.preventDefault();
-    updateDropIndicator(event.currentTarget, event.clientY);
+    updateDropIndicator(event.currentTarget, event.clientX, event.clientY);
 }
 
 

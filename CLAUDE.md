@@ -83,8 +83,8 @@ Join is a project management tool for visualizing task status and responsibiliti
 | Board | `pages/board.html` | `css/board.css` | `js/pages/board.js` |
 | Add Task | `pages/add-task.html` | `css/add-task.css` | `js/pages/add-task.js` |
 | Contacts | `pages/contacts.html` | `css/contacts.css` | `js/pages/contacts.js` |
-| Imprint | `pages/imprint.html` | _(global/base.css)_ | — |
-| Privacy | `pages/privacy.html` | _(global/base.css)_ | — |
+| Imprint | `pages/imprint.html` | `css/legal.css` | `js/pages/imprint.js` |
+| Privacy | `pages/privacy.html` | `css/legal.css` | `js/pages/imprint.js` |
 
 ## Firebase
 
