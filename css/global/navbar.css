@@ -114,6 +114,14 @@
   color: var(--color-nav-item);
   }
 
+.nav-legal-mobile a.active {
+    display: inline-block;
+    background: var(--color-primary-dark);
+    color: var(--color-white);
+    padding: var(--space-sm) var(--space-2xs);
+    border-radius: var(--border-radius-sm);
+}
+
 .header-help img {
     width: 24px;
     height: 24px;
@@ -283,6 +291,14 @@
         text-decoration: none;
         transform: none;
         font-weight: var(--font-weight-bold);
+    }
+
+    .nav-legal a.active {
+        display: inline-block;
+        background: var(--color-primary-dark);
+        color: var(--color-white);
+        padding: var(--space-xs) var(--space-2xs);
+        border-radius: var(--border-radius-sm);
     }
 
     .header-logo-mobile {

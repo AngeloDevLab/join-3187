@@ -3,13 +3,16 @@ import { toggleDropdown, initDropdownAutoClose } from './task-category-dropdown.
 
 
 /**
- * Highlights the nav-item whose link matches the current page.
+ * Highlights the link whose data-page matches the current page: the parent
+ * nav-item for main nav-links, or the link itself for nav-legal links.
  * @param {HTMLElement} sidebar
  */
 function setActiveLink(sidebar) {
     const path = window.location.pathname;
-    sidebar.querySelectorAll('.nav-link').forEach((a) => {
-        a.parentElement.classList.toggle('active', path.endsWith(a.dataset.page));
+    sidebar.querySelectorAll('[data-page]').forEach((a) => {
+        const isActive = path.endsWith(a.dataset.page);
+        const target = a.classList.contains('nav-link') ? a.parentElement : a;
+        target.classList.toggle('active', isActive);
     });
 }
 
