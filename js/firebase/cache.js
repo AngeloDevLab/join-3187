@@ -104,8 +104,21 @@ export async function updateContact(id, data) {
 }
 
 
+/**
+ * Removes a contact's id from every task's assignedTo list before the contact is deleted.
+ * @param {string} contactId
+ */
+async function unassignContactFromTasks(contactId) {
+    const tasks = (await getTasks()) || {};
+    const affected = Object.entries(tasks).filter(([, task]) => task.assignedTo?.includes(contactId));
+    await Promise.all(affected.map(([id, task]) =>
+        updateTask(id, { assignedTo: task.assignedTo.filter((cId) => cId !== contactId) })));
+}
+
+
 /** @param {string} id */
 export async function removeContact(id) {
+    await unassignContactFromTasks(id);
     await remove('contacts', id);
     removeFromCache('contacts', id);
 }
