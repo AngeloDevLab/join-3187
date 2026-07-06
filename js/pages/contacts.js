@@ -118,7 +118,6 @@ function buildContactCardNode(contact) {
     avatar.textContent = getInitials(contact.name);
 
     emailEl.textContent = contact.email;
-    emailEl.href = `mailto:${contact.email}`;
 
     return card;
 }
