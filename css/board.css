@@ -607,18 +607,7 @@
     border-radius: var(--border-radius-sm);
     font-size: 14px;
     font-weight: var(--font-weight-medium);
-}
-
-.priority-chip--urgent {
-    color: var(--priority-urgent);
-}
-
-.priority-chip--medium {
-    color: var(--priority-medium);
-}
-
-.priority-chip--low {
-    color: var(--priority-low);
+    color: var(--color-text);
 }
 
 .task-detail-actions {
