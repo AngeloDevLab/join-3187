@@ -58,7 +58,7 @@ Join is a project management tool for visualizing task status and responsibiliti
 - **2 blank lines between functions** — consistent throughout every script
 - **JSDoc required on every function** — document parameters and return values
 - Reusable logic belongs in `js/components/` or `js/utils/`, not in page scripts
-- Sidebar/header markup is static HTML, copy-pasted identically into every protected page (`pages/board.html`, `pages/summary.html`, `pages/add-task.html`, `pages/contacts.html`); `js/components/navbar.js` only attaches behavior (active-link highlight, header avatar initials, dropdown toggle, logout) via `initNavbar()` — it does not render any markup
+- Sidebar/header markup is static HTML, copy-pasted identically into every protected page (`pages/board.html`, `pages/summary.html`, `pages/add-task.html`, `pages/contacts.html`, `pages/help.html`); `js/components/navbar.js` only attaches behavior (active-link highlight, header avatar initials, dropdown toggle, logout) via `initNavbar()` — it does not render any markup
 - **No `DOMContentLoaded` wrapper** — all scripts use `type="module"` which defers automatically; call init functions directly at the top level at the end of the file
 - **`import '../utils/auth-guard.js'` must be the first import** in every protected page script (all pages except `index.html`, `imprint.html`, `privacy.html`)
 - **Never import from `js/firebase/database.js` in page scripts** — always go through `js/firebase/cache.js`
@@ -70,7 +70,16 @@ Join is a project management tool for visualizing task status and responsibiliti
 | Navbar / Sidebar (behavior only) | `js/components/navbar.js` | done |
 | Modal / Drawer | `js/components/modal.js` | done |
 | Toast | `js/components/toast.js` | done |
+| Add Task form | `js/components/add-task-form.js` | done |
 | Subtask input | `js/components/subtask.js` | done |
+| Task card | `js/components/task-card.js` | done |
+| Task detail modal (view/edit/delete) | `js/components/task-detail-modal.js` | done |
+| Task category dropdown | `js/components/task-category-dropdown.js` | done |
+| Task assigned-to dropdown | `js/components/task-assigned-dropdown.js` | done |
+| Drag ghost (drag visuals) | `js/components/drag-ghost.js` | done |
+| Drop indicator (column drop highlight) | `js/components/drop-indicator.js` | done |
+| Contact form fields + validation | `js/components/contact-form.js` | done |
+| Contact overlay (add/edit/delete dialogs) | `js/components/contact-overlay.js` | done |
 | Form validation | `js/utils/form-validation.js` | done |
 | Auth Guard | `js/utils/auth-guard.js` | done |
 
@@ -83,6 +92,7 @@ Join is a project management tool for visualizing task status and responsibiliti
 | Board | `pages/board.html` | `css/board.css` | `js/pages/board.js` |
 | Add Task | `pages/add-task.html` | `css/add-task.css` | `js/pages/add-task.js` |
 | Contacts | `pages/contacts.html` | `css/contacts.css` | `js/pages/contacts.js` |
+| Help | `pages/help.html` | `css/help.css` | `js/pages/help.js` |
 | Imprint | `pages/imprint.html` | `css/legal.css` | `js/pages/imprint.js` |
 | Privacy | `pages/privacy.html` | `css/legal.css` | `js/pages/imprint.js` |
 
@@ -91,7 +101,7 @@ Join is a project management tool for visualizing task status and responsibiliti
 - Config in `js/firebase/config.js`
 - Auth wrapper in `js/firebase/auth.js` — session management, login, signup, guest
 - Database access in `js/firebase/database.js` — raw REST fetch wrapper (internal only)
-- Cache layer in `js/firebase/cache.js` — memory + sessionStorage + Firebase; **use this in page scripts**
+- Cache layer in `js/firebase/cache.js` — in-memory only, backed by Firebase; **use this in page scripts**. The memory cache lives only as long as the current page (MPA — a page navigation reloads the module), so it saves refetches within a page, not across pages
 - Route protection in `js/utils/auth-guard.js`
 
 ## CSS Global Files

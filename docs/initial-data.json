@@ -1,5 +1,21 @@
 {
     "users": {
+        "-OwJpCu33NwCD7HIktwG": {
+            "email": "apietsch94@gmail.com",
+            "name": "Angelo Pietsch"
+        },
+        "-OwJxwUZw1570Bs8h1wn": {
+            "email": "mahadyussufnur@gmail.com",
+            "name": "Mahad Yussuf Nur"
+        },
+        "-OwKDZyu69h1J9at4L9s": {
+            "email": "louis.juchem@web.de",
+            "name": "Louis Juchem"
+        },
+        "-OwTWyye2-1VO7gf97kQ": {
+            "email": "christiantatek.m@gmail.com",
+            "name": "Christian Mulugeta"
+        }
     },
     "tasks": {
         "task1": {
@@ -98,6 +114,29 @@
                     "done": false
                 }
             }
+        },
+        "task5": {
+            "title": "Build Add Task form",
+            "description": "Form to create a task with title, due date, priority, category, assigned contacts and subtasks",
+            "category": "userStory",
+            "priority": "medium",
+            "column": "done",
+            "assignedTo": [
+                "contact2",
+                "contact3"
+            ],
+            "dueDate": "2024-02-01",
+            "createdAt": "2024-01-12",
+            "subtasks": {
+                "subtask1": {
+                    "title": "Form fields and validation",
+                    "done": true
+                },
+                "subtask2": {
+                    "title": "Assigned-to and category dropdowns",
+                    "done": true
+                }
+            }
         }
     },
     "contacts": {
@@ -150,6 +189,26 @@
             "name": "Lena Richter",
             "email": "lena@gmail.com",
             "phone": "+49 123 456789"
+        },
+        "-OwKDZzUkLWiJi7oNMsV": {
+            "name": "Louis Juchem",
+            "email": "louis.juchem@web.de",
+            "phone": ""
+        },
+        "-OwOwWbQy7CLQiswd9zN": {
+            "name": "Mahad Yussuf Nur",
+            "email": "mahadyussufnur@gmail.com",
+            "phone": "55151"
+        },
+        "-OwTXz78InSw2anEoEGq": {
+            "name": "Christian Mulugeta",
+            "email": "christiantatek.m@gmail.com",
+            "phone": ""
+        },
+        "-OwsxUiGSOmtd1bt9xk8": {
+            "name": "Angelo Pietsch",
+            "email": "apietsch94@gmail.com",
+            "phone": ""
         }
     }
 }

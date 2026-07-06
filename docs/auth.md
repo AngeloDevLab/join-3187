@@ -36,7 +36,7 @@ js/utils/auth-guard.js  — reads sessionStorage, redirects to index.html if no 
 1. User fills email + password → clicks "Log in"
 2. `handleLoginSubmit` validates: email format + password non-empty
 3. `loginUser(email)` calls `findUserByEmail` → `getAll('users')` from Firebase
-4. Match found → `setSession({ id, name, initials })` writes to `sessionStorage`
+4. Match found → `setSession({ id, name, initials, email })` writes to `sessionStorage`
 5. `exitAndRedirect` fades the card, shows toast, navigates to `pages/summary.html`
 
 No password check on login — passwords are not stored in Firebase.
@@ -54,8 +54,13 @@ The email alone identifies the user. This is intentional for this project scope.
    - Privacy Policy checkbox checked
 2. `registerUser(name, email)` checks for duplicate email via `findUserByEmail`
 3. Duplicate → throws, error shown on email field
-4. New user → `create('users', { name, email, initials })` → `setSession`
+4. New user → `create('users', { name, email })`, then `saveContact({ name, email, phone: '' })` so the
+   new user immediately shows up in Contacts → `setSession({ id, name, initials, email })`
 5. Toast + redirect to `pages/summary.html`
+
+Note: `contacts.js` also runs `addCurrentUserToContacts()` on every Contacts page load as a
+safety net (deduped by email) — the explicit save in step 4 covers the common case, this
+just guards against a user record that predates this behavior.
 
 ---
 
@@ -69,7 +74,7 @@ No DB entry is created. Guest data is lost when the tab closes.
 ## Session
 
 - Storage: `sessionStorage` (cleared on tab close, survives page navigation)
-- Key: `currentUser` → `{ id, name, initials }`
+- Key: `currentUser` → `{ id, name, initials, email }`
 - Read via `getCurrentUser()` — used by auth-guard and any page that needs the current user
 - Cleared via `logoutUser()` + redirect to `index.html` (caller handles redirect so the intro animation replays)
 
@@ -94,6 +99,9 @@ rather than after. Login button stays always-enabled (fewer fields, less frictio
 The browser's built-in email validation (`validity.valid`) accepts `user@domain` without
 a TLD. The regex `/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/` requires at least a two-character TLD.
 
-**Why `initials` are derived and stored, not computed on the fly?**
-Initials are displayed in avatars across multiple pages. Storing them avoids re-deriving
-from the name on every render and keeps the user object self-contained.
+**Why are `initials` computed via `getInitials(name)` instead of stored in Firebase?**
+Initials are derived from `name` on the fly wherever an avatar renders (contacts, task
+cards, dropdowns) via `getInitials()` in `helpers.js` — never persisted to the `users` or
+`contacts` collections. The one exception is the session object in `sessionStorage`, where
+`initials` is computed once at login/signup and cached there purely so the navbar avatar
+doesn't need to re-derive it on every page load.

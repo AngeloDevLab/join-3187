@@ -15,10 +15,11 @@ A collaborative Kanban board built as a Multi-Page Application (MPA), developed 
 - Subtasks with progress indicator
 - Drag & drop between columns (desktop)
 - Real-time task search
-- Contact management (add, edit, delete)
+- Contact management (add, edit, delete — deleting a contact also unassigns it from any tasks)
 - Responsive design (from 320px, mobile-first)
 - Time-based greeting message
 - Dashboard with task overview
+- Help / FAQ page
 - Legal Notice & Privacy Policy
 
 ## Setup
@@ -30,7 +31,7 @@ A collaborative Kanban board built as a Multi-Page Application (MPA), developed 
 
 2. Create a Firebase project at [firebase.google.com](https://firebase.google.com)
 
-3. Add your Firebase config to `js/firebase/config.js` – **never push this to the repository**, exclude it via `.gitignore` instead
+3. Copy `js/firebase/config.example.js` to `js/firebase/config.js` and fill in your Firebase Realtime Database URL (see `docs/database-setup.md` for the full walkthrough) – **never push `config.js` to the repository**, it's already excluded via `.gitignore`
 
 4. Open `index.html` in your browser – no build step required
 
@@ -44,6 +45,7 @@ join/
 │   ├── add-task.html
 │   ├── contacts.html
 │   ├── summary.html
+│   ├── help.html
 │   ├── imprint.html
 │   └── privacy.html
 ├── css/                # Global and page-specific stylesheets
@@ -70,7 +72,7 @@ join/
 - **MPA over SPA** — each page is independent, no client-side routing required
 - **Firebase Realtime Database over Firestore** — simpler API for this use case
 - **CSS custom properties** — all design tokens (colors, spacing, typography) defined in `css/variables.css`
-- **Avatar colors assigned by name hash** — deterministic, same contact always gets the same color
+- **Avatar colors assigned by contact ID hash** — deterministic, same contact always gets the same color everywhere (contacts list, task cards, assigned-to dropdown)
 
 ## Team
 

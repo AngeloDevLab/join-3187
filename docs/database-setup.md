@@ -26,10 +26,10 @@
 
 ```javascript
 // config.js
-export const DB_URL = "https://{your-project}.firebaseio.com"
+export const DB_URL = 'https://{your-project}-default-rtdb.{region}.firebasedatabase.app';
 ```
 
-The base URL can be found in the Realtime Database under "Data" — it is displayed directly above the data tree.
+The base URL can be found in the Realtime Database under "Data" — it is displayed directly above the data tree. Copy `config.example.js` to `config.js` and fill it in, rather than writing this file from scratch.
 
 > `config.js` is listed in `.gitignore` — do not commit it. Only `config.example.js` goes into the repo.
 

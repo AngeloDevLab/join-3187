@@ -5,12 +5,16 @@
 ```
 Page Script (e.g. board.js, summary.js)
   └── js/firebase/cache.js       — single entry point for all data access
-        ├── Memory (module-level object, lives as long as the page is open)
-        ├── sessionStorage        — survives page navigation within a session
-        └── js/firebase/database.js — raw Firebase REST calls (last resort)
+        ├── Memory (module-level object, lives only as long as the current page)
+        └── js/firebase/database.js — raw Firebase REST calls (on a cache miss)
 ```
 
 **Rule: page scripts never import `database.js` directly. Only `cache.js`.**
+
+Because this is an MPA, every page navigation is a full browser navigation — the JS module
+graph (and with it the `memory` object) is torn down and rebuilt from scratch. The cache
+only avoids repeat Firebase calls for reads that happen *within* one page's lifetime
+(e.g. re-rendering the board after a drag-and-drop); it does not persist across pages.
 
 ---
 
@@ -19,18 +23,16 @@ Page Script (e.g. board.js, summary.js)
 ```
 getTasks() / getContacts() / getUsers()
   │
-  ├─ memory hit?       → return immediately (no I/O)
+  ├─ memory hit?  → return immediately (no I/O)
   │
-  ├─ sessionStorage hit? → populate memory → return (no Firebase call)
-  │
-  └─ cache miss        → fetch from Firebase
-                          → write to sessionStorage
-                          → write to memory
-                          → return
+  └─ cache miss   → fetch from Firebase
+                     → write to memory
+                     → return
 ```
 
-On a typical session: Firebase is called **once per collection per tab**.
-Every subsequent read (same page or after navigation) is served from cache.
+Within a single page load, Firebase is called **once per collection**. Navigating to a
+different page always triggers a fresh fetch, since the memory cache doesn't survive
+the navigation.
 
 ---
 
@@ -40,17 +42,26 @@ Every subsequent read (same page or after navigation) is served from cache.
 saveTask(data) / saveContact(data)
   │
   ├─ write to Firebase (POST)
-  └─ update memory + sessionStorage in place  ← no refetch needed
+  └─ update memory in place  ← no refetch needed
      (addToCache adds the new entry by ID)
 
-removeTask(id) / removeContact(id)
+removeTask(id)
   │
   ├─ delete from Firebase (DELETE)
-  └─ remove from memory + sessionStorage in place
+  └─ remove from memory in place
+
+removeContact(id)
+  │
+  ├─ strip this contact's id from every task's assignedTo list (updateTask per affected task)
+  ├─ delete the contact from Firebase (DELETE)
+  └─ remove from memory in place
 ```
 
 Writes never trigger a refetch — the cache is updated directly with the
 known change, keeping reads fast and Firebase calls minimal.
+`removeContact` is the one write that fans out to a second collection: it must clean up
+`tasks` before the contact itself disappears, otherwise a task could keep referencing a
+contact id that no longer exists.
 
 ---
 
@@ -58,26 +69,28 @@ known change, keeping reads fast and Firebase calls minimal.
 
 | Scenario | Behaviour |
 |---|---|
-| Same tab, own writes | Always consistent — cache updated on every write |
-| Multiple tabs, same user | Each tab has its own cache — no sync between tabs |
-| Two users simultaneously | Stale until page refresh — accepted trade-off |
-| Tab close / reopen | sessionStorage cleared — fresh fetch on next visit |
+| Same page, own writes | Always consistent — cache updated on every write |
+| Navigating to another page | Fresh Firebase fetch — memory cache doesn't survive navigation |
+| Multiple tabs, same user | Each page/tab has its own cache — no sync between them |
+| Two users simultaneously | Stale until the next page load — accepted trade-off |
 
-Multi-tab synchronisation is **out of scope** for this project.
+Multi-tab / multi-user synchronisation is **out of scope** for this project.
 Firebase Realtime listeners (`onValue`) would be needed for that.
 
 ---
 
 ## Decisions
 
-**Why three layers instead of just sessionStorage?**
-The in-memory layer avoids `JSON.parse` on every read within the same page.
-On data-heavy pages (board with many tasks), this matters.
+**Why an in-memory layer at all, if it doesn't survive navigation?**
+It still avoids redundant Firebase round-trips for the many reads that happen within a
+single page's lifetime (e.g. re-rendering the board after every drag-and-drop, or
+re-reading contacts after every add/edit/delete).
 
-**Why sessionStorage and not localStorage?**
-sessionStorage is scoped to a tab and cleared on close. This prevents a returning
-user from seeing data cached from a previous session without a fresh fetch.
-localStorage would require explicit cache invalidation logic across sessions.
+**Why not sessionStorage or localStorage for the data cache?**
+That was the original plan, but it turned out unnecessary: each page already does exactly
+one fetch per collection on load, and reads within that page hit memory. Persisting across
+navigations would mean writing extra cache-invalidation logic (staleness after another
+tab's write) for a saving that doesn't matter at this project's data volume.
 
 **Why update the cache in place on writes instead of invalidating?**
 Invalidating forces a Firebase refetch on the next read. Updating in place
