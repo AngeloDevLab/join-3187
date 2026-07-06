@@ -4,19 +4,21 @@ import { getCurrentUser } from '../firebase/auth.js';
 import { getTasks } from '../firebase/cache.js';
 import { escapeHtml } from '../utils/helpers.js';
 
-document.querySelectorAll('.summary-card').forEach(element => {
-  element.setAttribute('tabindex', '0');
-  element.setAttribute('role', 'link');   
-  element.addEventListener('click', () => {
-    window.location.href = './board.html';
-  });
-  element.addEventListener('keydown', (event) => { 
-    if (event.key === 'Enter') {   
-      event.preventDefault();                        
-      window.location.href = './board.html';     
-    }
-  });                                            
-});
+/** Makes each summary card behave as a link to the board (click or Enter key). */
+function initSummaryCardLinks() {
+    document.querySelectorAll('.summary-card').forEach((element) => {
+        element.setAttribute('tabindex', '0');
+        element.setAttribute('role', 'link');
+        element.addEventListener('click', () => { window.location.href = './board.html'; });
+        element.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                window.location.href = './board.html';
+            }
+        });
+    });
+}
+
 
 /** Shows the greeting overlay on mobile (on first login) or sets the name directly on desktop. */
 function initGreetingOverlay() {
@@ -124,5 +126,6 @@ async function loadSummaryCounts() {
 
 
 initNavbar();
+initSummaryCardLinks();
 initGreetingOverlay();
 loadSummaryCounts();

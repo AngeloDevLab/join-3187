@@ -15,6 +15,7 @@ async function cached(key) {
     return data;
 }
 
+
 /**
  * Adds a new entry to cache without refetching Firebase.
  * @param {string} key @param {string} id @param {Object} data
@@ -24,6 +25,7 @@ function addToCache(key, id, data) {
     if (memory[key] === null) memory[key] = {};
     memory[key][id] = data;
 }
+
 
 /**
  * Removes an entry from cache without refetching Firebase.
