@@ -23,7 +23,7 @@ function updateNavForAuthStatus() {
 function getUserBarHTML(user) {
     return `<a href="help.html" class="header-help"><img src="../assets/icons/help.svg" alt="Help"></a>
         <button type="button" class="header-avatar" id="headerAvatarBtn">${escapeHtml(user.initials)}</button>
-        <nav class="header-dropdown" id="headerDropdown">
+        <nav class="header-dropdown popup-menu dropdown" id="headerDropdown">
             <ul>
                 <li class="header-help-mobile"><a href="help.html">Help</a></li>
                 <li><a href="imprint.html">Legal Notice</a></li>
@@ -46,10 +46,19 @@ function getNavListHTML(isLoggedIn) {
            <li class="nav-item"><a href="board.html" class="nav-link" data-page="board.html"><img src="../assets/icons/board.svg" class="nav-icon" alt="">Board</a></li>
            <li class="nav-item"><a href="contacts.html" class="nav-link" data-page="contacts.html"><img src="../assets/icons/contact.svg" class="nav-icon" alt="">Contacts</a></li>`
         : `<li class="nav-item"><a href="../index.html" class="nav-link" data-page="login.html"><img src="../assets/icons/login.svg" class="nav-icon" alt="">Login</a></li>
-           <li class="nav-item nav-legal-mobile"><a href="privacy.html">Privacy Policy</a></li>
-           <li class="nav-item nav-legal-mobile"><a href="imprint.html">Legal Notice</a></li>`;
+           <li class="nav-item nav-legal-mobile"><a href="privacy.html" data-page="privacy.html">Privacy Policy</a></li>
+           <li class="nav-item nav-legal-mobile"><a href="imprint.html" data-page="imprint.html">Legal Notice</a></li>`;
+}
+
+
+/**
+ * Navigates back to the previous page in browser history.
+ */
+function goBack() {
+    history.back();
 }
 
 
 updateNavForAuthStatus();
 initNavbar();
+document.getElementById('legalBackBtn').addEventListener('click', goBack);

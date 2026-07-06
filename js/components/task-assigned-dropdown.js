@@ -1,7 +1,7 @@
 import { toggleDropdown } from './task-category-dropdown.js';
 import { getCurrentUser } from '../firebase/auth.js';
 import { getContacts } from '../firebase/cache.js';
-import { getAvatarColor, getInitials, escapeHtml } from '../utils/helpers.js';
+import { getAvatarColorForId, getInitials, escapeHtml } from '../utils/helpers.js';
 
 
 /**
@@ -19,7 +19,7 @@ function buildAssignedItem(contact, color, isYou) {
     li.className = 'dropdown-option assigned-option';
     li.setAttribute('role', 'option');
     li.setAttribute('aria-selected', 'false');
-    li.innerHTML = `<span class="contact-avatar" style="background:${color}">${initials}</span>`
+    li.innerHTML = `<span class="contact-avatar avatar-circle" style="background:${color}">${initials}</span>`
         + `<span class="contact-name">${displayName}</span>`
         + `<img src="../assets/icons/default-box.svg" class="contact-checkbox" alt="">`;
     return li;
@@ -46,7 +46,7 @@ function toggleAssignedContact(option) {
 function updateAssignedTrigger(root) {
     const selected = root.querySelectorAll('.assigned-option.selected');
     root.querySelector('#assignedChipsDisplay').innerHTML = [...selected]
-        .map((opt) => `<span class="contact-avatar" style="background:${opt.dataset.color}">${opt.dataset.initials}</span>`)
+        .map((opt) => `<span class="contact-avatar avatar-circle" style="background:${opt.dataset.color}">${opt.dataset.initials}</span>`)
         .join('');
 }
 
@@ -89,7 +89,7 @@ async function loadAssignedContacts(root) {
     const entries = Object.entries(contacts)
         .map(([id, data]) => ({ id, ...data }))
         .sort((a, b) => (isCurrentUser(a, currentUser) ? -1 : isCurrentUser(b, currentUser) ? 1 : 0));
-    entries.forEach((c, i) => list.appendChild(buildAssignedItem(c, getAvatarColor(i), isCurrentUser(c, currentUser))));
+    entries.forEach((c) => list.appendChild(buildAssignedItem(c, getAvatarColorForId(c.id), isCurrentUser(c, currentUser))));
 }
 
 

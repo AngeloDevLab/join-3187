@@ -1,27 +1,41 @@
-/* TODO: board-specific body rule — height:100vh may conflict with app-layout; verify and remove if not needed */
-body {
-    height: 100vh;
-    margin: 0;
-}
+/* ── Board Toolbar ─────────────────────────────────────────── */
 
 .board-section {
-    padding: 64px 48px;
+    padding: var(--space-xl) clamp(var(--space-sm), 4vw, var(--space-xl));
     background-color: var(--color-bg);
 }
 
 .board-top {
     display: flex;
     align-items: center;
-    gap: 24px;
-    margin-bottom: 40px;
+    gap: var(--space-sm);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
 }
 
 .board-top h1 {
     margin-right: auto;
 }
 
+.add-task-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 10px;
+    font-size: 28px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.add-task-trigger-label {
+    display: none;
+}
+
 .board-search-message {
-    margin: -24px 0 24px;
+    margin: calc(-1 * var(--space-md)) 0 var(--space-md);
     color: var(--color-text-muted);
     font-size: 16px;
 }
@@ -29,15 +43,18 @@ body {
 .search-wrapper {
     position: relative;
     display: inline-block;
+    order: 1;
+    flex: 1 0 100%;
+    width: 100%;
 }
 
 .search-wrapper input {
-    width: 200px;
-    padding: 10px 8px;
-    border: 1px solid #ccc;
-    /* TODO: var(--color-border) */
-    border-radius: 8px;
-    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 16px;
+    padding: 12px 48px 12px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
 }
 
 .search-icon {
@@ -49,39 +66,29 @@ body {
     height: 16px;
 }
 
-
-.cancel {
-    border: none;
-    background-color: var(--color-accent);
-    color: #fff;
-    border-radius: var(--border-radius-sm);
-    padding: var(--space-xs) var(--space-sm);
-    display: none;
-    text-align: center;
-    width: fit-content;
-}
+/* ── Board Columns ─────────────────────────────────────────── */
 
 .board-columns {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
 }
 
 .board-column {
     min-width: 0;
+    width: 100%;
 }
 
 .column-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: #42526e;
-    /* TODO: no variable defined — add --color-column-head to variables.css */
+    color: var(--color-column-head);
     margin-bottom: 16px;
+    width: 100%;
 }
 
 .column-head h3 {
-    font-size: 20px;
     margin: 0;
 }
 
@@ -92,8 +99,7 @@ body {
     right: 40px;
     top: 50%;
     transform: translateY(-50%);
-    background-color: #d1d1d1;
-    /* TODO: var(--color-border) */
+    background-color: var(--color-border);
 }
 
 .plus-sign {
@@ -110,16 +116,18 @@ body {
 }
 
 .empty-task {
-    border: 1px dashed #a8a8a8;
-    /* TODO: var(--color-text-muted) */
-    background-color: #e7e7e7;
-    color: #a8a8a8;
-    /* TODO: var(--color-text-muted) */
+    border: 1px dashed var(--color-text-muted);
+    background-color: var(--color-empty-task-bg);
+    color: var(--color-text-muted);
     text-align: center;
     padding: 16px;
     border-radius: var(--border-radius-md);
     pointer-events: none;
+    width: 100%;
+    box-sizing: border-box;
 }
+
+/* ── Task Card ─────────────────────────────────────────────── */
 
 .card-header {
     display: flex;
@@ -129,22 +137,25 @@ body {
 }
 
 .task-card {
-    background-color: white;
+    background-color: var(--color-white);
     border-radius: var(--border-radius-xl);
     padding: 16px;
     margin-bottom: 16px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
-    /* TODO: var(--shadow-card) */
+    box-shadow: var(--shadow-task-card);
     cursor: grab;
     transition:
         transform 0.15s ease,
         box-shadow 0.15s ease,
         opacity 0.15s ease;
         word-break: break-word;
+    width: 220px;
+    max-width: 220px;
+    min-height: 170px;
+    flex-shrink: 0;
 }
 
 .task-card:hover {
-       transform: scale(1.05);
+       transform: scale(1.02);
     }
 
 .task-card.dragging {
@@ -169,14 +180,14 @@ body {
 .drop-indicator {
     border-radius: var(--border-radius-xl);
     border: 2px dashed var(--color-accent);
-    background: rgba(41, 171, 226, 0.08);
+    background: rgba(var(--color-accent-rgb), 0.08);
     margin-bottom: 16px;
 }
 
 .task-category {
     max-width: fit-content;
     display: inline-block;
-    color: white;
+    color: var(--color-white);
     padding: 5px 16px;
     border-radius: var(--border-radius-sm);
     font-size: 14px;
@@ -192,15 +203,14 @@ body {
 }
 
 .task-card h4 {
-    margin: 0 0 8px;
+    margin: 0 0 var(--space-2xs);
     color: var(--color-primary);
-    font-size: 16px;
 }
 
 .task-card p {
     color: var(--color-text-muted);
     margin: 0 0 16px;
-    font-size: 15px;
+    font-size: 13px;
 }
 
 .progress-row {
@@ -208,7 +218,7 @@ body {
     align-items: center;
     gap: 12px;
     margin-bottom: 16px;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .progress-bar {
@@ -222,8 +232,7 @@ body {
 .progress-bar div {
     width: 0%;
     height: 100%;
-    background-color: #4589ff;
-    /* TODO: var(--color-progress) */
+    background-color: var(--color-progress);
 }
 
 .card-bottom {
@@ -232,22 +241,19 @@ body {
     align-items: center;
 }
 
-/* TODO: .avatar duplicates .contact-avatar in global/dropdown.css — consolidate when board uses Firebase contacts */
 .avatar {
     display: inline-flex;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    color: white;
-    justify-content: center;
-    align-items: center;
-    font-size: 11px;
+    width: 30px;
+    height: 30px;
+    font-size: 10px;
     margin-right: -8px;
-    border: 1px solid white;
+    border: 1px solid var(--color-white);
 }
 
+/* ── Move Dropdown ─────────────────────────────────────────── */
+
 .move-button {
-    display: none;
+    display: inherit;
     position: relative;
 }
 
@@ -255,12 +261,18 @@ body {
     display: none;
     position: absolute;
     right: 0px;
-    background: var(--color-primary);
-    border-radius: var(--border-radius-lg) 0 var(--border-radius-lg) var(--border-radius-lg);
-    min-width: 190px;
-    color: #fff;
     padding-left: 0px;
     z-index: 1;
+}
+
+/* Higher specificity than .dropdown's width:100% (global/dropdown.css) so it wins
+   regardless of import order. */
+.category-nav.dropdown {
+    width: auto;
+}
+
+.category-nav.is-open {
+    display: block;
 }
 
 .category-nav li {
@@ -278,15 +290,18 @@ body {
 }
 
 .category-nav h3 {
-    font-size: 18px;
     margin: 0;
     padding: var(--space-md) var(--space-md) var(--space-xs) var(--space-md);
 }
 
+/* ── Add Task Modal ────────────────────────────────────────── */
+
 .add-task-modal {
-    width: 1100px;
-    max-width: 90vw;
-    max-height: 90vh;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
     padding: clamp(var(--space-sm), 4vw, var(--space-xl));
     overflow-y: auto;
     box-sizing: border-box;
@@ -294,7 +309,7 @@ body {
 }
 
 .add-task-modal h1 {
-    margin: 0 0 32px;
+    margin: 0 0 var(--space-lg);
 }
 
 .add-task-modal--edit {
@@ -334,154 +349,171 @@ body {
     border-top: 1px solid var(--color-border);
 }
 
-.add-task-modal-close {
+.add-task-modal > .close-btn {
     position: absolute;
     top: 24px;
     right: 24px;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    border-radius: 50%;
-    background: transparent;
-    font-size: 24px;
-    cursor: pointer;
-    transition: background var(--transition-fast), transform var(--transition-fast);
-}
-
-.add-task-modal-close:hover {
-    background: var(--color-bg);
-    transform: scale(1.1);
 }
 
 .drag-area {
     cursor: pointer;
     min-height: 150px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 16px;
+    overflow-x: auto;
 }
 
 .drag-area.drag-over {
     background-color: #e7f3ff;
     border-radius: var(--border-radius-xl);
-    border: 2px dashed #4589ff;
+    border: 2px dashed var(--color-progress);
     transition: background-color 0.2s ease;
 }
 
-@media (max-width: 1023px) {
-    .add-task-modal .form-footer {
-        bottom: 0;
+/* Unconditional: only takes effect once .form-footer is position:fixed (mobile,
+   see add-task.css), inert at desktop where it's position:static. */
+.add-task-modal .form-footer {
+    bottom: 0;
+}
+
+/* 768px here (not the usual 1024px tier) — synced with the .task-detail block
+   further down and with global/modal.css's .modal--right, since both need to
+   flip to the same full-screen-vs-centered-dialog point. This is just the
+   modal's own breakpoint, independent of the board layout's own 1024px tier
+   below. */
+@media (min-width: 768px) {
+    .add-task-modal {
+        width: 1100px;
+        height: auto;
+        max-width: 90vw;
+        max-height: 90vh;
+        border-radius: var(--border-radius-lg);
     }
 }
 
-/* TODO: breakpoint inconsistency — other pages use 1024px, board uses 700px */
-@media (max-width: 700px) {
-    .add-task-modal {
-        width: 100%;
-        height: 100%;
-        max-width: 100%;
-        max-height: 100%;
-        border-radius: 0;
+/* Restores the same two-column form-columns/form-divider layout add-task.css
+   gives the regular add-task modal at this width — .add-task-modal--edit's
+   own rules above (single column, narrow 525px) are mobile/tablet-only. */
+@media (min-width: 1024px) {
+    .add-task-modal--edit {
+        width: 1100px;
+        padding: clamp(var(--space-sm), 4vw, var(--space-xl));
     }
 
-    .board-section {
-        padding: 40px 12px 90px;
+    .add-task-modal--edit h1,
+    .add-task-modal--edit .form-columns {
+        padding: 0;
     }
 
+    .add-task-modal--edit .form-columns {
+        flex-direction: row;
+    }
+
+    .add-task-modal--edit .form-divider {
+        display: block;
+    }
+
+    .add-task-modal--edit .form-col {
+        padding: 0 var(--space-lg);
+    }
+
+    .add-task-modal--edit .form-footer {
+        position: static;
+        margin-top: 0;
+        padding: 0;
+        border-top: none;
+        background: transparent;
+    }
+}
+
+/* 1366px is intentional here (not the usual 1024px tier) — the board keeps its
+   mobile/tablet layout (stacked columns, horizontally-scrolling cards) all the
+   way through the most common laptop width, only switching to the 4-column
+   desktop grid once there's genuinely enough room for it. */
+@media (min-width: 1366px) {
     .board-top {
-        flex-wrap: wrap;
-        gap: 16px;
-        margin-bottom: 20px;
+        flex-wrap: nowrap;
+        gap: var(--space-md);
+        margin-bottom: 40px;
     }
 
     .search-wrapper {
-        order: 1;
-        flex: 1 0 100%;
-        width: 100%;
+        order: 0;
+        flex: 0 1 auto;
+        width: auto;
     }
 
     .add-task-trigger {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 48px;
-        height: 48px;
-        padding: 0;
-        border-radius: 10px;
-        font-size: 28px;
-        line-height: 1;
-        flex-shrink: 0;
+        display: inline-block;
+        width: auto;
+        height: auto;
+        padding: 8px var(--space-md);
+        border-radius: var(--border-radius-md);
+        font-size: 16px;
+        line-height: normal;
+        flex-shrink: 1;
     }
 
     .add-task-trigger-label {
-        display: none;
+        display: inline;
     }
 
     .search-wrapper input {
-        width: 100%;
-        box-sizing: border-box;
-        font-size: 16px;
-        padding: 12px 48px 12px 16px;
+        width: 200px;
+        box-sizing: content-box;
+        font-size: 14px;
+        padding: 10px var(--space-2xs);
     }
 
     .board-columns {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
     }
 
-    .column-head h3 {
-        font-size: 23px;
+    .drag-area {
+        flex-direction: column;
+        overflow-x: visible;
     }
+
 
     .task-card {
-        width: 280px;
-        max-width: 100%;
-        min-height: 170px;
+        width: auto;
+        max-width: none;
+        min-height: auto;
+        flex-shrink: 1;
     }
 
     .board-column {
-        width: 100%;
-    }
-
-    .board-column:not(:first-child) {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
+        width: auto;
     }
 
     .column-head {
-        width: 100%;
+        width: auto;
     }
 
     .empty-task {
-        width: 100%;
-        box-sizing: border-box;
+        width: auto;
+        box-sizing: content-box;
     }
 
-    .task-card h4 {
-        font-size: 13px;
-    }
 
     .task-card p {
-        font-size: 13px;
+        font-size: 15px;
     }
 
     .progress-row {
-        font-size: 12px;
+        font-size: 13px;
     }
 
     .avatar {
-        width: 23px;
-        height: 23px;
-        font-size: 10px;
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
     }
 
     .move-button {
-        display: inherit;
+        display: none;
     }
 }
 
@@ -489,8 +521,8 @@ body {
 /* ── Task Detail Modal ───────────────────────────────────── */
 
 .task-detail {
-    width: 460px;
-    max-height: 90vh;
+    width: 90vw;
+    max-height: 85dvh;
     padding: clamp(var(--space-sm), 4vw, var(--space-lg));
     overflow-y: auto;
     display: flex;
@@ -504,28 +536,9 @@ body {
     justify-content: space-between;
 }
 
-.task-detail-close {
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    border-radius: 50%;
-    background: transparent;
-    font-size: 24px;
-    cursor: pointer;
-    transition: background var(--transition-fast), transform var(--transition-fast);
-}
 
-.task-detail-close:hover {
-    background: var(--color-bg);
-    transform: scale(1.1);
-}
 
 .task-detail-title {
-    font-size: clamp(1.5rem, 4vw, 2rem);
     color: var(--color-text);
     margin: 0;
 }
@@ -556,7 +569,7 @@ body {
 .task-detail-section {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--space-2xs);
 }
 
 .task-detail-contact {
@@ -578,11 +591,11 @@ body {
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--space-xs);
 }
 
 .task-detail-subtask .checkbox {
-    padding: 4px 0;
+    padding: var(--space-xs) 0;
     font-size: 14px;
 }
 
@@ -590,10 +603,22 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 12px;
+    padding: var(--space-xs) 12px;
     border-radius: var(--border-radius-sm);
     font-size: 14px;
     font-weight: var(--font-weight-medium);
+}
+
+.priority-chip--urgent {
+    color: var(--priority-urgent);
+}
+
+.priority-chip--medium {
+    color: var(--priority-medium);
+}
+
+.priority-chip--low {
+    color: var(--priority-low);
 }
 
 .task-detail-actions {
@@ -612,7 +637,7 @@ body {
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 8px 12px;
+    padding: var(--space-2xs) 12px;
     border-radius: var(--border-radius-sm);
     font-size: 15px;
     color: var(--color-primary);
@@ -627,9 +652,10 @@ body {
     background: var(--color-border);
 }
 
-@media (max-width: 700px) {
+/* 768px synced with the block above and global/modal.css — see comment there */
+@media (min-width: 768px) {
     .task-detail {
-        width: 90vw;
-        max-height: 85dvh;
+        width: 460px;
+        max-height: 90vh;
     }
 }

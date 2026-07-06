@@ -1,0 +1,40 @@
+/* ── Privacy Policy & Imprint ─────────────────────────────────── */
+
+.legal-content {
+    padding: var(--space-xl) clamp(var(--space-sm), 4vw, var(--space-xl));
+}
+
+.legal-content h1 {
+    margin-bottom: var(--space-lg);
+}
+
+.legal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+}
+
+.legal-head h1 {
+    margin-bottom: 0;
+}
+
+@media (min-width: 1024px) {
+    .legal-head .close-btn {
+        display: none;
+    }
+}
+
+.legal-content h2 {
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-sm);
+}
+
+.legal-content p,
+.legal-content ul {
+    margin-bottom: var(--space-md);
+}
+
+.legal-content ul {
+    padding-left: var(--space-lg);
+}

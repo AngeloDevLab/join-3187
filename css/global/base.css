@@ -49,8 +49,17 @@ body {
     margin: 0;
 }
 
+/* Applied to <html> while any modal is open (see js/components/modal.js),
+   so the page behind the dialog can't be scrolled with wheel/touch. */
+html.modal-open {
+    overflow: hidden;
+}
+
 p,
-h1 {
+h1,
+h2,
+h3,
+h4 {
     margin: 0;
 }
 
@@ -63,7 +72,11 @@ h2 {
 }
 
 h3 {
-    font-size: clamp(1rem, 6vw, 1.5rem);
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+}
+
+h4 {
+    font-size: 1.25rem;
 }
 
 a {
@@ -81,4 +94,24 @@ a:hover {
     max-width: 1440px;
     margin: 0 auto;
     padding: 0 clamp(var(--space-sm), 4vw, var(--space-xl));
+}
+
+/* ── Heading + Divider (shared by summary's page title and contacts'
+   empty-state placeholder) ───────────────────────────────────────
+   Stacked look (no divider, gradient-underlined subtext) is the shared
+   default here; each page's own CSS switches to the row layout (divider
+   visible, underline removed) at whatever breakpoint fits that page's
+   available width — summary.css at 768px, contacts.css at 1200px. */
+
+.subline {
+    background: linear-gradient(var(--color-accent), var(--color-accent)) no-repeat bottom left;
+    background-size: 18% 2px;
+    padding-bottom: 10px;
+    font-size: 27px;
+    margin: 0px;
+    color: var(--color-primary);
+}
+
+.title-hr {
+    display: none;
 }

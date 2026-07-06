@@ -1,26 +1,45 @@
 let indicatorEl = null;
 
 
-/** Returns the shared indicator element, sized to match the dragged card's height. */
+/** Returns the shared indicator element, sized to match the dragged card. */
 function getIndicator() {
     if (!indicatorEl) {
         indicatorEl = document.createElement('div');
         indicatorEl.className = 'drop-indicator';
     }
     const draggingCard = document.querySelector('.task-card.dragging');
-    if (draggingCard) indicatorEl.style.height = `${draggingCard.offsetHeight}px`;
+    if (draggingCard) {
+        indicatorEl.style.height = `${draggingCard.offsetHeight}px`;
+        indicatorEl.style.width = `${draggingCard.offsetWidth}px`;
+    }
     return indicatorEl;
 }
 
 
 /**
- * Finds the first card the cursor is above the vertical midpoint of.
+ * Whether a column lays its cards out side by side (below the 1366px board
+ * breakpoint) rather than stacked, so the drop position must go by clientX.
  * @param {HTMLElement} container
+ * @returns {boolean}
+ */
+function isRowLayout(container) {
+    return getComputedStyle(container).flexDirection === 'row';
+}
+
+
+/**
+ * Finds the first card the cursor is past the midpoint of, along whichever
+ * axis the column currently lays cards out on.
+ * @param {HTMLElement} container
+ * @param {number} clientX
  * @param {number} clientY
  * @returns {HTMLElement|null}
  */
-function findCardToInsertBefore(container, clientY) {
+function findCardToInsertBefore(container, clientX, clientY) {
     const cards = [...container.querySelectorAll('.task-card:not(.dragging)')];
+    if (isRowLayout(container)) {
+        return cards.find((card) => clientX < card.getBoundingClientRect().left + card.offsetWidth / 2) ?? null;
+    }
     return cards.find((card) => clientY < card.getBoundingClientRect().top + card.offsetHeight / 2) ?? null;
 }
 
@@ -53,10 +72,11 @@ function isOriginalPosition(container, beforeCard) {
  * Shows/moves the drop indicator inside a column at the position closest to the cursor,
  * or hides it when that position matches the dragged card's original spot.
  * @param {HTMLElement} container
+ * @param {number} clientX
  * @param {number} clientY
  */
-export function updateDropIndicator(container, clientY) {
-    const beforeCard = findCardToInsertBefore(container, clientY);
+export function updateDropIndicator(container, clientX, clientY) {
+    const beforeCard = findCardToInsertBefore(container, clientX, clientY);
     if (isOriginalPosition(container, beforeCard)) {
         clearDropIndicator();
         return;

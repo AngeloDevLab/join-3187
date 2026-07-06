@@ -15,9 +15,10 @@
     width: 100%;
 }
 
-.input-wrapper input {
+.input-wrapper input,
+.input-wrapper textarea,
+.input-wrapper select {
     width: 100%;
-    padding: 10px 20px;
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-md);
     background: var(--color-white);
@@ -27,6 +28,11 @@
     color: var(--color-text);
     outline: none;
     transition: border-color var(--transition-fast);
+}
+
+.input-wrapper input,
+.input-wrapper textarea {
+    padding: 10px 20px;
 }
 
 .input-wrapper input::placeholder {
@@ -92,18 +98,7 @@
 /* ── Textarea ──────────────────────────────────────────────── */
 
 .input-wrapper textarea {
-    width: 100%;
-    padding: 10px 20px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius-md);
-    background: var(--color-white);
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(16px, 4vw, 20px);
-    font-weight: var(--font-weight-regular);
-    color: var(--color-text);
-    outline: none;
     resize: vertical;
-    transition: border-color var(--transition-fast);
 }
 
 .input-wrapper textarea::placeholder {
@@ -117,20 +112,10 @@
 /* ── Select ────────────────────────────────────────────────── */
 
 .input-wrapper select {
-    width: 100%;
     padding: 10px 48px 10px 20px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius-md);
-    background: var(--color-white);
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(16px, 4vw, 20px);
-    font-weight: var(--font-weight-regular);
-    color: var(--color-text);
     appearance: none;
     -webkit-appearance: none;
-    outline: none;
     cursor: pointer;
-    transition: border-color var(--transition-fast);
 }
 
 .input-wrapper select:focus {

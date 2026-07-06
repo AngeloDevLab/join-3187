@@ -28,7 +28,6 @@
         order: unset;
         grid-column: 2;
         grid-row: 1;
-        padding: 0 var(--space-xl);
     }
 
     .app-main {

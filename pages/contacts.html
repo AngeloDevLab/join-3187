@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="../css/global/layout.css">
     <link rel="stylesheet" href="../css/global/navbar.css">
     <link rel="stylesheet" href="../css/global/buttons.css">
+    <link rel="stylesheet" href="../css/global/dropdown.css">
+    <link rel="stylesheet" href="../css/global/avatar.css">
+    <link rel="stylesheet" href="../css/global/inputs.css">
+    <link rel="stylesheet" href="../css/global/modal.css">
     <link rel="stylesheet" href="../css/contacts.css">
 </head>
 <body>
@@ -33,7 +37,7 @@
             <div class="header-user">
                 <a href="help.html" class="header-help"><img src="../assets/icons/help.svg" alt="Help"></a>
                 <button type="button" class="header-avatar" id="headerAvatarBtn"></button>
-                <nav class="header-dropdown" id="headerDropdown">
+                <nav class="header-dropdown popup-menu dropdown" id="headerDropdown">
                     <ul>
                         <li class="header-help-mobile"><a href="help.html">Help</a></li>
                         <li><a href="imprint.html">Legal Notice</a></li>
@@ -48,7 +52,7 @@
             <div class="contacts-main">
                 <section id="contactsList" class="contacts-list">
                     <div class="desktop-add-contact-wrapper">
-                        <button class="desktop-add-contact-btn" onclick="openAddContactOverlay()">
+                        <button class="btn btn-primary desktop-add-contact-btn">
                             Add new contact
                             <img src="../assets/icons/add_contact.svg" alt="">
                         </button>
@@ -56,45 +60,44 @@
 
                     <div id="contactsContainer" class="contacts-scroll-container"></div>
 
-                    <button class="add-contact-btn" onclick="openAddContactOverlay()" aria-label="Add contact">
+                    <button class="add-contact-btn" aria-label="Add contact">
                         <img src="../assets/icons/add_contact.svg" alt="">
                     </button>
                 </section>
 
                 <section id="contactDetails" class="contact-details d-none">
-                    <div class="desktop-contact-placeholder">
+                    <div class="desktop-contact-placeholder contact-panel-heading">
                         <h1>Contacts</h1>
-                        <div></div>
-                        <p>Better with a team</p>
+                        <hr class="title-hr">
+                        <p class="subline">Better with a team</p>
                     </div>
                 </section>
             </div>
-
-            <div id="contactOverlayContainer"></div>
         </main>
     </div>
 
     <template id="contactCardTemplate">
         <div class="contact-card">
-            <div class="contact-avatar"></div>
-            <div>
+            <div class="contact-avatar avatar-circle"></div>
+            <div class="contact-card-info">
                 <h4 class="contact-card-name"></h4>
-                <a class="contact-card-email"></a>
+                <p class="contact-card-email"></p>
             </div>
         </div>
     </template>
 
     <template id="contactDetailsTemplate">
-        <div class="contact-details-header">
+        <div class="contact-details-header contact-panel-heading">
             <div class="contact-details-title-row">
                 <h1>Contacts</h1>
-                <button class="back-to-contacts-btn" onclick="showContactsList()">←</button>
+                <button class="back-to-contacts-btn">←</button>
             </div>
-            <p>Better with a team</p>
+            <hr class="title-hr">
+            <p class="subline">Better with a team</p>
         </div>
         <div id="contactDetailsCard" class="contact-details-card d-none">
             <div class="contact-details-profile">
-                <div class="contact-details-avatar"></div>
+                <div class="contact-details-avatar avatar-circle"></div>
                 <div class="contact-details-name-actions">
                     <h2 class="contact-details-name"></h2>
                     <div class="desktop-contact-actions">
@@ -109,11 +112,11 @@
                 <a class="contact-details-email"></a>
                 <h4>Phone</h4>
                 <p class="contact-details-phone"></p>
-                <button id="menuContactBtn" class="menu_contact_btn" onclick="toggleMenuContact()" aria-label="Contact menu">
+                <button id="menuContactBtn" class="menu_contact_btn" aria-label="Contact menu">
                     <img src="../assets/icons/menu_contact.svg" alt="">
                 </button>
-                <div id="contactMenuBackdrop" class="contact_menu_backdrop" onclick="closeMenuContact()"></div>
-                <div id="contactMenu" class="contact_menu" onclick="closeMenuContact()">
+                <div id="contactMenuBackdrop" class="contact_menu_backdrop"></div>
+                <div id="contactMenu" class="contact_menu">
                     <button class="contact_menu_option contact-details-edit-btn"><img src="../assets/icons/menu_contact_pencil.svg" alt="">Edit</button>
                     <button class="contact_menu_option contact-details-delete-btn"><img src="../assets/icons/menu_contact_trash.svg" alt="">Delete</button>
                 </div>
@@ -122,104 +125,116 @@
     </template>
 
     <template id="contactDetailsPlaceholderTemplate">
-        <div class="desktop-contact-placeholder">
+        <div class="desktop-contact-placeholder contact-panel-heading">
             <h1>Contacts</h1>
-            <div></div>
-            <p>Better with a team</p>
+            <hr class="title-hr">
+            <p class="subline">Better with a team</p>
         </div>
     </template>
 
     <template id="addContactOverlayTemplate">
-        <div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
-            <section class="contact-overlay contact-add-overlay" onclick="event.stopPropagation()">
-                <button class="contact-overlay-close" onclick="closeContactOverlay()" aria-label="Close">&times;</button>
-                <div class="contact-overlay-brand">
-                    <img src="../assets/icons/join_logo.svg" alt="Join">
-                    <h2>Add contact</h2>
-                    <p>Tasks are better with a team!</p>
-                    <div></div>
+        <section class="contact-overlay contact-add-overlay">
+            <button type="button" class="close-btn contact-add-close-btn-mobile" aria-label="Close">✕</button>
+            <div class="contact-overlay-brand">
+                <img src="../assets/icons/join_logo.svg" alt="Join">
+                <h2>Add contact</h2>
+                <p>Tasks are better with a team!</p>
+                <div></div>
+            </div>
+            <form class="contact-edit-form contact-add-form" novalidate>
+                <div class="contact-add-avatar avatar-circle" aria-hidden="true">
+                    <img src="../assets/icons/person.svg" alt="">
                 </div>
-                <form class="contact-edit-form contact-add-form" onsubmit="createContact(event)">
-                    <div class="contact-add-avatar" aria-hidden="true">
-                        <img src="../assets/icons/person.svg" alt="">
-                    </div>
-                    <div class="contact-add-fields">
-                        <label class="contact-input-wrapper">
+                <div class="contact-add-fields">
+                    <button type="button" class="close-btn contact-add-close-btn-desktop" aria-label="Close">✕</button>
+                    <div class="input-field">
+                        <label class="input-wrapper">
                             <input id="addContactName" type="text" placeholder="Name" autocomplete="name" required>
-                            <img src="../assets/icons/person.svg" alt="">
+                            <img src="../assets/icons/person.svg" alt="" class="input-icon">
                         </label>
-                        <label class="contact-input-wrapper">
-                            <input id="addContactEmail" type="email" placeholder="Email" autocomplete="email" required>
-                            <img src="../assets/icons/mail.svg" alt="">
-                        </label>
-                        <label class="contact-input-wrapper">
-                            <input id="addContactPhone" type="tel" placeholder="Phone" autocomplete="tel" required>
-                            <img src="../assets/icons/call.svg" alt="">
-                        </label>
-                        <div class="contact-overlay-actions contact-add-actions">
-                            <button type="button" class="contact-secondary-btn" onclick="closeContactOverlay()">Cancel &times;</button>
-                            <button type="submit" class="contact-primary-btn">Create contact &#10003;</button>
-                        </div>
+                        <p class="input-error-msg" id="addContactNameError"></p>
                     </div>
-                </form>
-            </section>
-        </div>
+                    <div class="input-field">
+                        <label class="input-wrapper">
+                            <input id="addContactEmail" type="email" placeholder="Email" autocomplete="email" required>
+                            <img src="../assets/icons/mail.svg" alt="" class="input-icon">
+                        </label>
+                        <p class="input-error-msg" id="addContactEmailError"></p>
+                    </div>
+                    <div class="input-field">
+                        <label class="input-wrapper">
+                            <input id="addContactPhone" type="tel" placeholder="Phone" autocomplete="tel" required>
+                            <img src="../assets/icons/call.svg" alt="" class="input-icon">
+                        </label>
+                        <p class="input-error-msg" id="addContactPhoneError"></p>
+                    </div>
+                    <div class="contact-overlay-actions contact-add-actions">
+                        <button type="button" class="btn btn-secondary overlay-cancel-btn">Cancel &times;</button>
+                        <button type="submit" class="btn btn-primary">Create contact &#10003;</button>
+                    </div>
+                </div>
+            </form>
+        </section>
     </template>
 
     <template id="editContactOverlayTemplate">
-        <div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
-            <section class="contact-overlay contact-edit-overlay" onclick="event.stopPropagation()">
-                <button class="contact-overlay-close" onclick="closeContactOverlay()" aria-label="Close">&times;</button>
-                <div class="contact-overlay-brand">
-                    <img src="../assets/icons/join_logo.svg" alt="Join">
-                    <h2>Edit contact</h2>
-                    <div></div>
-                </div>
-                <form class="contact-edit-form">
-                    <div class="contact-edit-avatar"></div>
-                    <div class="contact-edit-fields">
-                        
-                      
-                             <label class="contact-input-wrapper">
-                           <input id="editContactName" class="contact-edit-name-input" type="text" placeholder="Name" autocomplete="name" required>
-                            <img src="../assets/icons/person.svg" alt="">
+        <section class="contact-overlay contact-edit-overlay">
+            <button type="button" class="close-btn contact-edit-close-btn-mobile" aria-label="Close">✕</button>
+            <div class="contact-overlay-brand">
+                <img src="../assets/icons/join_logo.svg" alt="Join">
+                <h2>Edit contact</h2>
+                <div></div>
+            </div>
+            <form class="contact-edit-form" novalidate>
+                <div class="contact-edit-avatar avatar-circle"></div>
+                <div class="contact-edit-fields">
+                    <button type="button" class="close-btn contact-edit-close-btn-desktop" aria-label="Close">✕</button>
+                    <div class="input-field">
+                        <label class="input-wrapper">
+                            <input id="editContactName" class="contact-edit-name-input" type="text" placeholder="Name" autocomplete="name" required>
+                            <img src="../assets/icons/person.svg" alt="" class="input-icon">
                         </label>
-                        <label class="contact-input-wrapper">
-                           <input id="editContactEmail" class="contact-edit-email-input" type="email" placeholder="Email" autocomplete="email" required>
-                            <img src="../assets/icons/mail.svg" alt="">
-                        </label>
-                        <label class="contact-input-wrapper">
-                              <input id="editContactPhone" class="contact-edit-phone-input" type="tel" placeholder="Phone" autocomplete="tel" required>
-                            <img src="../assets/icons/call.svg" alt="">
-                        </label>
-                        <div class="contact-overlay-actions">
-                            <button type="button" class="contact-secondary-btn contact-edit-delete-btn">Delete</button>
-                            <button type="submit" class="contact-primary-btn">Save &#10003;</button>
-                        </div>
+                        <p class="input-error-msg" id="editContactNameError"></p>
                     </div>
-                </form>
-            </section>
-        </div>
+                    <div class="input-field">
+                        <label class="input-wrapper">
+                            <input id="editContactEmail" class="contact-edit-email-input" type="email" placeholder="Email" autocomplete="email" required>
+                            <img src="../assets/icons/mail.svg" alt="" class="input-icon">
+                        </label>
+                        <p class="input-error-msg" id="editContactEmailError"></p>
+                    </div>
+                    <div class="input-field">
+                        <label class="input-wrapper">
+                            <input id="editContactPhone" class="contact-edit-phone-input" type="tel" placeholder="Phone" autocomplete="tel" required>
+                            <img src="../assets/icons/call.svg" alt="" class="input-icon">
+                        </label>
+                        <p class="input-error-msg" id="editContactPhoneError"></p>
+                    </div>
+                    <div class="contact-overlay-actions">
+                        <button type="button" class="btn btn-secondary contact-edit-delete-btn">Delete</button>
+                        <button type="submit" class="btn btn-primary">Save &#10003;</button>
+                    </div>
+                </div>
+            </form>
+        </section>
     </template>
 
     <template id="deleteContactOverlayTemplate">
-        <div id="contactOverlay" class="contact-overlay-backdrop" onclick="closeContactOverlay()">
-            <section class="contact-overlay contact-delete-overlay" onclick="event.stopPropagation()">
-                <button class="contact-overlay-close" onclick="closeContactOverlay()" aria-label="Close">&times;</button>
-                <div class="contact-overlay-brand">
-                    <img src="../assets/icons/join_logo.svg" alt="Join">
-                    <h2>Delete contact</h2>
-                    <div></div>
+        <section class="contact-overlay contact-delete-overlay">
+            <button type="button" class="close-btn" aria-label="Close">✕</button>
+            <div class="contact-overlay-brand">
+                <img src="../assets/icons/join_logo.svg" alt="Join">
+                <h2>Delete contact</h2>
+                <div></div>
+            </div>
+            <div class="contact-delete-content">
+                <p class="contact-delete-message"></p>
+                <div class="contact-overlay-actions">
+                    <button type="button" class="btn btn-secondary overlay-cancel-btn">Cancel</button>
+                    <button type="button" class="btn btn-primary contact-delete-confirm-btn">Delete</button>
                 </div>
-                <div class="contact-delete-content">
-                    <p class="contact-delete-message"></p>
-                    <div class="contact-overlay-actions">
-                        <button type="button" class="contact-secondary-btn" onclick="closeContactOverlay()">Cancel</button>
-                        <button type="button" class="contact-primary-btn contact-delete-confirm-btn">Delete</button>
-                    </div>
-                </div>
-            </section>
-        </div>
+            </div>
+        </section>
     </template>
 
     <script type="module" src="../js/pages/contacts.js"></script>

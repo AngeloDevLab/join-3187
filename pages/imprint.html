@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="../css/global/layout.css" />
     <link rel="stylesheet" href="../css/global/navbar.css" />
     <link rel="stylesheet" href="../css/global/buttons.css" />
-    <link rel="stylesheet" href="../css/summary.css" />
+    <link rel="stylesheet" href="../css/global/dropdown.css" />
+    <link rel="stylesheet" href="../css/legal.css" />
 </head>
 
 <body>
@@ -30,8 +31,8 @@
                             src="../assets/icons/contact.svg" class="nav-icon" alt="">Contacts</a></li>
             </ul>
             <div class="nav-legal">
-                <a href="privacy.html">Privacy Policy</a>
-                <a href="imprint.html">Legal Notice</a>
+                <a href="privacy.html" data-page="privacy.html">Privacy Policy</a>
+                <a href="imprint.html" data-page="imprint.html">Legal Notice</a>
             </div>
         </aside>
 
@@ -41,7 +42,7 @@
             <div class="header-user">
                 <a href="help.html" class="header-help"><img src="../assets/icons/help.svg" alt="Help"></a>
                 <button type="button" class="header-avatar" id="headerAvatarBtn"></button>
-                <nav class="header-dropdown" id="headerDropdown">
+                <nav class="header-dropdown popup-menu dropdown" id="headerDropdown">
                     <ul>
                         <li class="header-help-mobile"><a href="help.html">Help</a></li>
                         <li><a href="imprint.html">Legal Notice</a></li>
@@ -53,8 +54,13 @@
         </header>
 
         <main class="app-main">
-            <section class="content">
-                <h1>Legal Notice</h1>
+            <section class="legal-content">
+                <div class="legal-head">
+                    <h1>Legal Notice</h1>
+                    <button type="button" class="close-btn" id="legalBackBtn" aria-label="Go back">
+                        <img src="../assets/icons/arrow-left.svg" alt="">
+                    </button>
+                </div>
                 <h2>Imprint</h2>
                 <ul>
                     <li>Angelo Pietsch, Louis Juchem, Mahad Yussuf Nur, Christian Mulugeta</li>

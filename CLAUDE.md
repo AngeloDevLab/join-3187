@@ -22,7 +22,8 @@ Join is a project management tool for visualizing task status and responsibiliti
 │   │   ├── navbar.css    # .app-sidebar, .app-header + nav components
 │   │   ├── buttons.css   # .btn, .btn-primary, .btn-secondary
 │   │   ├── inputs.css    # input, textarea, select, date-input
-│   │   └── dropdown.css  # .dropdown, .assigned-option, contact chips
+│   │   ├── dropdown.css  # .dropdown, .assigned-option, contact chips
+│   │   └── avatar.css    # .avatar-circle shared base for contact avatars
 │   └── *.css           # Page-specific stylesheets
 ├── js/
 │   ├── pages/          # One JS module per page
@@ -42,6 +43,13 @@ Join is a project management tool for visualizing task status and responsibiliti
 - Shared styles live in `css/global/` — import only what each page needs
 - Page-specific styles only in the corresponding `css/*.css` — never add page-specific rules to `css/global/`
 - Import order per page: `variables.css` → `global/*` → page stylesheet
+- Mobile-first breakpoints — 3 tiers only, no page-specific breakpoint values:
+  ```css
+  /* Base: Mobile (up to 767px) */
+  @media (min-width: 768px) { /* Tablet */ }
+  @media (min-width: 1024px) { /* Desktop */ }
+  ```
+  Component-specific exceptions (e.g. a breakpoint that must stay in sync with another rule) get a one-line comment explaining why, directly above the `@media` block.
 
 ## JavaScript Rules
 
@@ -75,8 +83,8 @@ Join is a project management tool for visualizing task status and responsibiliti
 | Board | `pages/board.html` | `css/board.css` | `js/pages/board.js` |
 | Add Task | `pages/add-task.html` | `css/add-task.css` | `js/pages/add-task.js` |
 | Contacts | `pages/contacts.html` | `css/contacts.css` | `js/pages/contacts.js` |
-| Imprint | `pages/imprint.html` | _(global/base.css)_ | — |
-| Privacy | `pages/privacy.html` | _(global/base.css)_ | — |
+| Imprint | `pages/imprint.html` | `css/legal.css` | `js/pages/imprint.js` |
+| Privacy | `pages/privacy.html` | `css/legal.css` | `js/pages/imprint.js` |
 
 ## Firebase
 
@@ -97,4 +105,5 @@ Join is a project management tool for visualizing task status and responsibiliti
 | `global/buttons.css` | `.btn`, `.btn-primary`, `.btn-secondary`, disabled state |
 | `global/inputs.css` | `input`, `textarea`, `select`, date input |
 | `global/dropdown.css` | `.dropdown`, `.assigned-option`, contact chips |
+| `global/avatar.css` | `.avatar-circle` shared base for per-contact avatar circles |
 | `global/modal.css` | `.modal`, `::backdrop`, slide-from-bottom/right animations |

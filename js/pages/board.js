@@ -9,6 +9,7 @@ import { getAvatarColorForId, getInitials, computeOrderBetween } from '../utils/
 import { startDragGhost, stopDragGhost } from '../components/drag-ghost.js';
 import { updateDropIndicator, clearDropIndicator, getDropNeighbors } from '../components/drop-indicator.js';
 import { generateTodoHtml } from '../components/task-card.js';
+import { toggleDropdown, initDropdownAutoClose } from '../components/task-category-dropdown.js';
 
 const CATEGORY_LABEL = { userStory: 'User Story', technicalTask: 'Technical Task' };
 
@@ -126,26 +127,14 @@ async function moveToFromNav(category, id) {
 
 
 /**
- * Toggles the "Move To" category nav open/closed for a task card on mobile.
- * @param {MouseEvent} event
+ * Toggles the "Move To" dropdown open/closed for a task card on mobile, using the shared dropdown pattern.
+ * @param {HTMLElement} trigger - the clicked move-button element
  */
-function toggleCategoryNav(event) {
-    let nav = event.target.nextElementSibling;
-    let isOpen = nav.style.display === 'block';
-    closeAllNavs();
-    nav.style.display = isOpen ? 'none' : 'block';
-    event.stopPropagation();
-}
-
-// NEU: zentrale Close-Funktion
-function closeAllNavs() {
-    document.querySelectorAll('.category-nav').forEach(nav => {
-        nav.style.display = 'none';
-    });
-}
-
-function initNavListeners() {
-    document.addEventListener('click', closeAllNavs); // NEU: einmalige Registrierung
+function toggleMoveDropdown(trigger) {
+    const nav = trigger.nextElementSibling;
+    const open = !nav.classList.contains('is-open');
+    document.querySelectorAll('.category-nav.is-open').forEach((other) => other.classList.remove('is-open'));
+    toggleDropdown({ dropdown: nav, trigger }, open);
 }
 
 
@@ -177,7 +166,7 @@ function stopDragging(event) {
  */
 function allowDrop(event) {
     event.preventDefault();
-    updateDropIndicator(event.currentTarget, event.clientY);
+    updateDropIndicator(event.currentTarget, event.clientX, event.clientY);
 }
 
 
@@ -243,7 +232,7 @@ function openAddTaskModal(status) {
     const node = document.getElementById('addTaskTemplate').content.cloneNode(true);
     const { dialog, close } = openModal(node, { animation: 'right' });
     initAddTaskForm(dialog, { onSubmitSuccess: (data) => handleNewTask(data, status, close), onCancel: close });
-    dialog.querySelector('.add-task-modal-close')?.addEventListener('click', close);
+    dialog.querySelector('.close-btn')?.addEventListener('click', close);
 }
 
 
@@ -305,6 +294,31 @@ function initCardDetailClick() {
 }
 
 
+/** Delegates clicks on the move-button (toggles its dropdown) and "Move To" list items (moves the task). */
+function initMoveNavClicks() {
+    document.querySelectorAll('.drag-area').forEach((area) => {
+        area.addEventListener('click', (e) => {
+            const moveBtn = e.target.closest('.move-button');
+            if (moveBtn) { e.stopPropagation(); toggleMoveDropdown(moveBtn); return; }
+            const item = e.target.closest('.category-nav li');
+            if (item) moveToFromNav(item.dataset.category, item.dataset.id);
+        });
+    });
+}
+
+
+/** Lets vertical mouse-wheel scrolling pan a card row that overflows horizontally. */
+function initDragAreaWheelScroll() {
+    document.querySelectorAll('.drag-area').forEach((area) => {
+        area.addEventListener('wheel', (e) => {
+            if (area.scrollWidth <= area.clientWidth) return;
+            e.preventDefault();
+            area.scrollLeft += e.deltaY;
+        });
+    });
+}
+
+
 /** Wires the board search input to filter tasks while typing. */
 function initBoardSearch() {
     const searchInput = document.getElementById('boardSearch');
@@ -329,12 +343,12 @@ window.allowDrop = allowDrop;
 window.highlightColumn = highlightColumn;
 window.unhighlightColumn = unhighlightColumn;
 window.moveTo = moveTo;
-window.moveToFromNav = moveToFromNav;
-window.toggleCategoryNav = toggleCategoryNav;
 
 initNavbar();
 updateHtml();
 initBoardSearch();
 initAddTaskButtons();
 initCardDetailClick();
-initNavListeners();
+initMoveNavClicks();
+initDragAreaWheelScroll();
+initDropdownAutoClose();

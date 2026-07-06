@@ -1,12 +1,11 @@
 /* ── Main Content ─────────────────────────────────────────── */
 
 .add-task-main {
-    padding: var(--space-lg) var(--space-xl);
+    padding: var(--space-xl) clamp(var(--space-sm), 4vw, var(--space-xl));
     overflow-y: auto;
 }
 
 .add-task-main h1 {
-    font-size: clamp(32px, 5vw, 61px);
     font-weight: var(--font-weight-bold);
     margin-bottom: var(--space-lg);
 }
@@ -20,6 +19,7 @@
 .form-columns {
     display: flex;
     align-items: flex-start;
+    flex-direction: column;
 }
 
 .form-col {
@@ -27,7 +27,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
-    padding: 0 var(--space-lg);
+    padding: 0;
 }
 
 .form-col:first-child {
@@ -44,6 +44,11 @@
     min-height: 480px;
     background: var(--color-border);
     flex-shrink: 0;
+    display: none;
+}
+
+.task-form {
+    padding-bottom: 140px;
 }
 
 /* ── Field Labels ─────────────────────────────────────────── */
@@ -63,6 +68,7 @@
 .priority-buttons {
     display: flex;
     gap: var(--space-sm);
+    flex-direction: column;
 }
 
 .priority-btn {
@@ -132,14 +138,22 @@
 .priority-btn:not(.selected):hover {
     box-shadow: var(--shadow-btn-hover);
 }
-
 /* ── Form Footer ──────────────────────────────────────────── */
 
 .form-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--mobile-nav-height);
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     justify-content: space-between;
-    padding-top: var(--space-md);
+    gap: var(--space-sm);
+    background: var(--color-bg);
+    border-top: 1px solid var(--color-border);
+    padding: var(--space-sm);
+    z-index: 2;
 }
 
 .required-note {
@@ -150,6 +164,7 @@
 .form-actions {
     display: flex;
     gap: var(--space-sm);
+    width: 100%;
 }
 
 .form-actions .btn {
@@ -313,48 +328,47 @@
 
 /* ── Responsive ───────────────────────────────────────────── */
 
-@media (max-width: 1023px) {
-    .add-task-main {
-        padding: var(--space-md);
-    }
-
-    .form-columns {
-        flex-direction: column;
-    }
-
-    .form-divider {
-        display: none;
-    }
-
-    .form-col {
-        padding: 0;
-    }
-
-    .task-form {
-        padding-bottom: 140px;
-    }
-
-    .form-footer {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: var(--mobile-nav-height);
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--space-sm);
-        background: var(--color-bg);
-        border-top: 1px solid var(--color-border);
-        padding: var(--space-sm);
-        z-index: 2;
-    }
-
-    .form-actions {
-        width: 100%;
+/* 480px is intentional here (not 768px like the two documented tiers) — the
+   priority buttons only get cramped on very narrow phones, they already fit
+   fine in a row from 480px up. */
+@media (min-width: 480px) {
+    .priority-buttons {
+        flex-direction: row;
     }
 }
 
-@media (max-width: 480px) {
-    .priority-buttons {
-        flex-direction: column;
+@media (min-width: 1024px) {
+    .form-columns {
+        flex-direction: row;
+    }
+
+    .form-divider {
+        display: block;
+    }
+
+    .form-col {
+        padding: 0 var(--space-lg);
+    }
+
+    .task-form {
+        padding-bottom: 0;
+    }
+
+    .form-footer {
+        position: static;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        flex-direction: row;
+        align-items: center;
+        gap: normal;
+        background: transparent;
+        border-top: none;
+        padding: var(--space-md) 0 0 0;
+        z-index: auto;
+    }
+
+    .form-actions {
+        width: auto;
     }
 }

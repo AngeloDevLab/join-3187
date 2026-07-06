@@ -1,8 +1,15 @@
 import '../utils/auth-guard.js';
 import { initNavbar } from '../components/navbar.js';
 import { getCurrentUser } from '../firebase/auth.js';
-import { getAvatarColorForId, getInitials } from '../utils/helpers.js';
+import { getAvatarColorForId, getInitials, triggerTransitionIn } from '../utils/helpers.js';
 import { getContacts, saveContact, updateContact, removeContact } from '../firebase/cache.js';
+import { getAddContactFields, getEditContactFields, validateContactFields } from '../components/contact-form.js';
+import {
+    openAddContactOverlay as showAddContactOverlay,
+    openEditContactOverlay as showEditContactOverlay,
+    openDeleteContactOverlay as showDeleteContactOverlay,
+    closeContactOverlay,
+} from '../components/contact-overlay.js';
 
 let activeContactId = null;
 
@@ -83,6 +90,9 @@ function renderGroupedContacts(grouped, container) {
         const heading = document.createElement('h3');
         heading.textContent = letter;
         group.appendChild(heading);
+        const divider = document.createElement('hr');
+        divider.className = 'contact-group-divider';
+        group.appendChild(divider);
         grouped[letter].forEach((contact) => group.appendChild(buildContactCardNode(contact)));
         container.appendChild(group);
     }
@@ -101,16 +111,37 @@ function buildContactCardNode(contact) {
     const emailEl = card.querySelector('.contact-card-email');
 
     card.id = `contact-card-${contact.id}`;
-    card.setAttribute('onclick', `showContactDetails('${contact.id}')`);
+    card.addEventListener('click', () => handleContactCardClick(contact.id));
     card.querySelector('.contact-card-name').textContent = contact.name;
 
     avatar.style.background = getAvatarColorForId(contact.id);
     avatar.textContent = getInitials(contact.name);
 
     emailEl.textContent = contact.email;
-    emailEl.href = `mailto:${contact.email}`;
 
     return card;
+}
+
+
+/**
+ * Handles a contact card click: on desktop, clicking the already-selected
+ * contact deselects it again; otherwise shows its details.
+ * @param {string} contactId
+ */
+function handleContactCardClick(contactId) {
+    if (activeContactId === contactId && window.innerWidth >= 1024) {
+        deselectContact();
+        return;
+    }
+    showContactDetails(contactId);
+}
+
+
+/** Deselects the active contact and resets the details panel to its placeholder. */
+function deselectContact() {
+    document.getElementById(`contact-card-${activeContactId}`)?.classList.remove('active');
+    activeContactId = null;
+    resetContactDetails();
 }
 
 
@@ -127,9 +158,7 @@ async function showContactDetails(contactId) {
     details.innerHTML = '';
     details.appendChild(buildContactDetailsNode(contact));
     showContactDetailsCard();
-    if (window.innerWidth < 1024) {
-        document.getElementById('contactsList').classList.add('d-none');
-    }
+    document.getElementById('contactsList').classList.add('d-none');
 }
 
 
@@ -146,9 +175,9 @@ function setActiveContactCard(contactId) {
 
 /** Shows the animated contact details card after it was rendered. */
 function showContactDetailsCard() {
-    requestAnimationFrame(() => {
-        document.getElementById('contactDetailsCard').classList.remove('d-none');
-    });
+    const card = document.getElementById('contactDetailsCard');
+    card.classList.remove('d-none');
+    triggerTransitionIn(card, 'is-open');
 }
 
 
@@ -165,12 +194,11 @@ function buildContactDetailsNode(contact) {
 
 
 /**
- * Fills the avatar/name/email/phone fields and wires the edit/delete action buttons
- * (desktop and mobile menu copies) in a cloned contact details node.
+ * Fills the avatar/name/email/phone fields in a cloned contact details node.
  * @param {DocumentFragment} node
  * @param {{ id: string, name: string, email: string, phone: string }} contact
  */
-function fillContactDetailsNode(node, contact) {
+function fillContactDetailsFields(node, contact) {
     const avatar = node.querySelector('.contact-details-avatar');
     avatar.style.background = getAvatarColorForId(contact.id);
     avatar.textContent = getInitials(contact.name);
@@ -179,18 +207,51 @@ function fillContactDetailsNode(node, contact) {
     emailEl.textContent = contact.email;
     emailEl.href = `mailto:${contact.email}`;
     node.querySelector('.contact-details-phone').textContent = contact.phone;
-    node.querySelectorAll('.contact-details-edit-btn').forEach((btn) =>
-        btn.setAttribute('onclick', `event.stopPropagation(); openEditContactOverlay('${contact.id}')`));
-    node.querySelectorAll('.contact-details-delete-btn').forEach((btn) =>
-        btn.setAttribute('onclick', `event.stopPropagation(); openDeleteContactOverlay('${contact.id}')`));
 }
 
 
 /**
- * Opens the add contact overlay.
+ * Wires the edit/delete action buttons (desktop and mobile menu copies) in a
+ * cloned contact details node.
+ * @param {DocumentFragment} node
+ * @param {string} contactId
  */
+function wireContactDetailsActions(node, contactId) {
+    node.querySelectorAll('.contact-details-edit-btn').forEach((btn) =>
+        btn.addEventListener('click', (e) => { e.stopPropagation(); openEditContactOverlay(contactId); }));
+    node.querySelectorAll('.contact-details-delete-btn').forEach((btn) =>
+        btn.addEventListener('click', (e) => { e.stopPropagation(); openDeleteContactOverlay(contactId); }));
+}
+
+
+/**
+ * Wires the "back to list" button and the mobile contact menu toggle/backdrop
+ * in a cloned contact details node.
+ * @param {DocumentFragment} node
+ */
+function wireContactDetailsNav(node) {
+    node.querySelector('.back-to-contacts-btn').addEventListener('click', showContactsList);
+    node.querySelector('#menuContactBtn').addEventListener('click', toggleMenuContact);
+    node.querySelector('#contactMenuBackdrop').addEventListener('click', closeMenuContact);
+    node.querySelector('#contactMenu').addEventListener('click', closeMenuContact);
+}
+
+
+/**
+ * Fills and wires a cloned contact details node with this contact's data and actions.
+ * @param {DocumentFragment} node
+ * @param {{ id: string, name: string, email: string, phone: string }} contact
+ */
+function fillContactDetailsNode(node, contact) {
+    fillContactDetailsFields(node, contact);
+    wireContactDetailsActions(node, contact.id);
+    wireContactDetailsNav(node);
+}
+
+
+/** Opens the add contact overlay. */
 function openAddContactOverlay() {
-    renderContactOverlay(buildAddContactOverlayNode());
+    showAddContactOverlay(createContact);
 }
 
 
@@ -202,7 +263,7 @@ async function openEditContactOverlay(contactId) {
     closeMenuContactIfRendered();
     const contact = await getContactById(contactId);
     if (!contact) return;
-    renderContactOverlay(buildEditContactOverlayNode(contact));
+    showEditContactOverlay(contact, (e) => saveEditedContact(e, contactId), () => openDeleteContactOverlay(contactId));
 }
 
 
@@ -214,67 +275,7 @@ async function openDeleteContactOverlay(contactId) {
     closeMenuContactIfRendered();
     const contact = await getContactById(contactId);
     if (!contact) return;
-    renderContactOverlay(buildDeleteContactOverlayNode(contact));
-}
-
-
-/**
- * Renders and animates a contact overlay.
- * @param {Node} node
- */
-function renderContactOverlay(node) {
-    closeContactOverlay();
-    document.getElementById('contactOverlayContainer').appendChild(node);
-    requestAnimationFrame(() => {
-        document.getElementById('contactOverlay').classList.add('contact-overlay-open');
-    });
-}
-
-
-/** Closes the active contact overlay. */
-function closeContactOverlay() {
-    document.getElementById('contactOverlayContainer').innerHTML = '';
-}
-
-
-/**
- * Builds the add-contact overlay node by cloning its template (fully static, no data to fill).
- * @returns {DocumentFragment}
- */
-function buildAddContactOverlayNode() {
-    return document.getElementById('addContactOverlayTemplate').content.cloneNode(true);
-}
-
-
-/**
- * Builds the edit-contact overlay node from the template, prefilled with this contact's data.
- * @param {{ id: string, name: string, email: string, phone: string }} contact
- * @returns {DocumentFragment}
- */
-function buildEditContactOverlayNode(contact) {
-    const node = document.getElementById('editContactOverlayTemplate').content.cloneNode(true);
-    const avatar = node.querySelector('.contact-edit-avatar');
-    avatar.style.background = getAvatarColorForId(contact.id);
-    avatar.textContent = getInitials(contact.name);
-    node.querySelector('.contact-edit-name-input').value = contact.name;
-    node.querySelector('.contact-edit-email-input').value = contact.email;
-    node.querySelector('.contact-edit-phone-input').value = contact.phone;
-    node.querySelector('form').setAttribute('onsubmit', `saveEditedContact(event, '${contact.id}')`);
-    node.querySelector('.contact-edit-delete-btn').setAttribute('onclick', `deleteContact('${contact.id}')`);
-    return node;
-}
-
-
-/**
- * Builds the delete-confirmation overlay node from the template for this contact.
- * @param {{ id: string, name: string }} contact
- * @returns {DocumentFragment}
- */
-function buildDeleteContactOverlayNode(contact) {
-    const node = document.getElementById('deleteContactOverlayTemplate').content.cloneNode(true);
-    node.querySelector('.contact-delete-message').textContent = `Delete ${contact.name}?`;
-    node.querySelector('.contact-delete-confirm-btn').setAttribute('onclick', `deleteContact('${contact.id}')`);
-    return node;
+    showDeleteContactOverlay(contact, () => deleteContact(contactId));
 }
 
 
@@ -284,12 +285,14 @@ function buildDeleteContactOverlayNode(contact) {
  */
 async function createContact(event) {
     event.preventDefault();
-    const name = document.getElementById('addContactName').value.trim();
-    const email = document.getElementById('addContactEmail').value.trim();
-    const phone = document.getElementById('addContactPhone').value.trim();
-    if (!name || !email || !phone) return;
+    const fields = getAddContactFields();
+    if (!validateContactFields(fields)) return;
 
-    const id = await saveContact({ name, email, phone });
+    const id = await saveContact({
+        name: fields.nameInput.value.trim(),
+        email: fields.emailInput.value.trim(),
+        phone: fields.phoneInput.value.trim(),
+    });
     closeContactOverlay();
     await renderContacts();
     await showContactDetails(id);
@@ -303,13 +306,14 @@ async function createContact(event) {
  */
 async function saveEditedContact(event, contactId) {
     event.preventDefault();
-    const data = {
-        name: document.getElementById('editContactName').value.trim(),
-        email: document.getElementById('editContactEmail').value.trim(),
-        phone: document.getElementById('editContactPhone').value.trim(),
-    };
+    const fields = getEditContactFields();
+    if (!validateContactFields(fields)) return;
 
-    await updateContact(contactId, data);
+    await updateContact(contactId, {
+        name: fields.nameInput.value.trim(),
+        email: fields.emailInput.value.trim(),
+        phone: fields.phoneInput.value.trim(),
+    });
     closeContactOverlay();
     await renderContacts();
     await showContactDetails(contactId);
@@ -379,18 +383,13 @@ function closeMenuContact() {
 }
 
 
-window.showContactDetails = showContactDetails;
-window.showContactsList = showContactsList;
-window.toggleMenuContact = toggleMenuContact;
-window.closeMenuContact = closeMenuContact;
-window.openAddContactOverlay = openAddContactOverlay;
-window.openEditContactOverlay = openEditContactOverlay;
-window.openDeleteContactOverlay = openDeleteContactOverlay;
-window.closeContactOverlay = closeContactOverlay;
-window.saveEditedContact = saveEditedContact;
-window.createContact = createContact;
-window.deleteContact = deleteContact;
+/** Wires the static "add contact" trigger buttons outside any template. */
+function initContactsPageListeners() {
+    document.querySelectorAll('.desktop-add-contact-btn, .add-contact-btn').forEach((btn) =>
+        btn.addEventListener('click', openAddContactOverlay));
+}
 
 
 initNavbar();
 init();
+initContactsPageListeners();

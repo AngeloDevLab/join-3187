@@ -1,16 +1,26 @@
+/*
+ * Breakpoint convention (documented here since plain CSS custom properties
+ * cannot be referenced inside @media conditions):
+ * 1024px — primary desktop/tablet split (contacts, add-task, layout, navbar, summary)
+ * 768px  — secondary tier (auth, summary)
+ * 530px  — auth-specific fine breakpoint
+ */
 :root {
     /* Brand */
     --color-primary: #2a3647;
     --color-primary-dark: #091931;
     --color-accent: #29abe2;
+    --color-accent-rgb: 41, 171, 226;
 
     /* Backgrounds */
     --color-bg: #f6f7f8;
     --color-white: #ffffff;
+    --color-empty-task-bg: #e7e7e7;
 
     /* Text */
     --color-text: #000000;
     --color-text-muted: #a8a8a8;
+    --color-column-head: #42526e;
 
     /* Navigation */
     --color-nav-item: #cdcdcd;
@@ -38,6 +48,8 @@
 
     /* Spacing */
     --space-xs: 4px;
+    /* sits between xs and sm — name isn't strictly size-ordered */
+    --space-2xs: 8px;
     --space-sm: 16px;
     --space-md: 24px;
     --space-lg: 32px;
@@ -48,6 +60,8 @@
     --shadow-btn-hover: 0 4px 4px rgba(0, 0, 0, 0.3);
     --shadow-header: 0 4px 4px rgba(0, 0, 0, 0.1);
     --shadow-card: 0 0 10px 3px rgba(0, 0, 0, 0.04);
+    --shadow-task-card: 0 0 10px rgba(0, 0, 0, 0.08);
+    --shadow-fab: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
 
     /* Typography */
     --font-weight-regular: 400;
@@ -66,6 +80,8 @@
     /* Border Radius */
     --border-radius-sm: 8px;
     --border-radius-md: 10px;
+    /* pixel-named since the scale is already non-monotonic (xl < lg) */
+    --border-radius-20: 20px;
     --border-radius-xl: 24px;
     --border-radius-lg: 30px;
 

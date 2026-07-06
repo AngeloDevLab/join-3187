@@ -32,7 +32,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: var(--space-xs);
     padding: var(--space-xs) 10px;
     text-decoration: none;
     color: var(--color-nav-item);
@@ -75,7 +75,7 @@
     align-items: center;
     justify-content: space-between;
     height: var(--header-height);
-    padding: 0 var(--space-sm);
+    padding: 0 clamp(var(--space-sm), 4vw, var(--space-xl));
     background: var(--color-white);
     box-shadow: var(--shadow-header);
     position: sticky;
@@ -107,12 +107,20 @@
 }
 
       .nav-legal-mobile {
-   color: #fff;
+   color: var(--color-white);
   }
 
 .nav-legal-mobile a {
   color: var(--color-nav-item);
   }
+
+.nav-legal-mobile a.active {
+    display: inline-block;
+    background: var(--color-primary-dark);
+    color: var(--color-white);
+    padding: var(--space-sm) var(--space-2xs);
+    border-radius: var(--border-radius-sm);
+}
 
 .header-help img {
     width: 24px;
@@ -148,10 +156,7 @@
     position: absolute;
     top: calc(100% + var(--space-xs));
     right: 0;
-    background: var(--color-primary);
-    border-radius: var(--border-radius-lg) 0 var(--border-radius-lg) var(--border-radius-lg);
     padding: var(--space-sm);
-    min-width: 190px;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);
@@ -162,7 +167,14 @@
     z-index: 100;
 }
 
-.header-dropdown.open {
+/* Higher specificity than .dropdown's position:relative/width:100% (global/dropdown.css),
+   since navbar.css loads before dropdown.css in every page's import order. */
+.header-dropdown.dropdown {
+    position: absolute;
+    width: auto;
+}
+
+.header-dropdown.is-open {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
@@ -211,10 +223,6 @@
 /* ── Desktop overrides (≥ 1024px) ───────────────────────── */
 
 @media (min-width: 1024px) {
-    .app-header {
-    padding: 0 var(--space-xl);
-    }
-
     .app-sidebar {
         order: unset;
         grid-column: 1;
@@ -283,6 +291,14 @@
         text-decoration: none;
         transform: none;
         font-weight: var(--font-weight-bold);
+    }
+
+    .nav-legal a.active {
+        display: inline-block;
+        background: var(--color-primary-dark);
+        color: var(--color-white);
+        padding: var(--space-xs) var(--space-2xs);
+        border-radius: var(--border-radius-sm);
     }
 
     .header-logo-mobile {
