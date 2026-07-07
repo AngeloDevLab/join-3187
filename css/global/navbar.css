@@ -268,22 +268,28 @@
     .nav-legal {
         display: flex;
         flex-direction: column;
-        gap: var(--space-xs);
-        margin-top: auto;
-        padding: var(--space-md) 50px;
         gap: 20px;
+        width: 100%;
+        margin-top: auto;
+        padding: var(--space-md) 0;
     }
 
       .nav-legal-mobile {
     display: none;
   }
 
+    /* Full-width block (not the container's old 50px side padding) so the
+       .active background below can span edge-to-edge like .nav-link's,
+       instead of hugging just the text. */
     .nav-legal a {
+        display: block;
+        width: 100%;
+        padding: var(--space-sm) 50px;
         color: var(--color-nav-item);
         font-size: 16px;
         text-decoration: none;
         transform: none;
-        transition: color var(--transition-fast);
+        transition: color var(--transition-fast), background var(--transition-fast);
     }
 
     .nav-legal a:hover {
@@ -294,11 +300,8 @@
     }
 
     .nav-legal a.active {
-        display: inline-block;
         background: var(--color-primary-dark);
         color: var(--color-white);
-        padding: var(--space-xs) var(--space-2xs);
-        border-radius: var(--border-radius-sm);
     }
 
     .header-logo-mobile {
