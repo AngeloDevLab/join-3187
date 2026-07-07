@@ -207,12 +207,13 @@ function isSignupReady(fields) {
 
 
 /**
- * Enables or disables the signup submit button based on field completion.
+ * Visually dims the submit button when required fields are missing, without
+ * disabling it so a click still triggers validation and shows the errors.
  * @param {HTMLButtonElement} btn
  * @param {ReturnType<typeof getSignupFields>} fields
  */
 function updateSignupBtn(btn, fields) {
-    btn.disabled = !isSignupReady(fields);
+    btn.classList.toggle('btn-pending', !isSignupReady(fields));
 }
 
 
@@ -244,7 +245,7 @@ function validateSignup(fields) {
         validateField(emailInput, emailError, isValidEmail(emailInput.value), 'Please enter a valid email address.'),
         validateField(passwordInput, passwordError, !!passwordInput.value.trim(), 'Please enter a password.'),
         validateField(confirmInput, confirmError, confirmInput.value === passwordInput.value, "Your passwords don't match. Please try again."),
-        validateField(checkbox, checkboxError, checkbox.checked, 'Please accept the Privacy Policy to continue.'),
+        validateField(checkbox, checkboxError, checkbox.checked, 'Please accept the Privacy Policy.'),
     ].every(Boolean);
 }
 
