@@ -183,6 +183,12 @@ hr {
     font-weight: var(--font-weight-bold);
 }
 
+/* Overrides global/base.css's fixed 27px, same clamp as contacts.css's
+   .contact-panel-heading .subline. */
+.subline {
+    font-size: clamp(18px, 2vw, 27px);
+}
+
 
 /* Tablet */
 @media (min-width: 768px) {
