@@ -49,7 +49,7 @@ async function findUserByEmail(email) {
  */
 export async function loginUser(email) {
     const user = await findUserByEmail(email);
-    if (!user) throw new Error('No account found. Please sign up.');
+    if (!user) throw new Error('Check your email and password. Please try again.');
     setSession({ id: user.id, name: user.name, initials: getInitials(user.name), email: user.email });
 }
 

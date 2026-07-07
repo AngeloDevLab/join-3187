@@ -129,6 +129,20 @@ function initPasswordToggles() {
 
 // ── Login ────────────────────────────────────────────────
 
+const LOGIN_ERROR_MESSAGE = 'Check your email and password.\nPlease try again.';
+
+
+/**
+ * Marks both login fields as invalid with one shared, unspecific message, so
+ * a failed attempt never reveals which field (or which reason) was wrong.
+ * @param {{ emailInput: HTMLInputElement, emailError: HTMLElement, passwordInput: HTMLInputElement, passwordError: HTMLElement }} fields
+ */
+function setLoginError(fields) {
+    setError(fields.emailInput.closest('.input-wrapper'), fields.emailError, '');
+    setError(fields.passwordInput.closest('.input-wrapper'), fields.passwordError, LOGIN_ERROR_MESSAGE);
+}
+
+
 /**
  * Validates and submits the login form.
  * @param {SubmitEvent} e
@@ -136,16 +150,16 @@ function initPasswordToggles() {
  */
 async function handleLoginSubmit(e, fields) {
     e.preventDefault();
-    const valid = [
-        validateField(fields.emailInput, fields.emailError, isValidEmail(fields.emailInput.value), 'Please enter a valid email address.'),
-        validateField(fields.passwordInput, fields.passwordError, !!fields.passwordInput.value.trim(), 'Please enter your password.'),
-    ].every(Boolean);
-    if (!valid) return;
+    const filledAndValid = isValidEmail(fields.emailInput.value) && !!fields.passwordInput.value.trim();
+    if (!filledAndValid) {
+        setLoginError(fields);
+        return;
+    }
     try {
         await loginUser(fields.emailInput.value);
         exitAndRedirect(document.getElementById('loginCard'), "You're logged in!", 'pages/summary.html');
-    } catch (err) {
-        setError(fields.emailInput.closest('.input-wrapper'), fields.emailError, err.message);
+    } catch {
+        setLoginError(fields);
     }
 }
 
