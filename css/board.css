@@ -1,7 +1,7 @@
 /* ── Board Toolbar ─────────────────────────────────────────── */
 
 .board-section {
-    padding: var(--space-xl) clamp(var(--space-sm), 4vw, var(--space-xl));
+    padding: clamp(var(--space-sm), 4vw, var(--space-xl));
     background-color: var(--color-bg);
 }
 

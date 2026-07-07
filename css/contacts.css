@@ -15,7 +15,7 @@
        edge instead of letting it push this element (or the page) into
        unwanted horizontal scroll. */
     overflow-x: hidden;
-    padding: var(--space-xl) clamp(var(--space-sm), 4vw, var(--space-xl));
+    padding: clamp(var(--space-sm), 4vw, var(--space-xl));
 }
 
 .contact-group {
@@ -113,7 +113,7 @@
 /* ── Contact Details ───────────────────────────────────────── */
 
 .contact-details {
-    padding: var(--space-xl) clamp(var(--space-sm), 4vw, var(--space-xl));
+    padding: clamp(var(--space-sm), 4vw, var(--space-xl));
     background-color: var(--color-bg);
 }
 
