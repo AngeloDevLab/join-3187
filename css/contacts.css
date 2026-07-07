@@ -52,7 +52,7 @@
 .contact-avatar {
     width: 42px;
     height: 42px;
-    font-size: 14px;
+    font-size: 16px;
     border: 2px solid var(--color-white);
 }
 
@@ -75,7 +75,7 @@
 .contact-card p {
     margin: 0;
     display: block;
-    font-size: 14px;
+    font-size: 16px;
     color: var(--color-link);
     text-decoration: none;
     white-space: nowrap;
@@ -221,7 +221,7 @@
 .contact_menu button {
     background: transparent;
     border: unset;
-    font-size: 14px;
+    font-size: 16px;
     cursor: pointer;
     display: flex;
     align-items: center;

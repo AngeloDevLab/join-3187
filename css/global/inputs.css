@@ -81,7 +81,7 @@
 }
 
 .input-error-msg {
-    font-size: 12px;
+    font-size: 16px;
     color: var(--color-error);
     min-height: 1.2em;
     transition: opacity 400ms ease;

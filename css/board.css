@@ -190,7 +190,7 @@
     color: var(--color-white);
     padding: 5px 16px;
     border-radius: var(--border-radius-sm);
-    font-size: 14px;
+    font-size: 16px;
     margin-bottom: 16px;
 }
 
@@ -210,7 +210,7 @@
 .task-card p {
     color: var(--color-text-muted);
     margin: 0 0 16px;
-    font-size: 13px;
+    font-size: 16px;
 }
 
 .progress-row {
@@ -218,7 +218,7 @@
     align-items: center;
     gap: 12px;
     margin-bottom: 16px;
-    font-size: 12px;
+    font-size: 16px;
 }
 
 .progress-bar {
@@ -243,9 +243,9 @@
 
 .avatar {
     display: inline-flex;
-    width: 30px;
-    height: 30px;
-    font-size: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
     margin-right: -8px;
     border: 1px solid var(--color-white);
 }
@@ -462,7 +462,7 @@
     .search-wrapper input {
         width: 200px;
         box-sizing: content-box;
-        font-size: 14px;
+        font-size: 16px;
         padding: 10px var(--space-2xs);
     }
 
@@ -499,17 +499,17 @@
 
 
     .task-card p {
-        font-size: 15px;
+        font-size: 16px;
     }
 
     .progress-row {
-        font-size: 13px;
+        font-size: 16px;
     }
 
     .avatar {
-        width: 28px;
-        height: 28px;
-        font-size: 11px;
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
     }
 
     .move-button {
@@ -576,12 +576,12 @@
     display: flex;
     align-items: center;
     gap: var(--space-sm);
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .task-detail-muted {
     color: var(--color-text-muted);
-    font-size: 14px;
+    font-size: 16px;
     margin: 0;
 }
 
@@ -596,7 +596,7 @@
 
 .task-detail-subtask .checkbox {
     padding: var(--space-xs) 0;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .priority-chip {
@@ -605,7 +605,7 @@
     gap: 6px;
     padding: var(--space-xs) 12px;
     border-radius: var(--border-radius-sm);
-    font-size: 14px;
+    font-size: 16px;
     font-weight: var(--font-weight-medium);
     color: var(--color-text);
 }
@@ -628,7 +628,7 @@
     cursor: pointer;
     padding: var(--space-2xs) 12px;
     border-radius: var(--border-radius-sm);
-    font-size: 15px;
+    font-size: 16px;
     color: var(--color-primary);
     transition: background var(--transition-fast);
 }

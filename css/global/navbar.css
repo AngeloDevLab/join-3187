@@ -36,7 +36,7 @@
     padding: var(--space-xs) 10px;
     text-decoration: none;
     color: var(--color-nav-item);
-    font-size: 12px;
+    font-size: 16px;
     transform: none;
     transition: background var(--transition-fast), color var(--transition-fast);
 }
@@ -90,7 +90,7 @@
 
 .header-tagline {
     display: none;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .header-user {
@@ -280,7 +280,7 @@
 
     .nav-legal a {
         color: var(--color-nav-item);
-        font-size: 14px;
+        font-size: 16px;
         text-decoration: none;
         transform: none;
         transition: color var(--transition-fast);
