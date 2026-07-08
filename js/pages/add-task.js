@@ -6,5 +6,8 @@ import { saveTask } from '../firebase/cache.js';
 
 initNavbar();
 initAddTaskForm(document, {
-    onSubmitSuccess: (data) => saveTask(toFirebaseTask(data, 'todo')),
+    onSubmitSuccess: async (data) => {
+        await saveTask(toFirebaseTask(data, 'todo'));
+        setTimeout(() => { window.location.href = 'board.html'; }, 1200);
+    },
 });
