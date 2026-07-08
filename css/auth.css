@@ -168,6 +168,18 @@
     box-shadow: var(--shadow-card);
 }
 
+/* Fluidly scales 32px/16px (320px viewport) to 48px/115px (1024px+
+   viewport) instead of jumping at a breakpoint. */
+.auth-card-login {
+    padding: clamp(32px, 24.73px + 2.27vw, 48px) clamp(16px, 14.06vw - 29px, 115px);
+}
+
+/* Same fluid scaling as .auth-card-login, just with the signup card's own
+   32px/16px (320px) to 48px/88px (1024px+) target padding. */
+.auth-card-signup {
+    padding: clamp(32px, 24.73px + 2.27vw, 48px) clamp(16px, 10.23vw - 16.73px, 88px);
+}
+
 .is-hidden {
     display: none;
 }
