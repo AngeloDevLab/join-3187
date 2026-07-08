@@ -40,7 +40,8 @@
     box-shadow: var(--shadow-default);
 }
 
-.dropdown-trigger:focus-visible {
+.dropdown-trigger:focus-visible,
+.dropdown-trigger:focus-within {
     border-color: var(--color-accent);
 }
 
@@ -103,6 +104,36 @@
 }
 
 /* ── Assigned Dropdown ─────────────────────────────────────── */
+
+/* Caps the panel to ~5 rows (60px each: 40px avatar + 10px top/bottom
+   padding from .dropdown-option) before scrolling, so a large contact
+   list doesn't push the dropdown off-screen. */
+#assignedList {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* #assignedTrigger's .dropdown-value is a real <input> (not the plain
+   <span> other dropdowns use) so contacts can be searched by name -
+   reset it to look like inert trigger text instead of a text field. */
+#assignedTrigger .dropdown-value {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: text;
+}
+
+#assignedTrigger .dropdown-value::placeholder {
+    color: var(--color-text-muted);
+}
+
+.assigned-option.is-filtered {
+    display: none;
+}
 
 .assigned-option {
     display: flex;

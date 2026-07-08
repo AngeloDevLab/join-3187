@@ -231,16 +231,16 @@
                         </div>
 
                         <div class="input-field">
-                            <label class="field-label" for="assignedTrigger">Assigned to</label>
+                            <label class="field-label" for="assignedValue">Assigned to</label>
                             <div class="input-wrapper">
                                 <div class="dropdown" id="assignedDropdown">
-                                    <button type="button" id="assignedTrigger" class="dropdown-trigger"
+                                    <div id="assignedTrigger" class="dropdown-trigger"
                                         aria-haspopup="listbox" aria-expanded="false" aria-multiselectable="true">
-                                        <span class="dropdown-value dropdown-placeholder" id="assignedValue">Select
-                                            contacts to assign</span>
+                                        <input type="text" id="assignedValue" class="dropdown-value"
+                                            placeholder="Select contacts to assign" autocomplete="off">
                                         <img src="../assets/icons/arrow_drop_down.svg" class="dropdown-arrow" alt=""
                                             width="12" height="12">
-                                    </button>
+                                    </div>
                                     <ul class="dropdown-panel" role="listbox" id="assignedList"></ul>
                                 </div>
                             </div>

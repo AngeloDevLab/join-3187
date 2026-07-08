@@ -52,7 +52,7 @@ function updateAssignedTrigger(root) {
 
 
 /**
- * Deselects all contacts and clears the chip display.
+ * Deselects all contacts, clears the chip display, and resets the search.
  * @param {ParentNode} root
  */
 export function resetAssignedDropdown(root) {
@@ -62,6 +62,21 @@ export function resetAssignedDropdown(root) {
         opt.setAttribute('aria-selected', 'false');
     });
     updateAssignedTrigger(root);
+    root.querySelector('#assignedValue').value = '';
+    filterAssignedOptions(root, '');
+}
+
+
+/**
+ * Shows only the assigned-option items whose contact name matches the query.
+ * @param {ParentNode} root
+ * @param {string} query
+ */
+function filterAssignedOptions(root, query) {
+    const q = query.trim().toLowerCase();
+    root.querySelectorAll('.assigned-option').forEach((opt) => {
+        opt.classList.toggle('is-filtered', !opt.dataset.name.toLowerCase().includes(q));
+    });
 }
 
 
@@ -119,7 +134,73 @@ export function selectAssignedContacts(root, ids) {
 
 
 /**
- * Sets up the assigned-to dropdown with event delegation for multi-select.
+ * Toggles the clicked contact's selected state and refreshes the chip row.
+ * @param {ParentNode} root
+ * @param {MouseEvent} e
+ */
+function handleAssignedListClick(root, e) {
+    const opt = e.target.closest('.assigned-option');
+    if (opt) { toggleAssignedContact(opt); updateAssignedTrigger(root); }
+}
+
+
+/**
+ * Opens the dropdown and resets the search to a fresh full list, unless
+ * it's already open (avoids re-clearing an in-progress search on re-click).
+ * @param {ParentNode} root
+ * @param {{ dropdown: HTMLElement, trigger: HTMLElement, searchInput: HTMLInputElement }} els
+ */
+function openAssignedDropdown(root, els) {
+    if (els.dropdown.classList.contains('is-open')) return;
+    toggleDropdown(els, true);
+    els.searchInput.value = '';
+    filterAssignedOptions(root, '');
+    els.searchInput.focus();
+}
+
+
+/**
+ * Closes the dropdown and clears the search back to its placeholder.
+ * @param {ParentNode} root
+ * @param {{ dropdown: HTMLElement, trigger: HTMLElement, searchInput: HTMLInputElement }} els
+ */
+function closeAssignedDropdown(root, els) {
+    toggleDropdown(els, false);
+    els.searchInput.value = '';
+    filterAssignedOptions(root, '');
+}
+
+
+/**
+ * Closes and clears the search once focus leaves the whole widget - not on
+ * every blur, since selecting an option or clicking the arrow also blurs
+ * the search input without the user actually leaving the dropdown.
+ * @param {ParentNode} root
+ * @param {{ dropdown: HTMLElement, trigger: HTMLElement, searchInput: HTMLInputElement }} els
+ * @param {FocusEvent} e
+ */
+function handleAssignedFocusOut(root, els, e) {
+    if (els.dropdown.contains(e.relatedTarget)) return;
+    closeAssignedDropdown(root, els);
+}
+
+
+/**
+ * Prevents mousedown on non-input parts of the widget from blurring the
+ * search input, so clicking the arrow or an option doesn't close things.
+ * @param {HTMLElement} trigger
+ * @param {HTMLInputElement} searchInput
+ * @param {HTMLElement} list
+ */
+function preventAssignedBlur(trigger, searchInput, list) {
+    trigger.addEventListener('mousedown', (e) => { if (e.target !== searchInput) e.preventDefault(); });
+    list.addEventListener('mousedown', (e) => { if (e.target.closest('.assigned-option')) e.preventDefault(); });
+}
+
+
+/**
+ * Sets up the assigned-to dropdown with event delegation for multi-select
+ * and name search.
  * @param {ParentNode} root
  * @returns {Promise<void>} Resolves once contacts have been loaded into the list.
  */
@@ -127,12 +208,14 @@ export function initAssignedDropdown(root) {
     const dropdown = root.querySelector('#assignedDropdown');
     if (!dropdown) return Promise.resolve();
     const trigger = root.querySelector('#assignedTrigger');
+    const searchInput = root.querySelector('#assignedValue');
     const list = root.querySelector('#assignedList');
-    trigger.addEventListener('click', () =>
-        toggleDropdown({ dropdown, trigger }, !dropdown.classList.contains('is-open')));
-    list.addEventListener('click', (e) => {
-        const opt = e.target.closest('.assigned-option');
-        if (opt) { toggleAssignedContact(opt); updateAssignedTrigger(root); }
-    });
+    const els = { dropdown, trigger, searchInput };
+    preventAssignedBlur(trigger, searchInput, list);
+    trigger.addEventListener('click', () => openAssignedDropdown(root, els));
+    searchInput.addEventListener('focus', () => openAssignedDropdown(root, els));
+    searchInput.addEventListener('input', () => filterAssignedOptions(root, searchInput.value));
+    dropdown.addEventListener('focusout', (e) => handleAssignedFocusOut(root, els, e));
+    list.addEventListener('click', (e) => handleAssignedListClick(root, e));
     return loadAssignedContacts(root);
 }
