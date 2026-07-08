@@ -113,7 +113,7 @@
 /* ── Contact Details ───────────────────────────────────────── */
 
 .contact-details {
-    padding: clamp(var(--space-sm), 4vw, var(--space-xl));
+    padding: clamp(var(--space-sm), 4vw, var(--space-xl)) clamp(var(--space-sm), 4vw, var(--space-xl)) 0;
     background-color: var(--color-bg);
 }
 
