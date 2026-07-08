@@ -33,7 +33,8 @@ export function clearError(wrapper, errorEl) {
 
 
 /**
- * Validates a single field and updates its error state.
+ * Validates a single field and updates its error state, clearing any
+ * previous error once the field becomes valid.
  * Passes null as wrapper when the input has no .input-wrapper ancestor (e.g. checkbox).
  * @param {HTMLElement} inputEl
  * @param {HTMLElement} errorEl
@@ -47,5 +48,19 @@ export function validateField(inputEl, errorEl, condition, message) {
         setError(wrapper, errorEl, message);
         return false;
     }
+    clearError(wrapper, errorEl);
     return true;
+}
+
+
+/**
+ * Re-validates a field as soon as it loses focus, showing or clearing its
+ * error immediately instead of waiting for a submit attempt.
+ * @param {HTMLElement} inputEl
+ * @param {HTMLElement} errorEl
+ * @param {() => boolean} getCondition - re-evaluated at blur time
+ * @param {string} message
+ */
+export function validateOnBlur(inputEl, errorEl, getCondition, message) {
+    inputEl.addEventListener('blur', () => validateField(inputEl, errorEl, getCondition(), message));
 }

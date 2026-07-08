@@ -1,4 +1,4 @@
-import { validateField, isValidEmail } from '../utils/form-validation.js';
+import { validateField, validateOnBlur, isValidEmail } from '../utils/form-validation.js';
 
 
 /**
@@ -45,4 +45,15 @@ export function validateContactFields(fields) {
         validateField(emailInput, emailError, isValidEmail(emailInput.value), 'Please enter a valid email'),
         validateField(phoneInput, phoneError, !!phoneInput.value.trim(), 'This field is required'),
     ].every(Boolean);
+}
+
+
+/**
+ * Validates each field as soon as focus leaves it, ahead of submit.
+ * @param {ReturnType<typeof getAddContactFields>} fields
+ */
+export function wireContactFormBlur(fields) {
+    validateOnBlur(fields.nameInput, fields.nameError, () => !!fields.nameInput.value.trim(), 'This field is required');
+    validateOnBlur(fields.emailInput, fields.emailError, () => isValidEmail(fields.emailInput.value), 'Please enter a valid email');
+    validateOnBlur(fields.phoneInput, fields.phoneError, () => !!fields.phoneInput.value.trim(), 'This field is required');
 }

@@ -1,4 +1,4 @@
-import { validateField, setError, clearError, isValidEmail } from '../utils/form-validation.js';
+import { validateField, validateOnBlur, setError, clearError, isValidEmail } from '../utils/form-validation.js';
 import { loginUser, registerUser, loginAsGuest } from '../firebase/auth.js';
 import { showToast } from '../components/toast.js';
 
@@ -281,6 +281,19 @@ async function handleSignupSubmit(e, fields) {
 }
 
 
+/**
+ * Validates each signup field as soon as focus leaves it, ahead of submit.
+ * @param {ReturnType<typeof getSignupFields>} fields
+ */
+function wireSignupBlurValidation(fields) {
+    validateOnBlur(fields.nameInput, fields.nameError, () => !!fields.nameInput.value.trim(), 'Please enter your name.');
+    validateOnBlur(fields.emailInput, fields.emailError, () => isValidEmail(fields.emailInput.value), 'Please enter a valid email address.');
+    validateOnBlur(fields.passwordInput, fields.passwordError, () => !!fields.passwordInput.value.trim(), 'Please enter a password.');
+    validateOnBlur(fields.confirmInput, fields.confirmError, () => fields.confirmInput.value === fields.passwordInput.value, "Your passwords don't match. Please try again.");
+    validateOnBlur(fields.checkbox, fields.checkboxError, () => fields.checkbox.checked, 'Please accept the Privacy Policy.');
+}
+
+
 /** Sets up the signup form with live validation and submit handling. */
 function initSignupForm() {
     const form = document.getElementById('signupForm');
@@ -293,6 +306,7 @@ function initSignupForm() {
     [fields.passwordInput, fields.confirmInput]
         .forEach((input) => input.addEventListener('input', () => checkPasswordMatch(fields)));
     fields.checkbox.addEventListener('change', () => updateSignupBtn(submitBtn, fields));
+    wireSignupBlurValidation(fields);
     form.addEventListener('submit', (e) => handleSignupSubmit(e, fields));
 }
 

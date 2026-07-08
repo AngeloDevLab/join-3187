@@ -3,7 +3,7 @@ import { initNavbar } from '../components/navbar.js';
 import { getCurrentUser } from '../firebase/auth.js';
 import { getAvatarColorForId, getInitials, triggerTransitionIn } from '../utils/helpers.js';
 import { getContacts, saveContact, updateContact, removeContact } from '../firebase/cache.js';
-import { getAddContactFields, getEditContactFields, validateContactFields } from '../components/contact-form.js';
+import { getAddContactFields, getEditContactFields, validateContactFields, wireContactFormBlur } from '../components/contact-form.js';
 import {
     openAddContactOverlay as showAddContactOverlay,
     openEditContactOverlay as showEditContactOverlay,
@@ -252,6 +252,7 @@ function fillContactDetailsNode(node, contact) {
 /** Opens the add contact overlay. */
 function openAddContactOverlay() {
     showAddContactOverlay(createContact);
+    wireContactFormBlur(getAddContactFields());
 }
 
 
@@ -264,6 +265,7 @@ async function openEditContactOverlay(contactId) {
     const contact = await getContactById(contactId);
     if (!contact) return;
     showEditContactOverlay(contact, (e) => saveEditedContact(e, contactId), () => openDeleteContactOverlay(contactId));
+    wireContactFormBlur(getEditContactFields());
 }
 
 

@@ -1,4 +1,4 @@
-import { clearError } from '../utils/form-validation.js';
+import { clearError, validateOnBlur } from '../utils/form-validation.js';
 
 
 /**
@@ -87,4 +87,5 @@ export function initCategoryDropdown(root) {
         toggleDropdown(els, !els.dropdown.classList.contains('is-open')));
     els.dropdown.querySelectorAll('.dropdown-option').forEach((opt) =>
         opt.addEventListener('click', () => pickCategoryOption(opt, els)));
+    validateOnBlur(els.trigger, els.errorEl, () => !!els.hiddenInput.value, 'This field is required');
 }

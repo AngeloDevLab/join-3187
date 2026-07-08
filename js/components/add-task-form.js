@@ -1,4 +1,4 @@
-import { validateField, clearError } from '../utils/form-validation.js';
+import { validateField, validateOnBlur, clearError } from '../utils/form-validation.js';
 import { showToast } from '../components/toast.js';
 import { initSubtaskInput, getSubtasks, setSubtasks } from './subtask.js';
 import { initCategoryDropdown, initDropdownAutoClose, setCategoryOption } from './task-category-dropdown.js';
@@ -112,6 +112,20 @@ function validateTaskForm(fields) {
             ? 'Date cannot be in the past' : 'This field is required'),
         validateField(categorySelect, categoryError, !!categorySelect.value, 'This field is required'),
     ].every(Boolean);
+}
+
+
+/**
+ * Validates each task field as soon as focus leaves it, ahead of submit.
+ * @param {ReturnType<typeof getFormFields>} fields
+ */
+function wireTaskFormBlurValidation(fields) {
+    validateOnBlur(fields.titleInput, fields.titleError, () => !!fields.titleInput.value.trim(), 'This field is required');
+    fields.dueDateInput.addEventListener('blur', () => {
+        const dueDateValid = !!fields.dueDateInput.value && fields.dueDateInput.value >= getTodayDateString();
+        validateField(fields.dueDateInput, fields.dueDateError, dueDateValid,
+            fields.dueDateInput.value ? 'Date cannot be in the past' : 'This field is required');
+    });
 }
 
 
@@ -274,6 +288,7 @@ function wireTaskFormEvents(root, form, fields, submitBtn, onSubmitSuccess, onCa
     form.addEventListener('submit', (e) => handleSubmit(e, fields, root, onSubmitSuccess, successMessage));
     form.querySelector('.clear-btn')?.addEventListener('click', () =>
         onCancel ? onCancel() : clearTaskForm(fields, root));
+    wireTaskFormBlurValidation(fields);
 }
 
 
