@@ -44,6 +44,7 @@
 
 .btn-pending {
     opacity: 0.4;
+    cursor: not-allowed;
 }
 
 .btn-pending:hover {
