@@ -45,6 +45,12 @@
     border-color: var(--color-accent);
 }
 
+/* base.css's `* { font-size: 16px; }` matches this element directly, which
+   beats inheriting .dropdown-trigger's clamped size - restore it explicitly. */
+.dropdown-value {
+    font-size: inherit;
+}
+
 .dropdown-placeholder {
     color: var(--color-text-muted);
 }
