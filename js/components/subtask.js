@@ -38,9 +38,22 @@ function addSubtask(root) {
     const input = root.querySelector('#task-subtask');
     const text = input.value.trim();
     if (!text) return;
-    root.querySelector('#subtaskList').appendChild(buildSubtaskItem(text));
+    const list = root.querySelector('#subtaskList');
+    list.appendChild(buildSubtaskItem(text));
+    updateSubtaskOverflow(list);
     input.value = '';
     input.focus();
+}
+
+
+/**
+ * Removes a subtask item and refreshes the collapsed/expanded overflow state.
+ * @param {HTMLLIElement} li
+ */
+function removeSubtask(li) {
+    const list = li.closest('.subtask-list');
+    li.remove();
+    updateSubtaskOverflow(list);
 }
 
 
@@ -92,20 +105,70 @@ function startEditSubtask(li) {
 
 
 /**
- * Handles clicks inside the subtask list: item clicks start editing, while the
- * left/right action buttons delete or confirm depending on the editing state.
+ * Handles clicks inside the subtask list: the "+N more" trailer toggles
+ * overflow, item clicks start editing, and the left/right action buttons
+ * delete or confirm depending on the editing state.
  * @param {MouseEvent} e
  */
 function handleSubtaskListClick(e) {
+    const more = e.target.closest('.subtask-more');
+    if (more) return toggleSubtaskOverflow(more.closest('.subtask-list'));
     const li = e.target.closest('.subtask-item');
     if (!li) return;
     const btn = e.target.closest('.subtask-item-btn');
     if (!btn) return startEditSubtask(li);
     const isEditing = li.classList.contains('is-editing');
     const isLeft = btn.classList.contains('subtask-btn-left');
-    if (isLeft) return isEditing ? li.remove() : startEditSubtask(li);
+    if (isLeft) return isEditing ? removeSubtask(li) : startEditSubtask(li);
     if (isEditing) li.querySelector('.subtask-edit-input')?.blur();
-    else li.remove();
+    else removeSubtask(li);
+}
+
+
+/**
+ * Builds the trailing "+N more" (collapsed) or "Show less" (expanded) row.
+ * @param {number} count
+ * @param {boolean} expanded
+ * @returns {HTMLLIElement}
+ */
+function buildMoreTrailer(count, expanded) {
+    const li = document.createElement('li');
+    li.className = 'subtask-more';
+    li.textContent = expanded ? 'Show less' : `+${count} more`;
+    return li;
+}
+
+
+/**
+ * Shows at most 2 real items plus a "+N more" trailer when collapsed and
+ * there are more than 3 subtasks; expanded shows everything, scrollable.
+ * @param {HTMLElement} list
+ */
+function updateSubtaskOverflow(list) {
+    const items = [...list.querySelectorAll('.subtask-item')];
+    list.querySelector('.subtask-more')?.remove();
+    if (items.length <= 3) {
+        list.classList.remove('is-expanded');
+        items.forEach((li) => li.classList.remove('is-hidden-overflow'));
+        return;
+    }
+    if (list.classList.contains('is-expanded')) {
+        items.forEach((li) => li.classList.remove('is-hidden-overflow'));
+        list.appendChild(buildMoreTrailer(items.length, true));
+        return;
+    }
+    items.forEach((li, i) => li.classList.toggle('is-hidden-overflow', i >= 2));
+    list.insertBefore(buildMoreTrailer(items.length - 2, false), items[2]);
+}
+
+
+/**
+ * Toggles between the collapsed 3-row view and the full scrollable list.
+ * @param {HTMLElement} list
+ */
+function toggleSubtaskOverflow(list) {
+    list.classList.toggle('is-expanded');
+    updateSubtaskOverflow(list);
 }
 
 
@@ -141,7 +204,9 @@ export function setSubtasks(root, subtasks) {
     const list = root.querySelector('#subtaskList');
     if (!list) return;
     list.innerHTML = '';
+    list.classList.remove('is-expanded');
     subtasks.forEach((s) => list.appendChild(buildSubtaskItem(s.title, s.done)));
+    updateSubtaskOverflow(list);
 }
 
 
