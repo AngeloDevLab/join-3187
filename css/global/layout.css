@@ -6,7 +6,7 @@
 .app-layout {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    min-height: 100dvh;
 }
 
 .app-main {
@@ -21,7 +21,7 @@
         display: grid;
         grid-template-columns: var(--sidebar-width) 1fr;
         grid-template-rows: var(--header-height) 1fr;
-        min-height: 100vh;
+        min-height: 100dvh;
     }
 
     .app-header {

@@ -297,7 +297,7 @@
     grid-template-columns: 1fr;
     width: min(390px, 100%);
     min-height: unset;
-    max-height: calc(100vh - var(--mobile-nav-height) - 112px);
+    max-height: calc(100dvh - var(--mobile-nav-height) - 112px);
     overflow: hidden;
     overflow-y: auto;
     border-radius: var(--border-radius-lg);
