@@ -158,7 +158,6 @@ function resetInputs(fields, root) {
     root.querySelector('#task-description').value = '';
     root.querySelector('#task-subtask').value = '';
     root.querySelector('#subtaskList').innerHTML = '';
-    root.querySelector('#subtaskList').classList.remove('is-expanded');
 }
 
 

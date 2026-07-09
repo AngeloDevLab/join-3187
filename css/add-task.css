@@ -224,15 +224,9 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    /* Reserves 4 rows so the layout doesn't jump as the first few subtasks
-       are added; beyond that, .subtask-more takes the 4th row instead. */
-    min-height: calc(var(--subtask-item-height) * 4);
-}
-
-/* Expanded via .subtask-more's toggle: caps at ~3 rows and scrolls instead
-   of growing the modal/page for a long subtask list. */
-.subtask-list.is-expanded {
-    max-height: calc(var(--subtask-item-height) * 3);
+    /* Fixed to 3 rows so the layout never jumps - once a 4th subtask is
+       added, the list scrolls instead of growing the modal/page. */
+    height: calc(var(--subtask-item-height) * 3);
     overflow-y: auto;
 }
 
@@ -246,27 +240,6 @@
     border-radius: var(--border-radius-md);
     cursor: pointer;
     transition: background var(--transition-fast), transform var(--transition-fast);
-}
-
-.subtask-item.is-hidden-overflow {
-    display: none;
-}
-
-.subtask-more {
-    display: flex;
-    align-items: center;
-    min-height: var(--subtask-item-height);
-    box-sizing: border-box;
-    padding: 6px 12px;
-    border-radius: var(--border-radius-md);
-    color: var(--color-text-muted);
-    font-size: 16px;
-    cursor: pointer;
-    transition: background var(--transition-fast);
-}
-
-.subtask-more:hover {
-    background: rgba(0, 0, 0, 0.03);
 }
 
 .subtask-item:hover {
