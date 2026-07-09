@@ -55,8 +55,8 @@ The email alone identifies the user. This is intentional for this project scope.
 2. `registerUser(name, email)` checks for duplicate email via `findUserByEmail`
 3. Duplicate → throws, error shown on email field
 4. New user → `create('users', { name, email })`, then `saveContact({ name, email, phone: '' })` so the
-   new user immediately shows up in Contacts → `setSession({ id, name, initials, email })`
-5. Toast + redirect to `pages/summary.html`
+   new user immediately shows up in Contacts. No session is created — the user is not logged in.
+5. Toast + card switch back to the login form (same page, no navigation)
 
 Note: `contacts.js` also runs `addCurrentUserToContacts()` on every Contacts page load as a
 safety net (deduped by email) — the explicit save in step 4 covers the common case, this

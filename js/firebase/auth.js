@@ -55,7 +55,7 @@ export async function loginUser(email) {
 
 
 /**
- * Creates a new user entry in the DB and stores them in the session.
+ * Creates a new user entry in the DB. Does not log the user in.
  * Throws if the email is already registered.
  * @param {string} name
  * @param {string} email
@@ -64,9 +64,8 @@ export async function loginUser(email) {
 export async function registerUser(name, email) {
     const existing = await findUserByEmail(email);
     if (existing) throw new Error('Already registered. Please log in.');
-    const id = await create('users', { name, email });
+    await create('users', { name, email });
     await saveContact({ name, email, phone: '' });
-    setSession({ id, name, initials: getInitials(name), email });
 }
 
 

@@ -42,34 +42,6 @@
     visibility: hidden;
 }
 
-@media (min-width: 768px) {
-    .intro {
-        background-color: var(--color-bg);
-    }
-
-    .intro-logo-img-light {
-        opacity: 0;
-    }
-
-    .intro-logo-img-dark {
-        opacity: 1;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    .intro,
-    .intro-logo {
-        transition-duration: 0s;
-    }
-}
-
-@media (scripting: none) {
-    .intro {
-        display: none;
-    }
-}
-
 /* ── Page ──────────────────────────────────────────────── */
 
 .page {
@@ -122,21 +94,15 @@
     color: var(--color-text);
 }
 
+.signup-hint-card .btn {
+    padding: 15px 22px;
+}
+
 .signup-hint-header {
     position: fixed;
     top: var(--auth-logo-offset);
     right: var(--auth-content-inset);
     display: none;
-}
-
-@media (min-width: 530px) {
-    .signup-hint-header {
-        display: flex;
-    }
-
-    .signup-hint-card {
-        display: none;
-    }
 }
 
 /* ── Auth Cards ────────────────────────────────────────── */
@@ -182,16 +148,6 @@
 
 .is-hidden {
     display: none;
-}
-
-@media (min-width: 768px) {
-    .auth-card-login {
-        max-height: 500px;
-    }
-
-    .page-footer {
-        padding: var(--space-md);
-    }
 }
 
 .auth-title {
@@ -241,13 +197,6 @@
     min-height: 2.4em;
 }
 
-@media (min-width: 768px) {
-    #loginPasswordError {
-        white-space: normal;
-        min-height: 1.2em;
-    }
-}
-
 .auth-buttons {
     display: flex;
     flex-direction: column;
@@ -257,17 +206,74 @@
 
 .auth-buttons .btn {
     flex: 1 1 auto;
-    max-width: 180px;
+    width: 180px;
+    padding: 16px 24px;
 }
 
-@media (min-width: 530px) {
-    .auth-buttons {
-        flex-direction: row;
-        margin-top: var(--space-md);
+/* ── Breakpoints ───────────────────────────────────────── */
+
+@media (min-width: 768px) {
+    .intro {
+        background-color: var(--color-bg);
+    }
+
+    .intro-logo-img-light {
+        opacity: 0;
+    }
+
+    .intro-logo-img-dark {
+        opacity: 1;
+    }
+
+    .page-footer {
+        padding: var(--space-md);
+    }
+
+    .signup-hint-card {
+        display: none;
+    }
+
+    .signup-hint-card .btn {
+        padding: 15px 16px;
+    }
+
+    .signup-hint-header {
+        display: flex;
+    }
+
+    .auth-card-login {
+        max-height: 500px;
     }
 
     .auth-card {
         gap: var(--space-lg);
     }
+
+    #loginPasswordError {
+        white-space: normal;
+        min-height: 1.2em;
+    }
+
+    .auth-buttons {
+        flex-direction: row;
+        margin-top: var(--space-md);
+    }
+
+    .auth-buttons .btn {
+        width: auto;
+        padding: 12px 24px;
+    }
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .intro,
+    .intro-logo {
+        transition-duration: 0s;
+    }
+}
+
+@media (scripting: none) {
+    .intro {
+        display: none;
+    }
+}

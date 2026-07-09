@@ -1,4 +1,4 @@
-import { validateField, validateOnBlur, setError, clearError, isValidEmail } from '../utils/form-validation.js';
+import { validateField, validateOnBlur, setError, isValidEmail } from '../utils/form-validation.js';
 import { loginUser, registerUser, loginAsGuest } from '../firebase/auth.js';
 import { showToast } from '../components/toast.js';
 
@@ -54,6 +54,25 @@ function initIntro() {
     const intro = document.getElementById('intro');
     if (!intro) return;
     playIntro(intro);
+}
+
+
+/**
+ * Fades out the signup card, shows a toast, then switches to the login card.
+ * @param {HTMLElement} cardEl
+ * @param {string} message
+ */
+function exitToLogin(cardEl, message) {
+    cardEl.style.transition = 'opacity 300ms ease';
+    cardEl.style.opacity = '0';
+    setTimeout(() => {
+        showToast(message);
+        setTimeout(() => {
+            cardEl.style.transition = '';
+            cardEl.style.opacity = '';
+            showAuthCard('login');
+        }, 1200);
+    }, 300);
 }
 
 
@@ -232,22 +251,6 @@ function updateSignupBtn(btn, fields) {
 
 
 /**
- * Live-checks the confirm-password field against the password field, showing
- * or clearing the mismatch error immediately as the user types.
- * @param {ReturnType<typeof getSignupFields>} fields
- */
-function checkPasswordMatch(fields) {
-    const { passwordInput, confirmInput, confirmError } = fields;
-    const wrapper = confirmInput.closest('.input-wrapper');
-    if (!confirmInput.value || confirmInput.value === passwordInput.value) {
-        clearError(wrapper, confirmError);
-        return;
-    }
-    setError(wrapper, confirmError, "Your passwords don't match. Please try again.");
-}
-
-
-/**
  * Validates all signup fields on submit and shows errors for any that fail.
  * @param {ReturnType<typeof getSignupFields>} fields
  * @returns {boolean}
@@ -274,7 +277,7 @@ async function handleSignupSubmit(e, fields) {
     if (!validateSignup(fields)) return;
     try {
         await registerUser(fields.nameInput.value, fields.emailInput.value);
-        exitAndRedirect(document.getElementById('signupCard'), 'Account created!', 'pages/summary.html');
+        exitToLogin(document.getElementById('signupCard'), 'Account created!');
     } catch (err) {
         setError(fields.emailInput.closest('.input-wrapper'), fields.emailError, err.message);
     }
@@ -303,8 +306,6 @@ function initSignupForm() {
     updateSignupBtn(submitBtn, fields);
     [fields.nameInput, fields.emailInput, fields.passwordInput, fields.confirmInput]
         .forEach((input) => input.addEventListener('input', () => updateSignupBtn(submitBtn, fields)));
-    [fields.passwordInput, fields.confirmInput]
-        .forEach((input) => input.addEventListener('input', () => checkPasswordMatch(fields)));
     fields.checkbox.addEventListener('change', () => updateSignupBtn(submitBtn, fields));
     wireSignupBlurValidation(fields);
     form.addEventListener('submit', (e) => handleSignupSubmit(e, fields));
