@@ -78,6 +78,24 @@
     }
 }
 
+/* The edit-task drawer uses the >=768px rounded/backdrop-visible treatment
+   at every width, unlike the regular Add Task modal which stays full-screen
+   on mobile. Caps width below .modal's own 100vw (instead of clearing it
+   like the >=768px block does above) so narrow phones keep a visible side
+   margin/backdrop instead of the drawer touching both edges. */
+.modal--right:has(.add-task-modal--edit) {
+    width: fit-content;
+    height: fit-content;
+    max-width: calc(100vw - 2 * var(--space-sm));
+    margin: auto;
+    border-radius: var(--border-radius-lg);
+    transform: translateX(100%);
+}
+
+.modal--right:has(.add-task-modal--edit).is-open {
+    transform: translateX(0);
+}
+
 
 /* ── Centered modal (scale + fade) ──────────────────────── */
 

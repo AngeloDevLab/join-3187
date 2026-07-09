@@ -35,7 +35,7 @@ function buildPriorityHtml(priority) {
  */
 function buildAssignedHtml(assigned) {
     if (!assigned?.length) return '<p class="task-detail-muted">No contacts assigned</p>';
-    return assigned.map((c) => {
+    const rows = assigned.map((c) => {
         const initials = escapeHtml(c.initials);
         const name = escapeHtml(c.name ?? c.initials);
         return `<div class="task-detail-contact">
@@ -43,6 +43,7 @@ function buildAssignedHtml(assigned) {
             <span>${name}</span>
         </div>`;
     }).join('');
+    return `<div class="task-detail-assigned-list">${rows}</div>`;
 }
 
 
@@ -213,6 +214,7 @@ function wireSubtaskCheckboxes(dialog, todo, onToggleSubtask) {
 function switchToEditMode(dialog, todo, { onSave, onClose }) {
     const node = document.getElementById('addTaskTemplate').content.cloneNode(true);
     node.querySelector('.add-task-modal')?.classList.add('add-task-modal--edit');
+    node.querySelector('.add-task-modal h1')?.remove();
     dialog.classList.replace('modal--center', 'modal--right');
     dialog.replaceChildren(node);
     initAddTaskForm(dialog, {
