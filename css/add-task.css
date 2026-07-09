@@ -18,7 +18,6 @@
 
 .form-columns {
     display: flex;
-    align-items: flex-start;
     flex-direction: column;
 }
 
@@ -164,7 +163,6 @@
 .form-actions {
     display: flex;
     gap: var(--space-sm);
-    width: 100%;
 }
 
 .form-actions .btn {
@@ -371,9 +369,10 @@
     }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
     .form-columns {
         flex-direction: row;
+        align-items: flex-start;
     }
 
     .form-divider {
