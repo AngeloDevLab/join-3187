@@ -2,6 +2,7 @@ import '../utils/auth-guard.js';
 import { initNavbar } from '../components/navbar.js';
 import { getCurrentUser } from '../firebase/auth.js';
 import { getAvatarColorForId, getInitials, triggerTransitionIn } from '../utils/helpers.js';
+import { showToast } from '../components/toast.js';
 import { getContacts, saveContact, updateContact, removeContact } from '../firebase/cache.js';
 import { getAddContactFields, getEditContactFields, validateContactFields, wireContactFormBlur } from '../components/contact-form.js';
 import {
@@ -298,6 +299,7 @@ async function createContact(event) {
     closeContactOverlay();
     await renderContacts();
     await showContactDetails(id);
+    showToast('Contact successfully created');
 }
 
 

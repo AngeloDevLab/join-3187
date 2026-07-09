@@ -45,6 +45,29 @@ html {
     font-size: 16px;
 }
 
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+}
+
+/* Chrome/Edge/Safari - without this, the thumb only renders while actively
+   scrolling on systems with "overlay scrollbars" enabled (macOS, some
+   Windows setups), making scrollable areas look empty at rest. */
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+    border-radius: var(--border-radius-sm);
+}
+
 body {
     margin: 0;
 }
