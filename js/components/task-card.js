@@ -1,15 +1,20 @@
 import { PRIORITY_META, escapeHtml, getSubtaskProgress } from '../utils/helpers.js';
 
+const MAX_VISIBLE_AVATARS = 3;
+
 
 /**
- * Returns avatar markup for a task's assigned contacts.
+ * Returns avatar markup for a task's assigned contacts, capped to
+ * MAX_VISIBLE_AVATARS with any remainder collapsed into a "+n" avatar.
  * @param {{ assigned: { initials: string, color: string }[] }} todo
  * @returns {string}
  */
 function buildAvatarsHtml(todo) {
-    return todo.assigned
-        .map((c) => `<span class="avatar avatar-circle" style="background:${c.color}">${escapeHtml(c.initials)}</span>`)
-        .join('');
+    const overflow = todo.assigned.length - MAX_VISIBLE_AVATARS;
+    const avatars = todo.assigned.slice(0, MAX_VISIBLE_AVATARS)
+        .map((c) => `<span class="avatar avatar-circle" style="background:${c.color}">${escapeHtml(c.initials)}</span>`);
+    if (overflow > 0) avatars.push(`<span class="avatar avatar-circle avatar-more">+${overflow}</span>`);
+    return avatars.join('');
 }
 
 
