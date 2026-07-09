@@ -3,6 +3,8 @@ import { getCurrentUser } from '../firebase/auth.js';
 import { getContacts } from '../firebase/cache.js';
 import { getAvatarColorForId, getInitials, escapeHtml } from '../utils/helpers.js';
 
+const MAX_VISIBLE_CHIPS = 4;
+
 
 /**
  * Builds a single assigned-to list item element.
@@ -40,14 +42,26 @@ function toggleAssignedContact(option) {
 
 
 /**
- * Updates the chip row below the dropdown to show the selected contacts' avatars.
+ * Builds the avatar chip markup for a single selected contact.
+ * @param {HTMLLIElement} opt
+ * @returns {string}
+ */
+function buildChipAvatar(opt) {
+    return `<span class="contact-avatar avatar-circle" style="background:${opt.dataset.color}">${opt.dataset.initials}</span>`;
+}
+
+
+/**
+ * Updates the chip row below the dropdown to show up to MAX_VISIBLE_CHIPS
+ * selected contacts' avatars, collapsing any remainder into a "+n" chip.
  * @param {ParentNode} root
  */
 function updateAssignedTrigger(root) {
-    const selected = root.querySelectorAll('.assigned-option.selected');
-    root.querySelector('#assignedChipsDisplay').innerHTML = [...selected]
-        .map((opt) => `<span class="contact-avatar avatar-circle" style="background:${opt.dataset.color}">${opt.dataset.initials}</span>`)
-        .join('');
+    const selected = [...root.querySelectorAll('.assigned-option.selected')];
+    const overflow = selected.length - MAX_VISIBLE_CHIPS;
+    const chips = selected.slice(0, MAX_VISIBLE_CHIPS).map(buildChipAvatar);
+    if (overflow > 0) chips.push(`<span class="contact-avatar avatar-circle contact-avatar-more">+${overflow}</span>`);
+    root.querySelector('#assignedChipsDisplay').innerHTML = chips.join('');
 }
 
 
@@ -199,6 +213,23 @@ function preventAssignedBlur(trigger, searchInput, list) {
 
 
 /**
+ * Toggles the dropdown closed when the arrow is clicked while open,
+ * otherwise opens it (e.g. clicking into the search input).
+ * @param {ParentNode} root
+ * @param {{ dropdown: HTMLElement, trigger: HTMLElement, searchInput: HTMLInputElement }} els
+ * @param {MouseEvent} e
+ */
+function handleAssignedTriggerClick(root, els, e) {
+    const isArrowClick = e.target.closest('.dropdown-arrow');
+    if (isArrowClick && els.dropdown.classList.contains('is-open')) {
+        closeAssignedDropdown(root, els);
+        return;
+    }
+    openAssignedDropdown(root, els);
+}
+
+
+/**
  * Sets up the assigned-to dropdown with event delegation for multi-select
  * and name search.
  * @param {ParentNode} root
@@ -212,7 +243,7 @@ export function initAssignedDropdown(root) {
     const list = root.querySelector('#assignedList');
     const els = { dropdown, trigger, searchInput };
     preventAssignedBlur(trigger, searchInput, list);
-    trigger.addEventListener('click', () => openAssignedDropdown(root, els));
+    trigger.addEventListener('click', (e) => handleAssignedTriggerClick(root, els, e));
     searchInput.addEventListener('focus', () => openAssignedDropdown(root, els));
     searchInput.addEventListener('input', () => filterAssignedOptions(root, searchInput.value));
     dropdown.addEventListener('focusout', (e) => handleAssignedFocusOut(root, els, e));

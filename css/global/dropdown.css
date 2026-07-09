@@ -57,7 +57,14 @@
 
 .dropdown-arrow {
     flex-shrink: 0;
-    transition: transform var(--transition-fast);
+    box-sizing: content-box;
+    padding: var(--space-2xs);
+    border-radius: 50%;
+    transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.dropdown-arrow:hover {
+    background-color: var(--color-border);
 }
 
 .dropdown.is-open .dropdown-trigger {
@@ -129,6 +136,7 @@
     background: transparent;
     padding: 0;
     font: inherit;
+    line-height: 1.5;
     color: inherit;
     cursor: text;
 }
@@ -194,7 +202,7 @@
     gap: var(--space-xs);
     align-items: center;
     flex-wrap: wrap;
-    min-height: 30px;
+    min-height: 40px;
     margin-top: var(--space-xs);
 }
 
@@ -202,4 +210,8 @@
     width: 40px;
     height: 40px;
     font-size: 16px;
+}
+
+.contact-avatar-more {
+    background: var(--color-primary);
 }
