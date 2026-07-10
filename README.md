@@ -26,7 +26,7 @@ A collaborative Kanban board built as a Multi-Page Application (MPA), developed 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/<your-repo>/join.git
+   git clone https://github.com/AngeloDevLab/join-3187.git
    ```
 
 2. Create a Firebase project at [firebase.google.com](https://firebase.google.com)

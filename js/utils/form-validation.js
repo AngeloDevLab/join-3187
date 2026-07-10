@@ -1,4 +1,5 @@
 const EMAIL_RE = /^[^\s@.]+(?:\.[^\s@.]+)*@[^\s@.]+(?:\.[^\s@.]+)*\.[^\s@.]{2,}$/;
+const PHONE_RE = /^\+?[0-9]+$/;
 
 /**
  * @param {string} value
@@ -6,6 +7,29 @@ const EMAIL_RE = /^[^\s@.]+(?:\.[^\s@.]+)*@[^\s@.]+(?:\.[^\s@.]+)*\.[^\s@.]{2,}$
  */
 export function isValidEmail(value) {
     return EMAIL_RE.test(value.trim());
+}
+
+
+/**
+ * @param {string} value
+ * @returns {boolean}
+ */
+export function isValidPhone(value) {
+    return PHONE_RE.test(value.trim());
+}
+
+
+/**
+ * Strips any non-digit characters as the user types, keeping a phone field
+ * numeric-only while still allowing a leading "+" for a country code.
+ * @param {HTMLInputElement} inputEl
+ */
+export function restrictToDigits(inputEl) {
+    inputEl.addEventListener('input', () => {
+        const value = inputEl.value;
+        const sanitized = (value.startsWith('+') ? '+' : '') + value.replace(/\D/g, '');
+        if (sanitized !== value) inputEl.value = sanitized;
+    });
 }
 
 

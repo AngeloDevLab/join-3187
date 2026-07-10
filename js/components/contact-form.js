@@ -1,4 +1,4 @@
-import { validateField, validateOnBlur, isValidEmail } from '../utils/form-validation.js';
+import { validateField, validateOnBlur, isValidEmail, isValidPhone, restrictToDigits } from '../utils/form-validation.js';
 
 
 /**
@@ -43,7 +43,7 @@ export function validateContactFields(fields) {
     return [
         validateField(nameInput, nameError, !!nameInput.value.trim(), 'This field is required'),
         validateField(emailInput, emailError, isValidEmail(emailInput.value), 'Please enter a valid email'),
-        validateField(phoneInput, phoneError, !!phoneInput.value.trim(), 'This field is required'),
+        validateField(phoneInput, phoneError, isValidPhone(phoneInput.value), 'Please enter a valid phone number'),
     ].every(Boolean);
 }
 
@@ -55,5 +55,6 @@ export function validateContactFields(fields) {
 export function wireContactFormBlur(fields) {
     validateOnBlur(fields.nameInput, fields.nameError, () => !!fields.nameInput.value.trim(), 'This field is required');
     validateOnBlur(fields.emailInput, fields.emailError, () => isValidEmail(fields.emailInput.value), 'Please enter a valid email');
-    validateOnBlur(fields.phoneInput, fields.phoneError, () => !!fields.phoneInput.value.trim(), 'This field is required');
+    validateOnBlur(fields.phoneInput, fields.phoneError, () => isValidPhone(fields.phoneInput.value), 'Please enter a valid phone number');
+    restrictToDigits(fields.phoneInput);
 }
