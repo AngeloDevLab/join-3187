@@ -1,6 +1,6 @@
 import { toggleDropdown } from './task-category-dropdown.js';
 import { authService } from '../services/auth-service.js';
-import { getContacts } from '../services/cache.js';
+import { contactStore } from '../services/contact-store.js';
 import { getAvatarColorForId, getInitials, escapeHtml } from '../utils/helpers.js';
 import { iconUrl } from '../utils/paths.js';
 
@@ -113,8 +113,7 @@ function isCurrentUser(contact, currentUser) {
 async function loadAssignedContacts(root) {
     const list = root.querySelector('#assignedList');
     if (!list) return;
-    const contacts = await getContacts();
-    if (!contacts) return;
+    const contacts = await contactStore.getAll();
     const currentUser = authService.currentUser;
     const entries = Object.entries(contacts)
         .map(([id, data]) => ({ id, ...data }))

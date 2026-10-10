@@ -3,7 +3,8 @@ import { initNavbar } from '../../components/navbar.js';
 import { authService } from '../../services/auth-service.js';
 import { getAvatarColorForId, getInitials, triggerTransitionIn } from '../../utils/helpers.js';
 import { showToast } from '../../components/toast.js';
-import { getContacts, saveContact, updateContact, removeContact } from '../../services/cache.js';
+import { contactStore } from '../../services/contact-store.js';
+import { toggleContactMenu, closeContactMenu, closeContactMenuIfRendered } from '../../components/contact-menu.js';
 import { getAddContactFields, getEditContactFields, validateContactFields, wireContactFormBlur } from '../../components/contact-form.js';
 import {
     openAddContactOverlay as showAddContactOverlay,
@@ -14,10 +15,10 @@ import {
 
 let activeContactId = null;
 
-/** Adds the logged-in user to contacts if needed, then renders the list. */
+/** Adds the logged-in user to contacts if needed, then keeps the list in sync with the store. */
 async function init() {
     await addCurrentUserToContacts();
-    await renderContacts();
+    contactStore.subscribe(renderContacts);
 }
 
 
@@ -25,9 +26,9 @@ async function init() {
 async function addCurrentUserToContacts() {
     const currentUser = authService.currentUser;
     if (!currentUser?.email) return;
-    const contacts = (await getContacts()) || {};
+    const contacts = await contactStore.getAll();
     if (hasContactWithEmail(contacts, currentUser.email)) return;
-    await saveContact({ name: currentUser.name, email: currentUser.email, phone: '' });
+    await contactStore.add({ name: currentUser.name, email: currentUser.email, phone: '' });
 }
 
 
@@ -38,7 +39,7 @@ async function addCurrentUserToContacts() {
  * @returns {boolean}
  */
 function hasContactWithEmail(contacts, email) {
-    return Object.values(contacts).some((contact) => contact.email.toLowerCase() === email.toLowerCase());
+    return Object.values(contacts).some((contact) => contact.email?.toLowerCase() === email.toLowerCase());
 }
 
 
@@ -54,13 +55,27 @@ function getSortedContacts(contacts) {
 }
 
 
-/** Loads contacts from cache and renders them grouped by first letter. */
-async function renderContacts() {
-    const contacts = (await getContacts()) || {};
+/**
+ * Renders all contacts grouped by first letter; runs on every store change.
+ * @param {Object} contacts
+ */
+function renderContacts(contacts) {
     const container = document.getElementById('contactsContainer');
     container.innerHTML = '';
-    const grouped = groupByFirstLetter(getSortedContacts(contacts));
-    renderGroupedContacts(grouped, container);
+    renderGroupedContacts(groupByFirstLetter(getSortedContacts(contacts)), container);
+    syncActiveContact(contacts);
+}
+
+
+/**
+ * Keeps the selected contact highlighted after a re-render, or deselects it
+ * if it was deleted in the meantime (by this or another user).
+ * @param {Object} contacts
+ */
+function syncActiveContact(contacts) {
+    if (activeContactId === null) return;
+    if (!contacts[activeContactId]) return deselectContact();
+    document.getElementById(`contact-card-${activeContactId}`)?.classList.add('active');
 }
 
 
@@ -163,13 +178,15 @@ async function showContactDetails(contactId) {
 }
 
 
-/** Marks the selected contact card as active. */
+/**
+ * Marks the selected contact card as active.
+ * @param {string} contactId
+ */
 function setActiveContactCard(contactId) {
     if (activeContactId !== null) {
-        document.getElementById(`contact-card-${activeContactId}`).classList.remove('active');
+        document.getElementById(`contact-card-${activeContactId}`)?.classList.remove('active');
     }
-
-    document.getElementById(`contact-card-${contactId}`).classList.add('active');
+    document.getElementById(`contact-card-${contactId}`)?.classList.add('active');
     activeContactId = contactId;
 }
 
@@ -232,9 +249,9 @@ function wireContactDetailsActions(node, contactId) {
  */
 function wireContactDetailsNav(node) {
     node.querySelector('.back-to-contacts-btn').addEventListener('click', showContactsList);
-    node.querySelector('#menuContactBtn').addEventListener('click', toggleMenuContact);
-    node.querySelector('#contactMenuBackdrop').addEventListener('click', closeMenuContact);
-    node.querySelector('#contactMenu').addEventListener('click', closeMenuContact);
+    node.querySelector('#menuContactBtn').addEventListener('click', toggleContactMenu);
+    node.querySelector('#contactMenuBackdrop').addEventListener('click', closeContactMenu);
+    node.querySelector('#contactMenu').addEventListener('click', closeContactMenu);
 }
 
 
@@ -262,7 +279,7 @@ function openAddContactOverlay() {
  * @param {string} contactId
  */
 async function openEditContactOverlay(contactId) {
-    closeMenuContactIfRendered();
+    closeContactMenuIfRendered();
     const contact = await getContactById(contactId);
     if (!contact) return;
     showEditContactOverlay(contact, (e) => saveEditedContact(e, contactId), () => openDeleteContactOverlay(contactId));
@@ -275,7 +292,7 @@ async function openEditContactOverlay(contactId) {
  * @param {string} contactId
  */
 async function openDeleteContactOverlay(contactId) {
-    closeMenuContactIfRendered();
+    closeContactMenuIfRendered();
     const contact = await getContactById(contactId);
     if (!contact) return;
     showDeleteContactOverlay(contact, () => deleteContact(contactId));
@@ -291,13 +308,12 @@ async function createContact(event) {
     const fields = getAddContactFields();
     if (!validateContactFields(fields)) return;
 
-    const id = await saveContact({
+    const id = await contactStore.add({
         name: fields.nameInput.value.trim(),
         email: fields.emailInput.value.trim(),
         phone: fields.phoneInput.value.trim(),
     });
     closeContactOverlay();
-    await renderContacts();
     await showContactDetails(id);
     showToast('Contact successfully created');
 }
@@ -313,13 +329,12 @@ async function saveEditedContact(event, contactId) {
     const fields = getEditContactFields();
     if (!validateContactFields(fields)) return;
 
-    await updateContact(contactId, {
+    await contactStore.update(contactId, {
         name: fields.nameInput.value.trim(),
         email: fields.emailInput.value.trim(),
         phone: fields.phoneInput.value.trim(),
     });
     closeContactOverlay();
-    await renderContacts();
     await showContactDetails(contactId);
 }
 
@@ -329,10 +344,9 @@ async function saveEditedContact(event, contactId) {
  * @param {string} contactId
  */
 async function deleteContact(contactId) {
-    await removeContact(contactId);
+    await contactStore.remove(contactId);
     activeContactId = null;
     closeContactOverlay();
-    await renderContacts();
     resetContactDetails();
 }
 
@@ -343,8 +357,8 @@ async function deleteContact(contactId) {
  * @returns {Promise<{ id: string, name: string, email: string, phone: string } | undefined>}
  */
 async function getContactById(contactId) {
-    const contacts = (await getContacts()) || {};
-    return contacts[contactId] ? { id: contactId, ...contacts[contactId] } : undefined;
+    const contact = await contactStore.getById(contactId);
+    return contact ? { id: contactId, ...contact } : undefined;
 }
 
 
@@ -358,32 +372,10 @@ function resetContactDetails() {
 }
 
 
-/** Closes the mobile menu only when it exists in the DOM. */
-function closeMenuContactIfRendered() {
-    if (document.getElementById('contactMenu')) closeMenuContact();
-}
-
-
 /** Shows the contacts list panel and hides details (mobile). */
 function showContactsList() {
     document.getElementById('contactDetails').classList.add('d-none');
     document.getElementById('contactsList').classList.remove('d-none');
-}
-
-
-/** Toggles the mobile contact action menu open/closed. */
-function toggleMenuContact() {
-    document.getElementById('contactMenu').classList.toggle('contact_menu_open');
-    document.getElementById('menuContactBtn').classList.toggle('menu_contact_btn_active');
-    document.getElementById('contactMenuBackdrop').classList.toggle('contact_menu_backdrop_open');
-}
-
-
-/** Closes the mobile contact action menu. */
-function closeMenuContact() {
-    document.getElementById('contactMenu').classList.remove('contact_menu_open');
-    document.getElementById('menuContactBtn').classList.remove('menu_contact_btn_active');
-    document.getElementById('contactMenuBackdrop').classList.remove('contact_menu_backdrop_open');
 }
 
 

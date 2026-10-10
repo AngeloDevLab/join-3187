@@ -4,7 +4,8 @@ import { openModal } from '../../components/modal.js';
 import { initAddTaskForm, toFirebaseTask } from '../../components/add-task-form.js';
 import { openTaskDetailModal } from '../../components/task-detail-modal.js';
 import { showToast } from '../../components/toast.js';
-import { getTasks, getContacts, saveTask, updateTask, removeTask } from '../../services/cache.js';
+import { taskStore } from '../../services/task-store.js';
+import { contactStore } from '../../services/contact-store.js';
 import { getAvatarColorForId, getInitials, computeOrderBetween } from '../../utils/helpers.js';
 import { startDragGhost, stopDragGhost } from '../../components/drag-ghost.js';
 import { updateDropIndicator, clearDropIndicator, getDropNeighbors } from '../../components/drop-indicator.js';
@@ -24,10 +25,10 @@ let currentDraggedElement;
 let allTodos = [];
 let currentSearchTerm = '';
 
-/** Loads tasks and contacts from Firebase, then renders all four board columns. */
-async function updateHtml() {
-    const tasks = (await getTasks()) || {};
-    const contacts = (await getContacts()) || {};
+/** Rebuilds the board from the live task and contact stores; runs on every change to either. */
+async function refreshBoard() {
+    const tasks = await taskStore.getAll();
+    const contacts = await contactStore.getAll();
     allTodos = Object.entries(tasks).map(([id, task]) => toDisplayTodo(id, task, contacts));
     renderBoard();
 }
@@ -121,8 +122,7 @@ function renderColumn(category, todos) {
  * @param {string} id
  */
 async function moveToFromNav(category, id) {
-    await updateTask(id, { column: category, order: Date.now() });
-    await updateHtml();
+    await taskStore.update(id, { column: category, order: Date.now() });
 }
 
 
@@ -206,20 +206,18 @@ async function moveTo(category) {
     const order = computeOrderBetween(before, after);
     const todo = allTodos.find((t) => t.id === currentDraggedElement);
     if (todo) { todo.column = category; todo.order = order; renderBoard(); }
-    await updateTask(currentDraggedElement, { column: category, order });
-    await updateHtml();
+    await taskStore.update(currentDraggedElement, { column: category, order });
 }
 
 
 /**
- * Saves a new task to Firebase for the given column and refreshes the board.
+ * Saves a new task to Firebase for the given column; the live store re-renders the board.
  * @param {Parameters<typeof toFirebaseTask>[0]} data
  * @param {string} status
  * @param {() => void} close
  */
 async function handleNewTask(data, status, close) {
-    await saveTask({ ...toFirebaseTask(data, status), order: Date.now() });
-    await updateHtml();
+    await taskStore.add({ ...toFirebaseTask(data, status), order: Date.now() });
     close();
 }
 
@@ -237,35 +235,32 @@ function openAddTaskModal(status) {
 
 
 /**
- * Persists edited task data to Firebase, keeping its column and creation date, then refreshes the board.
+ * Persists edited task data to Firebase, keeping its column and creation date.
  * @param {string} id
  * @param {Object} task
  * @param {Parameters<typeof toFirebaseTask>[0]} data
  */
 async function handleSaveTask(id, task, data) {
-    await updateTask(id, toFirebaseTask(data, task.column, task.createdAt));
-    await updateHtml();
+    await taskStore.update(id, toFirebaseTask(data, task.column, task.createdAt));
 }
 
 
 /**
- * Persists a toggled subtask's done state to Firebase and refreshes the board.
+ * Persists a toggled subtask's done state to Firebase.
  * @param {string} id
  * @param {Object} subtasks
  */
 async function handleToggleSubtask(id, subtasks) {
-    await updateTask(id, { subtasks });
-    await updateHtml();
+    await taskStore.update(id, { subtasks });
 }
 
 
 /**
- * Deletes a task from Firebase, refreshes the board and notifies the user.
+ * Deletes a task from Firebase and notifies the user.
  * @param {string} id
  */
 async function handleDeleteTask(id) {
-    await removeTask(id);
-    await updateHtml();
+    await taskStore.remove(id);
     showToast('Task deleted');
 }
 
@@ -279,10 +274,9 @@ function initCardDetailClick() {
             if (e.target.closest('.move-button, .category-nav')) return;
             const card = e.target.closest('.task-card');
             if (!card) return;
-            const tasks = (await getTasks()) || {};
-            const task = tasks[card.dataset.id];
+            const task = await taskStore.getById(card.dataset.id);
             if (!task) return;
-            const contacts = (await getContacts()) || {};
+            const contacts = await contactStore.getAll();
             const todo = toDisplayTodo(card.dataset.id, task, contacts);
             openTaskDetailModal(todo, {
                 onDelete: handleDeleteTask,
@@ -345,7 +339,8 @@ window.unhighlightColumn = unhighlightColumn;
 window.moveTo = moveTo;
 
 initNavbar();
-updateHtml();
+taskStore.subscribe(refreshBoard);
+contactStore.subscribe(refreshBoard);
 initBoardSearch();
 initAddTaskButtons();
 initCardDetailClick();

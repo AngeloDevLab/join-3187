@@ -7,7 +7,7 @@ import {
     updateProfile,
 } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
 import { auth } from './firebase.js';
-import { saveContact } from './cache.js';
+import { contactStore } from './contact-store.js';
 import { getInitials } from '../utils/helpers.js';
 
 const SIGNUP_ERRORS = {
@@ -97,7 +97,7 @@ export class AuthService {
         try {
             const { user } = await createUserWithEmailAndPassword(this.#auth, email.trim(), password);
             await updateProfile(user, { displayName: name.trim() });
-            await saveContact({ name: name.trim(), email: email.trim(), phone: '' });
+            await contactStore.add({ name: name.trim(), email: email.trim(), phone: '' });
             await signOut(this.#auth);
         } catch (err) {
             throw new Error(SIGNUP_ERRORS[err.code] ?? SIGNUP_FALLBACK_ERROR);

@@ -1,7 +1,7 @@
 import '../../utils/auth-guard.js';
 import { initNavbar } from '../../components/navbar.js';
 import { authService } from '../../services/auth-service.js';
-import { getTasks } from '../../services/cache.js';
+import { taskStore } from '../../services/task-store.js';
 import { escapeHtml } from '../../utils/helpers.js';
 import { pageUrl } from '../../utils/paths.js';
 
@@ -121,14 +121,7 @@ function renderSummaryCounts(counts) {
 }
 
 
-/** Loads tasks from the cache and renders the summary card counts. */
-async function loadSummaryCounts() {
-    const tasks = await getTasks();
-    renderSummaryCounts(computeSummaryCounts(tasks));
-}
-
-
 initNavbar();
 initSummaryCardLinks();
 initGreetingOverlay();
-loadSummaryCounts();
+taskStore.subscribe((tasks) => renderSummaryCounts(computeSummaryCounts(tasks)));
