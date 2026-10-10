@@ -66,6 +66,7 @@ Page script (e.g. BoardPage)
               → every change re-renders the subscribed pages
 ```
 
+- **Diagrams:** [docs/architecture.md](docs/architecture.md) — layers, page load and save flow (Mermaid, rendered by GitHub)
 - **Auth:** [docs/auth.md](docs/auth.md) — login, signup, guest, route protection
 - **Data:** [docs/data-layer.md](docs/data-layer.md) — stores, live updates, writes
 - **Schema:** [docs/database-schema.md](docs/database-schema.md) — collections and fields
