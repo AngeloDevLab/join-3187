@@ -13,6 +13,18 @@ export class ContactStore extends Store {
 
 
     /**
+     * Finds a contact by email, ignoring case.
+     * @param {string} email
+     * @returns {Promise<string|null>} the contact's id, or null if there is none
+     */
+    async findByEmail(email) {
+        const wanted = email.trim().toLowerCase();
+        const contacts = await this.fetchOnce();
+        return Object.keys(contacts).find((id) => contacts[id].email?.toLowerCase() === wanted) ?? null;
+    }
+
+
+    /**
      * Deletes a contact and removes it from every task's assignedTo list in one
      * atomic multi-path write, so no task is left pointing at a deleted contact.
      * @param {string} id

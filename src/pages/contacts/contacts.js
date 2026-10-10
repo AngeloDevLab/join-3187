@@ -12,16 +12,6 @@ const DESKTOP = window.matchMedia('(min-width: 1024px)');
 
 
 /**
- * @param {Object<string, { email?: string }>} contacts
- * @param {string} email
- * @returns {boolean} true if a contact with this email already exists
- */
-function hasContactWithEmail(contacts, email) {
-    return Object.values(contacts).some((contact) => contact.email?.toLowerCase() === email.toLowerCase());
-}
-
-
-/**
  * The contacts page: keeps list and details in sync with the live contact
  * store and runs create/edit/delete through the contact dialogs.
  */
@@ -125,7 +115,7 @@ class ContactsPage {
     async #addCurrentUser() {
         const user = authService.currentUser;
         if (!user?.email) return;
-        if (hasContactWithEmail(await contactStore.getAll(), user.email)) return;
+        if (await contactStore.findByEmail(user.email)) return;
         await contactStore.add({ name: user.name, email: user.email, phone: '' });
     }
 }

@@ -1,6 +1,7 @@
 import {
     ref,
     child,
+    get,
     onValue,
     push,
     update as dbUpdate,
@@ -62,6 +63,17 @@ export class Store {
     async getById(id) {
         await this.#listen();
         return this.#data[id];
+    }
+
+
+    /**
+     * Reads the collection once, without starting the realtime listener — for
+     * one-off checks on pages that do not display the collection.
+     * @returns {Promise<Object<string, Object>>}
+     */
+    async fetchOnce() {
+        if (this.#hasData) return this.#data;
+        return (await get(this.#ref)).val() ?? {};
     }
 
 

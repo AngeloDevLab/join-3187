@@ -86,8 +86,9 @@ export class AuthService {
 
 
     /**
-     * Creates an account with a display name and a matching contact, then logs
-     * out again so the user explicitly logs in afterwards.
+     * Creates an account with a display name and — unless a contact with this
+     * email already exists — a matching contact, then logs out again so the
+     * user explicitly logs in afterwards.
      * @param {string} name
      * @param {string} email
      * @param {string} password
@@ -97,7 +98,7 @@ export class AuthService {
         try {
             const { user } = await createUserWithEmailAndPassword(this.#auth, email.trim(), password);
             await updateProfile(user, { displayName: name.trim() });
-            await contactStore.add({ name: name.trim(), email: email.trim(), phone: '' });
+            if (!(await contactStore.findByEmail(email))) await contactStore.add({ name: name.trim(), email: email.trim(), phone: '' });
             await signOut(this.#auth);
         } catch (err) {
             throw new Error(SIGNUP_ERRORS[err.code] ?? SIGNUP_FALLBACK_ERROR);
