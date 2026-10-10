@@ -24,7 +24,7 @@ function initSummaryCardLinks() {
 /** Shows the greeting overlay on mobile (on first login) or sets the name directly on desktop. */
 function initGreetingOverlay() {
     const overlay = document.querySelector('.greeting-overlay');
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
     if (!isMobile) { setGreetingName(overlay); return; }
     if (sessionStorage.getItem('justLoggedIn') !== 'true') { overlay.style.display = 'none'; return; }
     playMobileGreeting(overlay);
