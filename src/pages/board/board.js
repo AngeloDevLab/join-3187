@@ -3,346 +3,265 @@ import { initNavbar } from '../../components/navbar.js';
 import { Modal } from '../../components/modal.js';
 import { Dropdown } from '../../components/dropdown.js';
 import { TaskForm } from '../../components/task-form/task-form.js';
-import { openTaskDetailModal } from '../../components/task-detail-modal.js';
+import { TaskDetailModal } from '../../components/task-detail-modal.js';
 import { showToast } from '../../components/toast.js';
-import { taskStore } from '../../services/task-store.js';
-import { contactStore } from '../../services/contact-store.js';
-import { getAvatarColorForId, getInitials, computeOrderBetween } from '../../utils/helpers.js';
+import { taskCardHtml } from '../../components/task-card.js';
 import { startDragGhost, stopDragGhost } from '../../components/drag-ghost.js';
 import { updateDropIndicator, clearDropIndicator, getDropNeighbors } from '../../components/drop-indicator.js';
-import { generateTodoHtml } from '../../components/task-card.js';
+import { taskStore } from '../../services/task-store.js';
+import { contactStore } from '../../services/contact-store.js';
+import { computeOrderBetween } from '../../utils/helpers.js';
+import { toTaskView } from '../../utils/task-view.js';
 
-const CATEGORY_LABEL = { userStory: 'User Story', technicalTask: 'Technical Task' };
-
-let categoryMessages = {
+/** Board columns in display order, with the message shown when a column is empty. */
+const COLUMNS = {
     todo: 'No tasks to do',
     inProgress: 'No tasks in progress',
     awaitFeedback: 'No tasks awaiting feedback',
-    done: 'No tasks done'
+    done: 'No tasks done',
 };
-
-let currentDraggedElement;
-let allTodos = [];
-let currentSearchTerm = '';
-
-/** Rebuilds the board from the live task and contact stores; runs on every change to either. */
-async function refreshBoard() {
-    const tasks = await taskStore.getAll();
-    const contacts = await contactStore.getAll();
-    allTodos = Object.entries(tasks).map(([id, task]) => toDisplayTodo(id, task, contacts));
-    renderBoard();
-}
-
-
-/** Renders the board with the currently active search term. */
-function renderBoard() {
-    const todos = filterTodos(allTodos, currentSearchTerm);
-    updateSearchMessage(todos.length);
-    renderColumn('todo', todos);
-    renderColumn('inProgress', todos);
-    renderColumn('awaitFeedback', todos);
-    renderColumn('done', todos);
-}
+const SAVE_ERROR = 'Could not save the change. Please try again.';
 
 
 /**
- * Converts a raw Firebase task into the display shape used for rendering.
- * @param {string} id
- * @param {Object} task
- * @param {Object} contacts
- * @returns {Object}
+ * The board page. Renders the columns live from the task and contact stores
+ * and handles search, drag & drop, the mobile "Move To" menu and the add/detail
+ * modals. The inline drag & drop attributes in board.html and on the task cards
+ * call its public methods through `window.board`.
  */
-function toDisplayTodo(id, task, contacts) {
-    const subtasksList = Object.entries(task.subtasks ?? {}).map(([key, s]) => ({ key, title: s.title, done: !!s.done }));
-    return {
-        id,
-        column: task.column,
-        order: task.order ?? 0,
-        title: task.title,
-        description: task.description,
-        type: CATEGORY_LABEL[task.category] ?? task.category,
-        priority: task.priority,
-        dueDate: task.dueDate,
-        subtasks: subtasksList,
-        assigned: (task.assignedTo ?? [])
-            .filter((cid) => contacts[cid])
-            .map((cid) => ({ name: contacts[cid].name, initials: getInitials(contacts[cid].name), color: getAvatarColorForId(cid) })),
-        raw: task,
-    };
-}
+class BoardPage {
+    /** @type {import('../../utils/task-view.js').TaskView[]} */
+    #tasks = [];
+    #searchTerm = '';
+    #draggedId = null;
 
 
-/**
- * Returns tasks whose title or description contains the search term.
- * @param {Array} todos
- * @param {string} searchTerm
- * @returns {Array}
- */
-function filterTodos(todos, searchTerm) {
-    const term = searchTerm.trim().toLowerCase();
-    if (!term) return todos;
-    return todos.filter((todo) =>
-        (todo.title ?? '').toLowerCase().includes(term) ||
-        (todo.description ?? '').toLowerCase().includes(term));
-}
-
-
-/**
- * Shows a message when an active search has no results.
- * @param {number} resultCount
- */
-function updateSearchMessage(resultCount) {
-    const message = document.getElementById('boardSearchMessage');
-    if (!message) return;
-    message.hidden = !currentSearchTerm.trim() || resultCount > 0;
-}
-
-
-/**
- * Renders all tasks for a given category into its column container.
- * @param {string} category
- * @param {Array} todos
- */
-function renderColumn(category, todos) {
-    const column = todos.filter((t) => t.column === category).sort((a, b) => a.order - b.order);
-    const container = document.getElementById(category);
-    container.innerHTML = '';
-    if (column.length === 0) {
-        const message = currentSearchTerm.trim() ? 'No matching tasks' : categoryMessages[category];
-        container.innerHTML = `<div class="empty-task">${message}</div>`;
-        return;
+    /** Subscribes to the stores and wires search, "+" buttons and the columns. */
+    init() {
+        taskStore.subscribe(() => this.#refresh());
+        contactStore.subscribe(() => this.#refresh());
+        document.getElementById('boardSearch')?.addEventListener('input', (e) => this.#search(e.target.value));
+        document.querySelectorAll('[data-status]').forEach((btn) =>
+            btn.addEventListener('click', () => this.#openAddTask(btn.dataset.status)));
+        document.querySelectorAll('.drag-area').forEach((area) => this.#wireColumn(area));
     }
-    column.forEach((todo) => { container.innerHTML += generateTodoHtml(todo); });
-}
 
 
-/**
- * Moves a task by id to a category (Klick statt Drag&Drop) and persists it.
- * @param {string} category
- * @param {string} id
- */
-async function moveToFromNav(category, id) {
-    await taskStore.update(id, { column: category, order: Date.now() });
-}
+    // ── Drag & drop (called from inline attributes) ──────────
+
+    /**
+     * Remembers the dragged task, marks its card and starts the floating drag ghost.
+     * @param {DragEvent} event
+     * @param {string} id
+     */
+    startDragging(event, id) {
+        this.#draggedId = id;
+        startDragGhost(event, event.currentTarget);
+        event.currentTarget.classList.add('dragging');
+    }
 
 
-/**
- * Toggles the "Move To" dropdown open/closed for a task card on mobile, using the shared dropdown pattern.
- * @param {HTMLElement} trigger - the clicked move-button element
- */
-function toggleMoveDropdown(trigger) {
-    const nav = trigger.nextElementSibling;
-    Dropdown.closeAll(nav);
-    Dropdown.for(nav, trigger).toggle();
-}
+    /** @param {DragEvent} event - restores the released card and removes the drag ghost */
+    stopDragging(event) {
+        event.currentTarget.classList.remove('dragging');
+        stopDragGhost();
+    }
 
 
-/**
- * Stores the dragged task id, marks the card as dragging and starts the floating drag ghost.
- * @param {DragEvent} event
- * @param {string} id
- */
-function startDragging(event, id) {
-    currentDraggedElement = id;
-    startDragGhost(event, event.currentTarget);
-    event.currentTarget.classList.add('dragging');
-}
+    /** @param {DragEvent} event - allows the drop and moves the insertion indicator under the cursor */
+    allowDrop(event) {
+        event.preventDefault();
+        updateDropIndicator(event.currentTarget, event.clientX, event.clientY);
+    }
 
 
-/**
- * Restores the released card and removes the floating drag ghost.
- * @param {DragEvent} event
- */
-function stopDragging(event) {
-    event.currentTarget.classList.remove('dragging');
-    stopDragGhost();
-}
+    /** @param {string} column - highlights the column a dragged card entered */
+    highlightColumn(column) {
+        document.getElementById(column).classList.add('drag-over');
+    }
 
 
-/**
- * Allows the drop and moves the insertion indicator to the closest position.
- * @param {DragEvent} event
- */
-function allowDrop(event) {
-    event.preventDefault();
-    updateDropIndicator(event.currentTarget, event.clientX, event.clientY);
-}
-
-
-/**
- * Highlights a column when a dragged card enters it.
- * @param {string} id
- */
-function highlightColumn(id) { document.getElementById(id).classList.add('drag-over'); }
-
-
-/**
- * Removes the column highlight, only when truly leaving (not entering a child element).
- * @param {DragEvent} event
- * @param {string} id
- */
-function unhighlightColumn(event, id) {
-    const container = document.getElementById(id);
-    if (!container.contains(event.relatedTarget)) {
+    /**
+     * Removes the highlight only when the cursor truly leaves the column (not when entering a child).
+     * @param {DragEvent} event
+     * @param {string} column
+     */
+    unhighlightColumn(event, column) {
+        const container = document.getElementById(column);
+        if (container.contains(event.relatedTarget)) return;
         container.classList.remove('drag-over');
         clearDropIndicator();
     }
-}
 
 
-/**
- * Persists the dragged task's new column and order (from the drop indicator position), then re-renders.
- * Does nothing if the card was dropped back onto its original position.
- * @param {string} category
- */
-async function moveTo(category) {
-    document.getElementById(category).classList.remove('drag-over');
-    const neighbors = getDropNeighbors();
-    clearDropIndicator();
-    if (!neighbors) return;
-    const before = allTodos.find((t) => t.id === neighbors.beforeId)?.order;
-    const after = allTodos.find((t) => t.id === neighbors.afterId)?.order;
-    const order = computeOrderBetween(before, after);
-    const todo = allTodos.find((t) => t.id === currentDraggedElement);
-    if (todo) { todo.column = category; todo.order = order; renderBoard(); }
-    await taskStore.update(currentDraggedElement, { column: category, order });
-}
+    /**
+     * Drops the dragged task at the indicator position: moves it locally right
+     * away, then persists column and order. No-op when dropped back in place.
+     * @param {string} column
+     */
+    async moveTo(column) {
+        document.getElementById(column).classList.remove('drag-over');
+        const neighbors = getDropNeighbors();
+        clearDropIndicator();
+        if (!neighbors) return;
+        const order = computeOrderBetween(this.#orderOf(neighbors.beforeId), this.#orderOf(neighbors.afterId));
+        this.#moveLocally(this.#draggedId, column, order);
+        await this.#persist(taskStore.update(this.#draggedId, { column, order }));
+    }
 
 
-/**
- * Saves a new task to Firebase for the given column; the live store re-renders the board.
- * @param {import('../../components/task-form/task-form.js').TaskFormValues} values
- * @param {string} status
- * @param {() => void} close
- */
-async function handleNewTask(values, status, close) {
-    await taskStore.create(values, status);
-    close();
-}
+    // ── Rendering ────────────────────────────────────────────
+
+    /** Rebuilds the task views from both stores; runs on every change to either. */
+    async #refresh() {
+        const tasks = await taskStore.getAll();
+        const contacts = await contactStore.getAll();
+        this.#tasks = Object.entries(tasks).map(([id, task]) => toTaskView(id, task, contacts));
+        this.#render();
+    }
 
 
-/**
- * Opens the Add Task modal pre-targeted at the given column.
- * @param {string} status
- */
-function openAddTaskModal(status) {
-    const node = document.getElementById('addTaskTemplate').content.cloneNode(true);
-    const modal = new Modal(node, { animation: 'right' }).open();
-    const dialog = modal.element;
-    const close = () => modal.close();
-    new TaskForm(dialog, { onSubmit: (values) => handleNewTask(values, status, close), onCancel: close });
-    dialog.querySelector('.close-btn')?.addEventListener('click', close);
-}
+    /** Renders every column with the active search applied. */
+    #render() {
+        const visible = this.#visibleTasks();
+        const message = document.getElementById('boardSearchMessage');
+        if (message) message.hidden = !this.#searchTerm.trim() || visible.length > 0;
+        Object.keys(COLUMNS).forEach((column) => this.#renderColumn(column, visible));
+    }
 
 
-/**
- * Persists edited task fields; column, order and creation date stay untouched.
- * @param {string} id
- * @param {import('../../components/task-form/task-form.js').TaskFormValues} values
- */
-async function handleSaveTask(id, values) {
-    await taskStore.update(id, values);
-}
+    /** @returns {import('../../utils/task-view.js').TaskView[]} tasks whose title or description match the search */
+    #visibleTasks() {
+        const term = this.#searchTerm.trim().toLowerCase();
+        if (!term) return this.#tasks;
+        return this.#tasks.filter((t) => t.title.toLowerCase().includes(term) || t.description.toLowerCase().includes(term));
+    }
 
 
-/**
- * Persists a toggled subtask's done state to Firebase.
- * @param {string} id
- * @param {Object} subtasks
- */
-async function handleToggleSubtask(id, subtasks) {
-    await taskStore.update(id, { subtasks });
-}
+    /**
+     * @param {string} column
+     * @param {import('../../utils/task-view.js').TaskView[]} tasks
+     */
+    #renderColumn(column, tasks) {
+        const cards = tasks.filter((t) => t.column === column).sort((a, b) => a.order - b.order);
+        const empty = this.#searchTerm.trim() ? 'No matching tasks' : COLUMNS[column];
+        document.getElementById(column).innerHTML = cards.length
+            ? cards.map(taskCardHtml).join('')
+            : `<div class="empty-task">${empty}</div>`;
+    }
 
 
-/**
- * Deletes a task from Firebase and notifies the user.
- * @param {string} id
- */
-async function handleDeleteTask(id) {
-    await taskStore.remove(id);
-    showToast('Task deleted');
-}
+    /** @param {string} term - applies a new search term */
+    #search(term) {
+        this.#searchTerm = term;
+        this.#render();
+    }
 
 
-/**
- * Delegates card clicks to open the task detail modal, skipping drag controls.
- */
-function initCardDetailClick() {
-    document.querySelectorAll('.drag-area').forEach((area) => {
-        area.addEventListener('click', async (e) => {
-            if (e.target.closest('.move-button, .category-nav')) return;
-            const card = e.target.closest('.task-card');
-            if (!card) return;
-            const task = await taskStore.getById(card.dataset.id);
-            if (!task) return;
-            const contacts = await contactStore.getAll();
-            const todo = toDisplayTodo(card.dataset.id, task, contacts);
-            openTaskDetailModal(todo, {
-                onDelete: handleDeleteTask,
-                onSave: handleSaveTask,
-                onToggleSubtask: handleToggleSubtask,
-            });
-        });
-    });
-}
+    // ── Column interactions ──────────────────────────────────
 
-
-/** Delegates clicks on the move-button (toggles its dropdown) and "Move To" list items (moves the task). */
-function initMoveNavClicks() {
-    document.querySelectorAll('.drag-area').forEach((area) => {
-        area.addEventListener('click', (e) => {
-            const moveBtn = e.target.closest('.move-button');
-            if (moveBtn) return toggleMoveDropdown(moveBtn);
-            const item = e.target.closest('.category-nav li');
-            if (item) moveToFromNav(item.dataset.category, item.dataset.id);
-        });
-    });
-}
-
-
-/** Lets vertical mouse-wheel scrolling pan a card row that overflows horizontally. */
-function initDragAreaWheelScroll() {
-    document.querySelectorAll('.drag-area').forEach((area) => {
+    /** @param {HTMLElement} area - wires card clicks and horizontal wheel scrolling for one column */
+    #wireColumn(area) {
+        area.addEventListener('click', (e) => this.#handleColumnClick(e));
         area.addEventListener('wheel', (e) => {
             if (area.scrollWidth <= area.clientWidth) return;
             e.preventDefault();
             area.scrollLeft += e.deltaY;
         });
-    });
+    }
+
+
+    /**
+     * One delegated handler per column: the move button toggles its menu, a menu
+     * entry moves the task, a click anywhere else on a card opens its details.
+     * @param {MouseEvent} e
+     */
+    #handleColumnClick(e) {
+        const moveButton = e.target.closest('.move-button');
+        if (moveButton) return this.#toggleMoveMenu(moveButton);
+        const entry = e.target.closest('.category-nav li');
+        if (entry) return this.#persist(taskStore.update(entry.dataset.id, { column: entry.dataset.category, order: Date.now() }));
+        if (e.target.closest('.category-nav')) return;
+        const card = e.target.closest('.task-card');
+        if (card) this.#openDetail(card.dataset.id);
+    }
+
+
+    /** @param {HTMLElement} trigger - the card's move button; its menu is the next sibling */
+    #toggleMoveMenu(trigger) {
+        const menu = trigger.nextElementSibling;
+        Dropdown.closeAll(menu);
+        Dropdown.for(menu, trigger).toggle();
+    }
+
+
+    /** @param {string} column - opens the Add Task modal for that column */
+    #openAddTask(column) {
+        const node = document.getElementById('addTaskTemplate').content.cloneNode(true);
+        const modal = new Modal(node, { animation: 'right' }).open();
+        const close = () => modal.close();
+        new TaskForm(modal.element, {
+            onSubmit: async (values) => { await taskStore.create(values, column); close(); },
+            onCancel: close,
+        });
+        modal.element.querySelector('.close-btn')?.addEventListener('click', close);
+    }
+
+
+    /** @param {string} id - opens the detail modal for that task */
+    #openDetail(id) {
+        const task = this.#tasks.find((t) => t.id === id);
+        if (!task) return;
+        new TaskDetailModal(task, {
+            onDelete: async (taskId) => { await taskStore.remove(taskId); showToast('Task deleted'); },
+            onSave: (taskId, values) => taskStore.update(taskId, values),
+            onToggleSubtask: (taskId, subtasks) => taskStore.update(taskId, { subtasks }),
+        }).open();
+    }
+
+
+    // ── Helpers ──────────────────────────────────────────────
+
+    /**
+     * @param {string|null} id
+     * @returns {number|undefined}
+     */
+    #orderOf(id) {
+        return this.#tasks.find((t) => t.id === id)?.order;
+    }
+
+
+    /**
+     * Moves a task's view right away, before the database round trip finishes.
+     * @param {string} id
+     * @param {string} column
+     * @param {number} order
+     */
+    #moveLocally(id, column, order) {
+        const task = this.#tasks.find((t) => t.id === id);
+        if (!task) return;
+        Object.assign(task, { column, order });
+        this.#render();
+    }
+
+
+    /**
+     * Awaits a write and shows an error toast if it fails. Firebase then rolls
+     * back its local change, so the live listener re-renders the previous state.
+     * @param {Promise<void>} write
+     */
+    async #persist(write) {
+        try {
+            await write;
+        } catch (err) {
+            console.error('Saving the board change failed:', err);
+            showToast(SAVE_ERROR);
+        }
+    }
 }
 
 
-/** Wires the board search input to filter tasks while typing. */
-function initBoardSearch() {
-    const searchInput = document.getElementById('boardSearch');
-    if (!searchInput) return;
-    searchInput.addEventListener('input', () => {
-        currentSearchTerm = searchInput.value;
-        renderBoard();
-    });
-}
-
-
-/** Wires every "+" trigger on the board to open the Add Task modal for its column. */
-function initAddTaskButtons() {
-    document.querySelectorAll('[data-status]').forEach((btn) =>
-        btn.addEventListener('click', () => openAddTaskModal(btn.dataset.status)));
-}
-
-
-window.startDragging = startDragging;
-window.stopDragging = stopDragging;
-window.allowDrop = allowDrop;
-window.highlightColumn = highlightColumn;
-window.unhighlightColumn = unhighlightColumn;
-window.moveTo = moveTo;
-
+const board = new BoardPage();
+window.board = board;
 initNavbar();
-taskStore.subscribe(refreshBoard);
-contactStore.subscribe(refreshBoard);
-initBoardSearch();
-initAddTaskButtons();
-initCardDetailClick();
-initMoveNavClicks();
-initDragAreaWheelScroll();
+board.init();

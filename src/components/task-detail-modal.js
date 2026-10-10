@@ -1,5 +1,6 @@
 import { Modal } from './modal.js';
 import { TaskForm } from './task-form/task-form.js';
+import { showToast } from './toast.js';
 import { PRIORITY_META, escapeHtml, getSubtaskProgress } from '../utils/helpers.js';
 import { iconUrl } from '../utils/paths.js';
 
@@ -17,11 +18,10 @@ function formatDate(dateStr) {
 
 
 /**
- * Returns HTML for the priority chip with label and icon.
  * @param {string} priority - 'urgent' | 'medium' | 'low'
- * @returns {string}
+ * @returns {string} the priority chip with label and icon
  */
-function buildPriorityHtml(priority) {
+function priorityHtml(priority) {
     const meta = PRIORITY_META[priority] ?? PRIORITY_META.medium;
     return `<span class="priority-chip priority-chip--${meta.cls}">
         ${meta.label} <img src="${meta.icon}" alt="" width="18" height="18">
@@ -30,63 +30,24 @@ function buildPriorityHtml(priority) {
 
 
 /**
- * Returns HTML rows for all assigned contacts.
- * @param {{ initials: string, color: string, name?: string }[]} [assigned]
- * @returns {string}
+ * @param {import('../utils/task-view.js').TaskView['assigned']} assigned
+ * @returns {string} one row per assigned contact, or a muted placeholder
  */
-function buildAssignedHtml(assigned) {
-    if (!assigned?.length) return '<p class="task-detail-muted">No contacts assigned</p>';
-    const rows = assigned.map((c) => {
-        const initials = escapeHtml(c.initials);
-        const name = escapeHtml(c.name ?? c.initials);
-        return `<div class="task-detail-contact">
-            <span class="avatar avatar-circle" style="background:${c.color}">${initials}</span>
-            <span>${name}</span>
-        </div>`;
-    }).join('');
+function assignedHtml(assigned) {
+    if (!assigned.length) return '<p class="task-detail-muted">No contacts assigned</p>';
+    const rows = assigned.map((c) => `<div class="task-detail-contact">
+            <span class="avatar avatar-circle" style="background:${c.color}">${escapeHtml(c.initials)}</span>
+            <span>${escapeHtml(c.name)}</span>
+        </div>`).join('');
     return `<div class="task-detail-assigned-list">${rows}</div>`;
 }
 
 
 /**
- * Returns HTML for the category badge, title and description.
- * @param {{ type: string, title: string, description: string }} todo
- * @returns {string}
- */
-function buildDetailTop(todo) {
-    const cls = todo.type === 'User Story' ? 'user-story' : 'technical';
-    return `<div class="task-header">
-                <span class="task-category ${cls}">${todo.type}</span>
-                <button type="button" class="close-btn" aria-label="Close">✕</button>
-            </div>
-                <h2 class="task-detail-title">${escapeHtml(todo.title)}</h2>
-            <p class="task-detail-description">${escapeHtml(todo.description)}</p>`;
-}
-
-
-/**
- * Returns HTML for the due date and priority rows.
- * @param {{ dueDate?: string, priority: string }} todo
- * @returns {string}
- */
-function buildDetailMeta(todo) {
-    return `<div class="task-detail-row">
-        <span class="task-detail-label">Due date:</span>
-        <span>${formatDate(todo.dueDate)}</span>
-    </div>
-    <div class="task-detail-row">
-        <span class="task-detail-label">Priority:</span>
-        ${buildPriorityHtml(todo.priority)}
-    </div>`;
-}
-
-
-/**
- * Returns the progress bar + done/total count row for a subtask list.
  * @param {{ done: boolean }[]} subtasks
- * @returns {string}
+ * @returns {string} the progress bar plus done/total count
  */
-function buildSubtaskProgressHtml(subtasks) {
+function progressHtml(subtasks) {
     const { done, total, percent } = getSubtaskProgress(subtasks);
     return `<div class="progress-row">
         <div class="progress-bar"><div style="width:${percent}%"></div></div>
@@ -96,46 +57,70 @@ function buildSubtaskProgressHtml(subtasks) {
 
 
 /**
- * Returns checkable list items for each subtask.
- * @param {{ key: string, title: string, done: boolean }[]} subtasks
- * @returns {string}
+ * @param {import('../utils/task-view.js').TaskView['subtasks']} subtasks
+ * @returns {string} the progress row plus one checkbox per subtask, or a placeholder
  */
-function buildSubtaskListHtml(subtasks) {
-    return subtasks.map((s) => `<li class="task-detail-subtask">
+function subtasksHtml(subtasks) {
+    if (!subtasks.length) return '<p class="task-detail-muted">No subtasks</p>';
+    const items = subtasks.map((s) => `<li class="task-detail-subtask">
         <label class="checkbox">
             <input type="checkbox" class="checkbox-input" data-key="${s.key}" ${s.done ? 'checked' : ''}>
             <span class="checkbox-icon" aria-hidden="true"></span>
             ${escapeHtml(s.title)}
         </label>
     </li>`).join('');
+    return `${progressHtml(subtasks)}<ul class="task-detail-subtask-list">${items}</ul>`;
 }
 
 
 /**
- * Returns HTML for the assigned contacts and subtasks sections.
- * @param {{ assigned?: object[], subtasks: { key: string, title: string, done: boolean }[] }} todo
- * @returns {string}
+ * @param {import('../utils/task-view.js').TaskView} task
+ * @returns {string} category badge, close button, title and description
  */
-function buildDetailSections(todo) {
-    const subtasksHtml = todo.subtasks.length
-        ? `${buildSubtaskProgressHtml(todo.subtasks)}<ul class="task-detail-subtask-list">${buildSubtaskListHtml(todo.subtasks)}</ul>`
-        : '<p class="task-detail-muted">No subtasks</p>';
+function headerHtml(task) {
+    return `<div class="task-header">
+            <span class="task-category ${task.category.cls}">${escapeHtml(task.category.label)}</span>
+            <button type="button" class="close-btn" aria-label="Close">✕</button>
+        </div>
+        <h2 class="task-detail-title">${escapeHtml(task.title)}</h2>
+        <p class="task-detail-description">${escapeHtml(task.description)}</p>`;
+}
+
+
+/**
+ * @param {import('../utils/task-view.js').TaskView} task
+ * @returns {string} the due date and priority rows
+ */
+function metaHtml(task) {
+    return `<div class="task-detail-row">
+            <span class="task-detail-label">Due date:</span>
+            <span>${formatDate(task.dueDate)}</span>
+        </div>
+        <div class="task-detail-row">
+            <span class="task-detail-label">Priority:</span>
+            ${priorityHtml(task.priority)}
+        </div>`;
+}
+
+
+/**
+ * @param {import('../utils/task-view.js').TaskView} task
+ * @returns {string} the assignees and subtasks sections
+ */
+function sectionsHtml(task) {
     return `<div class="task-detail-section">
-        <p class="task-detail-label">Assigned To:</p>
-        ${buildAssignedHtml(todo.assigned)}
-    </div>
-    <div class="task-detail-section">
-        <p class="task-detail-label">Subtasks</p>
-        ${subtasksHtml}
-    </div>`;
+            <p class="task-detail-label">Assigned To:</p>
+            ${assignedHtml(task.assigned)}
+        </div>
+        <div class="task-detail-section">
+            <p class="task-detail-label">Subtasks</p>
+            ${subtasksHtml(task.subtasks)}
+        </div>`;
 }
 
 
-/**
- * Returns HTML for the delete and edit action buttons.
- * @returns {string}
- */
-function buildDetailActions() {
+/** @returns {string} the delete and edit action buttons */
+function actionsHtml() {
     return `<div class="task-detail-actions">
         <button type="button" class="task-detail-action task-detail-delete">
             <img src="${iconUrl('delete.svg')}" alt="" width="16"> Delete
@@ -149,103 +134,100 @@ function buildDetailActions() {
 
 
 /**
- * Assembles the full detail panel HTML.
- * @param {object} todo
- * @returns {string}
+ * A centered modal showing one task, with checkable subtasks, Delete, and an
+ * Edit action that turns the same modal into the prefilled task form.
  */
-function buildDetailHtml(todo) {
-    return `<div class="task-detail">
-        
-        ${buildDetailTop(todo)}
-        ${buildDetailMeta(todo)}
-        ${buildDetailSections(todo)}
-        ${buildDetailActions()}
-    </div>`;
-}
+export class TaskDetailModal {
+    #task;
+    #callbacks;
+    #modal = null;
 
 
-/**
- * Converts a subtasks array back into the Firebase-keyed object shape.
- * @param {{ key: string, title: string, done: boolean }[]} subtasks
- * @returns {Object}
- */
-function buildSubtasksObject(subtasks) {
-    const result = {};
-    subtasks.forEach((s) => { result[s.key] = { title: s.title, done: s.done }; });
-    return result;
-}
+    /**
+     * @param {import('../utils/task-view.js').TaskView} task
+     * @param {{ onDelete: (id: string) => Promise<void>, onSave: (id: string, values: Object) => Promise<void>, onToggleSubtask: (id: string, subtasks: Object) => Promise<void> }} callbacks
+     */
+    constructor(task, callbacks) {
+        this.#task = task;
+        this.#callbacks = callbacks;
+    }
 
 
-/**
- * Re-renders the progress bar/count in place after a subtask checkbox changes.
- * @param {HTMLElement} dialog
- * @param {{ done: boolean }[]} subtasks
- */
-function updateSubtaskProgressUi(dialog, subtasks) {
-    const row = dialog.querySelector('.task-detail-subtask-list')?.previousElementSibling;
-    if (row?.classList.contains('progress-row')) row.outerHTML = buildSubtaskProgressHtml(subtasks);
-}
+    /** Builds and shows the detail view. */
+    open() {
+        const template = document.createElement('template');
+        template.innerHTML = `<div class="task-detail">
+            ${headerHtml(this.#task)}${metaHtml(this.#task)}${sectionsHtml(this.#task)}${actionsHtml()}
+        </div>`;
+        this.#modal = new Modal(template.content, { animation: 'center' }).open();
+        const dialog = this.#modal.element;
+        dialog.querySelector('.close-btn').addEventListener('click', () => this.#modal.close());
+        dialog.querySelector('.task-detail-delete').addEventListener('click', () => this.#delete());
+        dialog.querySelector('.task-detail-edit').addEventListener('click', () => this.#switchToEdit());
+        dialog.querySelectorAll('.task-detail-subtask .checkbox-input').forEach((input) =>
+            input.addEventListener('change', () => this.#toggleSubtask(input)));
+    }
 
 
-/**
- * Wires subtask checkboxes: toggling one updates the progress UI in place and persists via the callback.
- * @param {HTMLElement} dialog
- * @param {object} todo
- * @param {(id: string, subtasks: Object) => void} [onToggleSubtask]
- */
-function wireSubtaskCheckboxes(dialog, todo, onToggleSubtask) {
-    dialog.querySelectorAll('.task-detail-subtask .checkbox-input').forEach((input) => {
-        input.addEventListener('change', () => {
-            const sub = todo.subtasks.find((s) => s.key === input.dataset.key);
-            if (sub) sub.done = input.checked;
-            if (todo.raw?.subtasks?.[input.dataset.key]) todo.raw.subtasks[input.dataset.key].done = input.checked;
-            updateSubtaskProgressUi(dialog, todo.subtasks);
-            onToggleSubtask?.(todo.id, buildSubtasksObject(todo.subtasks));
+    /** Deletes the task and closes the modal; on failure it stays open with an error toast. */
+    async #delete() {
+        try {
+            await this.#callbacks.onDelete(this.#task.id);
+            this.#modal.close();
+        } catch (err) {
+            console.error('Deleting the task failed:', err);
+            showToast('Could not delete the task. Please try again.');
+        }
+    }
+
+
+    /**
+     * Updates the progress bar right away and persists the new done state;
+     * reverts the checkbox if saving fails.
+     * @param {HTMLInputElement} input
+     */
+    async #toggleSubtask(input) {
+        const subtask = this.#task.subtasks.find((s) => s.key === input.dataset.key);
+        subtask.done = input.checked;
+        this.#renderProgress();
+        try {
+            await this.#callbacks.onToggleSubtask(this.#task.id, this.#subtasksObject());
+        } catch (err) {
+            console.error('Saving the subtask failed:', err);
+            subtask.done = input.checked = !input.checked;
+            this.#renderProgress();
+            showToast('Could not save the subtask. Please try again.');
+        }
+    }
+
+
+    /** Re-renders the progress row in place. */
+    #renderProgress() {
+        const row = this.#modal.element.querySelector('.task-detail-subtask-list')?.previousElementSibling;
+        if (row?.classList.contains('progress-row')) row.outerHTML = progressHtml(this.#task.subtasks);
+    }
+
+
+    /** @returns {Object<string, { title: string, done: boolean }>} subtasks in their stored, keyed shape */
+    #subtasksObject() {
+        return Object.fromEntries(this.#task.subtasks.map((s) => [s.key, { title: s.title, done: s.done }]));
+    }
+
+
+    /** Replaces the modal's content with the task form, prefilled for editing. */
+    #switchToEdit() {
+        const dialog = this.#modal.element;
+        const node = document.getElementById('addTaskTemplate').content.cloneNode(true);
+        node.querySelector('.add-task-modal')?.classList.add('add-task-modal--edit');
+        node.querySelector('.add-task-modal h1')?.remove();
+        dialog.classList.replace('modal--center', 'modal--right');
+        dialog.replaceChildren(node);
+        const close = () => this.#modal.close();
+        new TaskForm(dialog, {
+            task: this.#task.raw,
+            onSubmit: async (values) => { await this.#callbacks.onSave(this.#task.id, values); close(); },
+            onCancel: close,
         });
-    });
-}
-
-
-/**
- * Replaces the modal's content in place with the add-task form, prefilled for editing.
- * @param {HTMLElement} dialog
- * @param {object} todo
- * @param {{ onSave?: Function, onClose: () => void }} options
- */
-function switchToEditMode(dialog, todo, { onSave, onClose }) {
-    const node = document.getElementById('addTaskTemplate').content.cloneNode(true);
-    node.querySelector('.add-task-modal')?.classList.add('add-task-modal--edit');
-    node.querySelector('.add-task-modal h1')?.remove();
-    dialog.classList.replace('modal--center', 'modal--right');
-    dialog.replaceChildren(node);
-    new TaskForm(dialog, {
-        task: todo.raw,
-        onSubmit: async (values) => { await onSave?.(todo.id, values); onClose(); },
-        onCancel: onClose,
-    });
-    dialog.querySelector('.close-btn')?.addEventListener('click', onClose);
-}
-
-
-/**
- * Opens a centered modal showing the detail view of the given task, with an
- * Edit action that turns the same modal into an in-place edit form.
- * @param {object} todo
- * @param {{ onDelete?: (id: string) => void|Promise<void>, onSave?: (id: string, values: Object) => Promise<void>, onToggleSubtask?: (id: string, subtasks: Object) => void }} [options]
- */
-export function openTaskDetailModal(todo, { onDelete, onSave, onToggleSubtask } = {}) {
-    const template = document.createElement('template');
-    template.innerHTML = buildDetailHtml(todo);
-    const modal = new Modal(template.content, { animation: 'center' }).open();
-    const dialog = modal.element;
-    const close = () => modal.close();
-    dialog.querySelector('.close-btn').addEventListener('click', close);
-    dialog.querySelector('.task-detail-delete').addEventListener('click', async () => {
-        await onDelete?.(todo.id);
-        close();
-    });
-    dialog.querySelector('.task-detail-edit').addEventListener('click', () => {
-        switchToEditMode(dialog, todo, { onSave, onClose: close });
-    });
-    wireSubtaskCheckboxes(dialog, todo, onToggleSubtask);
+        dialog.querySelector('.close-btn')?.addEventListener('click', close);
+    }
 }

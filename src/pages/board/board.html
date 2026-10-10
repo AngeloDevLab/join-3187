@@ -88,7 +88,7 @@
                                 </svg>
                             </button>
                         </div>
-                        <div class="drag-area" id="todo" ondrop="moveTo('todo')" ondragover="allowDrop(event)" ondragenter="highlightColumn('todo')" ondragleave="unhighlightColumn(event, 'todo')">
+                        <div class="drag-area" id="todo" ondrop="board.moveTo('todo')" ondragover="board.allowDrop(event)" ondragenter="board.highlightColumn('todo')" ondragleave="board.unhighlightColumn(event, 'todo')">
                             <div class="empty-task">No tasks To do</div>
                         </div>
                     </div>
@@ -106,8 +106,8 @@
                                 </svg>
                             </button>
                         </div>
-                        <div class="drag-area" id="inProgress" ondrop="moveTo('inProgress')"
-                            ondragover="allowDrop(event)" ondragenter="highlightColumn('inProgress')" ondragleave="unhighlightColumn(event, 'inProgress')"></div>
+                        <div class="drag-area" id="inProgress" ondrop="board.moveTo('inProgress')"
+                            ondragover="board.allowDrop(event)" ondragenter="board.highlightColumn('inProgress')" ondragleave="board.unhighlightColumn(event, 'inProgress')"></div>
                     </div>
 
                     <div class="board-column">
@@ -123,15 +123,15 @@
                                 </svg>
                             </button>
                         </div>
-                        <div class="drag-area" id="awaitFeedback" ondrop="moveTo('awaitFeedback')"
-                            ondragover="allowDrop(event)" ondragenter="highlightColumn('awaitFeedback')" ondragleave="unhighlightColumn(event, 'awaitFeedback')"></div>
+                        <div class="drag-area" id="awaitFeedback" ondrop="board.moveTo('awaitFeedback')"
+                            ondragover="board.allowDrop(event)" ondragenter="board.highlightColumn('awaitFeedback')" ondragleave="board.unhighlightColumn(event, 'awaitFeedback')"></div>
                     </div>
 
                     <div class="board-column">
                         <div class="column-head">
                             <h3>Done</h3>
                         </div>
-                        <div class="drag-area" id="done" ondrop="moveTo('done')" ondragover="allowDrop(event)" ondragenter="highlightColumn('done')" ondragleave="unhighlightColumn(event, 'done')"></div>
+                        <div class="drag-area" id="done" ondrop="board.moveTo('done')" ondragover="board.allowDrop(event)" ondragenter="board.highlightColumn('done')" ondragleave="board.unhighlightColumn(event, 'done')"></div>
                     </div>
                 </div>
             </section>
