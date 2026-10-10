@@ -5,29 +5,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="icon" type="image/svg+xml" href="./assets/icons/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="./public/icons/favicon.svg">
     <title>Join | Louis</title>
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/global/base.css">
-    <link rel="stylesheet" href="css/global/buttons.css">
-    <link rel="stylesheet" href="css/global/inputs.css">
-    <link rel="stylesheet" href="css/global/modal.css">
-    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="src/styles/variables.css">
+    <link rel="stylesheet" href="src/styles/base.css">
+    <link rel="stylesheet" href="src/styles/buttons.css">
+    <link rel="stylesheet" href="src/styles/inputs.css">
+    <link rel="stylesheet" href="src/styles/modal.css">
+    <link rel="stylesheet" href="src/pages/auth/auth.css">
 
-    <script type="module" src="js/pages/auth.js"></script>
+    <script type="module" src="src/pages/auth/auth.js"></script>
 </head>
 
 <body>
     <div class="intro" id="intro" aria-hidden="true">
         <div class="intro-logo">
-            <img src="./assets/icons/join_logo.svg" alt="" class="intro-logo-img intro-logo-img-light">
-            <img src="./assets/icons/favicon.svg" alt="" class="intro-logo-img intro-logo-img-dark">
+            <img src="./public/icons/join_logo.svg" alt="" class="intro-logo-img intro-logo-img-light">
+            <img src="./public/icons/favicon.svg" alt="" class="intro-logo-img intro-logo-img-dark">
         </div>
     </div>
 
     <div class="page max-content">
         <header class="page-header">
-            <img src="./assets/icons/favicon.svg" alt="Join" class="page-logo">
+            <img src="./public/icons/favicon.svg" alt="Join" class="page-logo">
 
             <p class="signup-hint signup-hint-header" id="signupHintHeader">
                 Not a Join user? <button type="button" class="btn btn-primary" data-show-auth="signup">Sign up</button>
@@ -43,7 +43,7 @@
                         <div class="input-field">
                             <div class="input-wrapper">
                                 <input type="email" id="loginEmail" name="email" placeholder="Email" autocomplete="email" required>
-                                <img src="./assets/icons/mail.svg" alt="" class="input-icon">
+                                <img src="./public/icons/mail.svg" alt="" class="input-icon">
                             </div>
                             <p class="input-error-msg" id="loginEmailError"></p>
                         </div>
@@ -51,7 +51,7 @@
                             <div class="input-wrapper">
                                 <input type="password" id="loginPassword" name="password" placeholder="Password" autocomplete="current-password" required>
                                 <button type="button" class="input-icon-btn" aria-label="Show password" disabled>
-                                    <img src="./assets/icons/lock.svg" alt="">
+                                    <img src="./public/icons/lock.svg" alt="">
                                 </button>
                             </div>
                             <p class="input-error-msg" id="loginPasswordError"></p>
@@ -72,7 +72,7 @@
             <section class="auth-card auth-card-signup is-hidden" id="signupCard">
                 <div class="auth-card-head">
                     <button type="button" class="close-btn" data-show-auth="login" aria-label="Back to log in">
-                        <img src="./assets/icons/arrow-left.svg" alt="">
+                        <img src="./public/icons/arrow-left.svg" alt="">
                     </button>
                     <h1 class="auth-title">Sign up</h1>
                 </div>
@@ -81,7 +81,7 @@
                     <div class="input-field">
                         <div class="input-wrapper">
                             <input type="text" id="signupName" name="name" placeholder="Name" autocomplete="name" required>
-                            <img src="./assets/icons/person.svg" alt="" class="input-icon">
+                            <img src="./public/icons/person.svg" alt="" class="input-icon">
                         </div>
                         <p class="input-error-msg" id="signupNameError"></p>
                     </div>
@@ -89,7 +89,7 @@
                     <div class="input-field">
                         <div class="input-wrapper">
                             <input type="email" id="signupEmail" name="email" placeholder="Email" autocomplete="email" required>
-                            <img src="./assets/icons/mail.svg" alt="" class="input-icon">
+                            <img src="./public/icons/mail.svg" alt="" class="input-icon">
                         </div>
                         <p class="input-error-msg" id="signupEmailError"></p>
                     </div>
@@ -98,7 +98,7 @@
                         <div class="input-wrapper">
                             <input type="password" id="signupPassword" placeholder="Password" autocomplete="new-password" required>
                             <button type="button" class="input-icon-btn" aria-label="Show password" disabled>
-                                <img src="./assets/icons/lock.svg" alt="">
+                                <img src="./public/icons/lock.svg" alt="">
                             </button>
                         </div>
                         <p class="input-error-msg" id="signupPasswordError"></p>
@@ -108,7 +108,7 @@
                         <div class="input-wrapper">
                             <input type="password" id="signupConfirm" placeholder="Confirm Password" autocomplete="new-password" required>
                             <button type="button" class="input-icon-btn" aria-label="Show password" disabled>
-                                <img src="./assets/icons/lock.svg" alt="">
+                                <img src="./public/icons/lock.svg" alt="">
                             </button>
                         </div>
                         <p class="input-error-msg" id="signupConfirmError"></p>
@@ -118,7 +118,7 @@
                         <label class="checkbox">
                             <input type="checkbox" id="signupPrivacy" name="privacy" class="checkbox-input" required>
                             <span class="checkbox-icon" aria-hidden="true"></span>
-                            I accept the <a href="./pages/privacy.html">Privacy policy</a>
+                            I accept the <a href="./src/pages/legal/privacy.html">Privacy policy</a>
                         </label>
                         <p class="input-error-msg" id="signupCheckboxError"></p>
                     </div>
@@ -131,8 +131,8 @@
         </main>
 
         <footer class="page-footer">
-            <a href="./pages/privacy.html">Privacy Policy</a>
-            <a href="./pages/imprint.html">Legal notice</a>
+            <a href="./src/pages/legal/privacy.html">Privacy Policy</a>
+            <a href="./src/pages/legal/imprint.html">Legal notice</a>
         </footer>
     </div>
 

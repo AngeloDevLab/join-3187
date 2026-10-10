@@ -31,7 +31,7 @@ A collaborative Kanban board built as a Multi-Page Application (MPA), developed 
 
 2. Create a Firebase project at [firebase.google.com](https://firebase.google.com)
 
-3. Copy `js/firebase/config.example.js` to `js/firebase/config.js` and fill in your Firebase Realtime Database URL (see `docs/database-setup.md` for the full walkthrough) – **never push `config.js` to the repository**, it's already excluded via `.gitignore`
+3. Copy `src/services/config.example.js` to `src/services/config.js` and fill in your Firebase Realtime Database URL (see `docs/database-setup.md` for the full walkthrough) – **never push `config.js` to the repository**, it's already excluded via `.gitignore`
 
 4. Open `index.html` in your browser – no build step required
 
@@ -39,24 +39,15 @@ A collaborative Kanban board built as a Multi-Page Application (MPA), developed 
 
 ```
 join/
-├── index.html          # Login / Landing page
-├── pages/              # All other HTML pages
-│   ├── board.html
-│   ├── add-task.html
-│   ├── contacts.html
-│   ├── summary.html
-│   ├── help.html
-│   ├── imprint.html
-│   └── privacy.html
-├── css/                # Global and page-specific stylesheets
-├── js/
-│   ├── pages/          # One JS module per page
-│   ├── components/     # Reusable UI components
-│   ├── utils/          # Utility functions
-│   └── firebase/       # Firebase config and database access
-└── assets/
-    ├── fonts/
-    └── icons/
+├── index.html          # Login / Register
+├── public/             # Static files: fonts, icons
+└── src/
+    ├── styles/         # Design tokens + shared styles
+    ├── pages/          # One folder per page (HTML + CSS + JS):
+    │                   #   summary, board, add-task, contacts, help, auth, legal (imprint + privacy)
+    ├── components/     # Reusable UI components
+    ├── services/       # Firebase config, auth and data access
+    └── utils/          # Utility functions
 ```
 
 ## Notes
@@ -71,7 +62,7 @@ join/
 - **Vanilla JS over a framework** — kept simple per project requirements, no build step needed
 - **MPA over SPA** — each page is independent, no client-side routing required
 - **Firebase Realtime Database over Firestore** — simpler API for this use case
-- **CSS custom properties** — all design tokens (colors, spacing, typography) defined in `css/variables.css`
+- **CSS custom properties** — all design tokens (colors, spacing, typography) defined in `src/styles/variables.css`
 - **Avatar colors assigned by contact ID hash** — deterministic, same contact always gets the same color everywhere (contacts list, task cards, assigned-to dropdown)
 
 ## Team

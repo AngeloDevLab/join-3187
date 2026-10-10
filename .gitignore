@@ -1,4 +1,13 @@
 .DS_Store
-js/firebase/config.js
+src/services/config.js
 out/
 node_modules/
+
+# Local planning docs
+docs/refactor-plan.md
+Join - Issue Collector.md
+
+# Editor / AI tooling
+.vscode/
+.claude/
+CLAUDE.md

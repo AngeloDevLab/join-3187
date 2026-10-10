@@ -1,0 +1,109 @@
+import { iconUrl } from './paths.js';
+
+export const AVATAR_COLORS = [
+    '#FF7A00',
+    '#9327FF',
+    '#6E52FF',
+    '#FC71FF',
+    '#FFBB2B',
+    '#1FD7C1',
+    '#462F8A',
+    '#FF4646',
+    '#00BEE8',
+];
+
+export const PRIORITY_META = {
+    urgent: { label: 'Urgent', cls: 'urgent', icon: iconUrl('urgent.svg') },
+    medium: { label: 'Medium', cls: 'medium', icon: iconUrl('equal.svg') },
+    low: { label: 'Low', cls: 'low', icon: iconUrl('low.svg') },
+};
+
+/**
+ * Returns a deterministic avatar background color based on a contact's id,
+ * so the same contact always gets the same color regardless of list order.
+ * @param {string|number} id
+ * @returns {string} CSS hex color
+ */
+export function getAvatarColorForId(id) {
+    const text = String(id);
+    let hash = 0;
+
+    for (let i = 0; i < text.length; i++) {
+        hash = (hash * 31 + text.charCodeAt(i)) % AVATAR_COLORS.length;
+    }
+
+    return AVATAR_COLORS[hash];
+}
+
+
+/**
+ * Gets initials from a person's name (max 2 letters).
+ * @param {string} name
+ * @returns {string}
+ */
+export function getInitials(name) {
+    const nameParts = name.split(' ');
+    let initials = '';
+
+    for (let i = 0; i < nameParts.length; i++) {
+        if (nameParts[i] !== '' && initials.length < 2) {
+            initials += nameParts[i].charAt(0).toUpperCase();
+        }
+    }
+
+    return initials;
+}
+
+
+/**
+ * Computes the done/total count and percentage for a list of subtasks.
+ * @param {{ done: boolean }[]} subtasks
+ * @returns {{ done: number, total: number, percent: number }}
+ */
+export function getSubtaskProgress(subtasks) {
+    const total = subtasks.length;
+    const done = subtasks.filter((s) => s.done).length;
+    return { done, total, percent: total ? Math.round((done / total) * 100) : 0 };
+}
+
+
+/**
+ * Escapes HTML-special characters so a value can be safely inserted
+ * into innerHTML without being interpreted as markup.
+ * @param {string} value
+ * @returns {string}
+ */
+export function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+    })[char]);
+}
+
+
+/**
+ * Returns a task order value placed between two neighboring order values.
+ * @param {number} [before] - order of the preceding task, or undefined to insert first
+ * @param {number} [after] - order of the following task, or undefined to insert last
+ * @returns {number}
+ */
+export function computeOrderBetween(before, after) {
+    if (before === undefined && after === undefined) return Date.now();
+    if (before === undefined) return after - 1000;
+    if (after === undefined) return before + 1000;
+    return (before + after) / 2;
+}
+
+
+/**
+ * Adds a class after two animation frames, so a CSS transition reliably plays
+ * from the element's current style instead of jumping straight to the end state.
+ * @param {HTMLElement} el
+ * @param {string} className
+ */
+export function triggerTransitionIn(el, className) {
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add(className)));
+}

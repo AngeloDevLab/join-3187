@@ -1,0 +1,140 @@
+@font-face {
+    font-family: 'Inter';
+    src: url('../../public/fonts/Inter-Medium.woff2') format('woff2'),
+        url('../../public/fonts/Inter-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('../../public/fonts/Inter-Bold.woff2') format('woff2'),
+        url('../../public/fonts/Inter-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('../../public/fonts/Inter-SemiBold.woff2') format('woff2'),
+        url('../../public/fonts/Inter-SemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('../../public/fonts/Inter-Regular.woff2') format('woff2'),
+        url('../../public/fonts/Inter-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+* {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--color-bg);
+    font-size: 16px;
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+}
+
+/* Chrome/Edge/Safari - without this, the thumb only renders while actively
+   scrolling on systems with "overlay scrollbars" enabled (macOS, some
+   Windows setups), making scrollable areas look empty at rest. */
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+    border-radius: var(--border-radius-sm);
+}
+
+body {
+    margin: 0;
+}
+
+/* Applied to <html> while any modal is open (see src/components/modal.js),
+   so the page behind the dialog can't be scrolled with wheel/touch. */
+html.modal-open {
+    overflow: hidden;
+}
+
+p,
+h1,
+h2,
+h3,
+h4 {
+    margin: 0;
+}
+
+h1 {
+    font-size: clamp(2rem, 6vw, 4rem);
+}
+
+h2 {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+h3 {
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+}
+
+h4 {
+    font-size: 1.25rem;
+}
+
+a {
+    text-decoration: none;
+    color: var(--color-link);
+}
+
+a:hover {
+    text-decoration: underline;
+    color: var(--color-link);
+    transform: scale(1.03);
+}
+
+.max-content {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 clamp(var(--space-sm), 4vw, var(--space-xl));
+}
+
+/* ── Heading + Divider (shared by summary's page title and contacts'
+   empty-state placeholder) ───────────────────────────────────────
+   Stacked look (no divider, gradient-underlined subtext) is the shared
+   default here; each page's own CSS switches to the row layout (divider
+   visible, underline removed) at whatever breakpoint fits that page's
+   available width — summary.css at 768px, contacts.css at 1200px. */
+
+.subline {
+    background: linear-gradient(var(--color-accent), var(--color-accent)) no-repeat bottom left;
+    background-size: 18% 2px;
+    padding-bottom: 10px;
+    font-size: 27px;
+    margin: 0px;
+    color: var(--color-primary);
+}
+
+.title-hr {
+    display: none;
+}
