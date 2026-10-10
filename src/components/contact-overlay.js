@@ -1,13 +1,13 @@
-import { openModal } from './modal.js';
+import { Modal } from './modal.js';
 import { getAvatarColorForId, getInitials } from '../utils/helpers.js';
 
-let activeClose = null;
+let activeModal = null;
 
 
 /** Closes the active contact overlay, if one is open. */
 export function closeContactOverlay() {
-    activeClose?.();
-    activeClose = null;
+    activeModal?.close();
+    activeModal = null;
 }
 
 
@@ -19,12 +19,12 @@ export function closeContactOverlay() {
 function openContactModal(templateId) {
     closeContactOverlay();
     const node = document.getElementById(templateId).content.cloneNode(true);
-    const { dialog, close } = openModal(node, { animation: 'contact' });
-    activeClose = close;
-    dialog.addEventListener('close', () => { if (activeClose === close) activeClose = null; });
-    dialog.querySelectorAll('.close-btn, .overlay-cancel-btn').forEach((btn) =>
+    const modal = new Modal(node, { animation: 'contact' }).open();
+    activeModal = modal;
+    modal.element.addEventListener('close', () => { if (activeModal === modal) activeModal = null; });
+    modal.element.querySelectorAll('.close-btn, .overlay-cancel-btn').forEach((btn) =>
         btn.addEventListener('click', closeContactOverlay));
-    return dialog;
+    return modal.element;
 }
 
 

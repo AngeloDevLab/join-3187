@@ -1,7 +1,7 @@
 import { validateField, validateOnBlur, clearError } from '../utils/form-validation.js';
 import { showToast } from '../components/toast.js';
 import { initSubtaskInput, getSubtasks, setSubtasks } from './subtask.js';
-import { initCategoryDropdown, initDropdownAutoClose, setCategoryOption } from './task-category-dropdown.js';
+import { initCategoryDropdown, setCategoryOption } from './task-category-dropdown.js';
 import { initAssignedDropdown, resetAssignedDropdown, getSelectedContacts, selectAssignedContacts } from './task-assigned-dropdown.js';
 
 
@@ -333,7 +333,6 @@ function prefillTaskForm(root, task) {
  * @param {{ onSubmitSuccess?: (data: ReturnType<typeof collectTaskData>) => void, onCancel?: () => void, editTask?: Object }} [options]
  */
 export function initAddTaskForm(root, { onSubmitSuccess, onCancel, editTask } = {}) {
-    initDropdownAutoClose();
     initPriorityButtons(root);
     initCategoryDropdown(root);
     const assignedReady = initAssignedDropdown(root);

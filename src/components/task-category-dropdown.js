@@ -1,15 +1,5 @@
 import { clearError, validateOnBlur } from '../utils/form-validation.js';
-
-
-/**
- * Opens or closes a dropdown by toggling `is-open` and the aria-expanded attribute.
- * @param {{ dropdown: HTMLElement, trigger: HTMLButtonElement }} els
- * @param {boolean} open
- */
-export function toggleDropdown(els, open) {
-    els.dropdown.classList.toggle('is-open', open);
-    els.trigger.setAttribute('aria-expanded', String(open));
-}
+import { Dropdown } from './dropdown.js';
 
 
 /**
@@ -39,25 +29,7 @@ function pickCategoryOption(option, els) {
     els.valueEl.classList.remove('dropdown-placeholder');
     els.hiddenInput.dispatchEvent(new Event('input'));
     clearError(els.hiddenInput.closest('.input-wrapper'), els.errorEl);
-    toggleDropdown(els, false);
-}
-
-
-let dropdownAutoCloseInitialized = false;
-
-
-/** Closes any open dropdown when clicking outside it (registered once, regardless of how many forms exist). */
-export function initDropdownAutoClose() {
-    if (dropdownAutoCloseInitialized) return;
-    dropdownAutoCloseInitialized = true;
-    document.addEventListener('click', (e) => {
-        document.querySelectorAll('.dropdown.is-open').forEach((d) => {
-            if (!d.contains(e.target)) {
-                d.classList.remove('is-open');
-                d.querySelector('.dropdown-trigger')?.setAttribute('aria-expanded', 'false');
-            }
-        });
-    });
+    Dropdown.for(els.dropdown).close();
 }
 
 
@@ -83,8 +55,8 @@ export function setCategoryOption(root, value, label) {
 export function initCategoryDropdown(root) {
     const els = getCategoryEls(root);
     if (!els.dropdown) return;
-    els.trigger.addEventListener('click', () =>
-        toggleDropdown(els, !els.dropdown.classList.contains('is-open')));
+    const dropdown = new Dropdown(els.dropdown, els.trigger);
+    els.trigger.addEventListener('click', () => dropdown.toggle());
     els.dropdown.querySelectorAll('.dropdown-option').forEach((opt) =>
         opt.addEventListener('click', () => pickCategoryOption(opt, els)));
     validateOnBlur(els.trigger, els.errorEl, () => !!els.hiddenInput.value, 'This field is required');

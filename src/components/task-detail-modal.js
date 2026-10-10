@@ -1,4 +1,4 @@
-import { openModal } from './modal.js';
+import { Modal } from './modal.js';
 import { initAddTaskForm } from './add-task-form.js';
 import { PRIORITY_META, escapeHtml, getSubtaskProgress } from '../utils/helpers.js';
 import { iconUrl } from '../utils/paths.js';
@@ -236,7 +236,9 @@ function switchToEditMode(dialog, todo, { onSave, onClose }) {
 export function openTaskDetailModal(todo, { onDelete, onSave, onToggleSubtask } = {}) {
     const template = document.createElement('template');
     template.innerHTML = buildDetailHtml(todo);
-    const { dialog, close } = openModal(template.content, { animation: 'center' });
+    const modal = new Modal(template.content, { animation: 'center' }).open();
+    const dialog = modal.element;
+    const close = () => modal.close();
     dialog.querySelector('.close-btn').addEventListener('click', close);
     dialog.querySelector('.task-detail-delete').addEventListener('click', async () => {
         await onDelete?.(todo.id);

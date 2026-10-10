@@ -1,6 +1,7 @@
 import '../../utils/auth-guard.js';
 import { initNavbar } from '../../components/navbar.js';
-import { openModal } from '../../components/modal.js';
+import { Modal } from '../../components/modal.js';
+import { Dropdown } from '../../components/dropdown.js';
 import { initAddTaskForm, toFirebaseTask } from '../../components/add-task-form.js';
 import { openTaskDetailModal } from '../../components/task-detail-modal.js';
 import { showToast } from '../../components/toast.js';
@@ -10,7 +11,6 @@ import { getAvatarColorForId, getInitials, computeOrderBetween } from '../../uti
 import { startDragGhost, stopDragGhost } from '../../components/drag-ghost.js';
 import { updateDropIndicator, clearDropIndicator, getDropNeighbors } from '../../components/drop-indicator.js';
 import { generateTodoHtml } from '../../components/task-card.js';
-import { toggleDropdown, initDropdownAutoClose } from '../../components/task-category-dropdown.js';
 
 const CATEGORY_LABEL = { userStory: 'User Story', technicalTask: 'Technical Task' };
 
@@ -132,9 +132,8 @@ async function moveToFromNav(category, id) {
  */
 function toggleMoveDropdown(trigger) {
     const nav = trigger.nextElementSibling;
-    const open = !nav.classList.contains('is-open');
-    document.querySelectorAll('.category-nav.is-open').forEach((other) => other.classList.remove('is-open'));
-    toggleDropdown({ dropdown: nav, trigger }, open);
+    Dropdown.closeAll(nav);
+    Dropdown.for(nav, trigger).toggle();
 }
 
 
@@ -228,7 +227,9 @@ async function handleNewTask(data, status, close) {
  */
 function openAddTaskModal(status) {
     const node = document.getElementById('addTaskTemplate').content.cloneNode(true);
-    const { dialog, close } = openModal(node, { animation: 'right' });
+    const modal = new Modal(node, { animation: 'right' }).open();
+    const dialog = modal.element;
+    const close = () => modal.close();
     initAddTaskForm(dialog, { onSubmitSuccess: (data) => handleNewTask(data, status, close), onCancel: close });
     dialog.querySelector('.close-btn')?.addEventListener('click', close);
 }
@@ -293,7 +294,7 @@ function initMoveNavClicks() {
     document.querySelectorAll('.drag-area').forEach((area) => {
         area.addEventListener('click', (e) => {
             const moveBtn = e.target.closest('.move-button');
-            if (moveBtn) { e.stopPropagation(); toggleMoveDropdown(moveBtn); return; }
+            if (moveBtn) return toggleMoveDropdown(moveBtn);
             const item = e.target.closest('.category-nav li');
             if (item) moveToFromNav(item.dataset.category, item.dataset.id);
         });
@@ -346,4 +347,3 @@ initAddTaskButtons();
 initCardDetailClick();
 initMoveNavClicks();
 initDragAreaWheelScroll();
-initDropdownAutoClose();

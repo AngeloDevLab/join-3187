@@ -1,4 +1,4 @@
-import { toggleDropdown } from './task-category-dropdown.js';
+import { Dropdown } from './dropdown.js';
 import { authService } from '../services/auth-service.js';
 import { contactStore } from '../services/contact-store.js';
 import { getAvatarColorForId, getInitials, escapeHtml } from '../utils/helpers.js';
@@ -166,7 +166,7 @@ function handleAssignedListClick(root, e) {
  */
 function openAssignedDropdown(root, els) {
     if (els.dropdown.classList.contains('is-open')) return;
-    toggleDropdown(els, true);
+    Dropdown.for(els.dropdown, els.trigger).open();
     els.searchInput.value = '';
     filterAssignedOptions(root, '');
     els.searchInput.focus();
@@ -179,7 +179,7 @@ function openAssignedDropdown(root, els) {
  * @param {{ dropdown: HTMLElement, trigger: HTMLElement, searchInput: HTMLInputElement }} els
  */
 function closeAssignedDropdown(root, els) {
-    toggleDropdown(els, false);
+    Dropdown.for(els.dropdown, els.trigger).close();
     els.searchInput.value = '';
     filterAssignedOptions(root, '');
 }

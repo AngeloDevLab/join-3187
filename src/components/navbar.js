@@ -1,5 +1,5 @@
 import { authService } from '../services/auth-service.js';
-import { toggleDropdown, initDropdownAutoClose } from './task-category-dropdown.js';
+import { Dropdown } from './dropdown.js';
 import { pageUrl } from '../utils/paths.js';
 
 
@@ -25,17 +25,14 @@ function initHeaderAvatar() {
 }
 
 
-/** Toggles the user dropdown open/closed, using the shared dropdown pattern. */
+/** Wires the header avatar to toggle the user dropdown; any entry click closes it again. */
 function initHeaderDropdown() {
     const btn = document.getElementById('headerAvatarBtn');
     const nav = document.getElementById('headerDropdown');
     if (!btn || !nav) return;
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleDropdown({ dropdown: nav, trigger: btn }, !nav.classList.contains('is-open'));
-    });
-    nav.querySelectorAll('a, button').forEach((el) =>
-        el.addEventListener('click', () => toggleDropdown({ dropdown: nav, trigger: btn }, false)));
+    const dropdown = new Dropdown(nav, btn);
+    btn.addEventListener('click', () => dropdown.toggle());
+    nav.querySelectorAll('a, button').forEach((el) => el.addEventListener('click', () => dropdown.close()));
 }
 
 
@@ -55,5 +52,4 @@ export function initNavbar() {
     initHeaderAvatar();
     initHeaderDropdown();
     initLogoutBtn();
-    initDropdownAutoClose();
 }
