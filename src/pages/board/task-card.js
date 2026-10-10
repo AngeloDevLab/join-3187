@@ -1,5 +1,5 @@
-import { PRIORITY_META, escapeHtml, getSubtaskProgress } from '../utils/helpers.js';
-import { iconUrl } from '../utils/paths.js';
+import { PRIORITY_META, escapeHtml, getSubtaskProgress } from '../../utils/helpers.js';
+import { iconUrl } from '../../utils/paths.js';
 
 const MAX_VISIBLE_AVATARS = 3;
 const MOVE_TARGETS = { todo: 'Todo', inProgress: 'In Progress', awaitFeedback: 'Await Feedback', done: 'Done' };
@@ -8,7 +8,7 @@ const MOVE_TARGETS = { todo: 'Todo', inProgress: 'In Progress', awaitFeedback: '
 /**
  * Returns avatar markup for a task's assigned contacts, capped to
  * MAX_VISIBLE_AVATARS with any remainder collapsed into a "+n" avatar.
- * @param {import('../utils/task-view.js').TaskView} task
+ * @param {import('../../utils/task-view.js').TaskView} task
  * @returns {string}
  */
 function avatarsHtml(task) {
@@ -44,7 +44,7 @@ function priorityIconHtml(priority) {
 
 /**
  * Returns the mobile "Move To" button and menu, listing every column except the current one.
- * @param {import('../utils/task-view.js').TaskView} task
+ * @param {import('../../utils/task-view.js').TaskView} task
  * @returns {string}
  */
 function moveMenuHtml(task) {
@@ -59,7 +59,7 @@ function moveMenuHtml(task) {
 
 /**
  * Returns the HTML markup for a single, draggable task card.
- * @param {import('../utils/task-view.js').TaskView} task
+ * @param {import('../../utils/task-view.js').TaskView} task
  * @returns {string}
  */
 export function taskCardHtml(task) {

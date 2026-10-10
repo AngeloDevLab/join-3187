@@ -1,4 +1,4 @@
-import { getAvatarColorForId, getInitials } from '../utils/helpers.js';
+import { getAvatarColorForId, getInitials } from '../../utils/helpers.js';
 
 
 /**

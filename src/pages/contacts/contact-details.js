@@ -1,4 +1,4 @@
-import { getAvatarColorForId, getInitials, triggerTransitionIn } from '../utils/helpers.js';
+import { getAvatarColorForId, getInitials, triggerTransitionIn } from '../../utils/helpers.js';
 
 const MENU_CLASSES = [
     ['#contactMenu', 'contact_menu_open'],

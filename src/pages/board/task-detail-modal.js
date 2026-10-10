@@ -1,8 +1,8 @@
-import { Modal } from './modal.js';
-import { TaskForm } from './task-form/task-form.js';
-import { showToast } from './toast.js';
-import { PRIORITY_META, escapeHtml, getSubtaskProgress } from '../utils/helpers.js';
-import { iconUrl } from '../utils/paths.js';
+import { Modal } from '../../components/modal.js';
+import { TaskForm } from '../../components/task-form/task-form.js';
+import { showToast } from '../../components/toast.js';
+import { PRIORITY_META, escapeHtml, getSubtaskProgress } from '../../utils/helpers.js';
+import { iconUrl } from '../../utils/paths.js';
 
 
 /**
@@ -30,7 +30,7 @@ function priorityHtml(priority) {
 
 
 /**
- * @param {import('../utils/task-view.js').TaskView['assigned']} assigned
+ * @param {import('../../utils/task-view.js').TaskView['assigned']} assigned
  * @returns {string} one row per assigned contact, or a muted placeholder
  */
 function assignedHtml(assigned) {
@@ -57,7 +57,7 @@ function progressHtml(subtasks) {
 
 
 /**
- * @param {import('../utils/task-view.js').TaskView['subtasks']} subtasks
+ * @param {import('../../utils/task-view.js').TaskView['subtasks']} subtasks
  * @returns {string} the progress row plus one checkbox per subtask, or a placeholder
  */
 function subtasksHtml(subtasks) {
@@ -74,7 +74,7 @@ function subtasksHtml(subtasks) {
 
 
 /**
- * @param {import('../utils/task-view.js').TaskView} task
+ * @param {import('../../utils/task-view.js').TaskView} task
  * @returns {string} category badge, close button, title and description
  */
 function headerHtml(task) {
@@ -88,7 +88,7 @@ function headerHtml(task) {
 
 
 /**
- * @param {import('../utils/task-view.js').TaskView} task
+ * @param {import('../../utils/task-view.js').TaskView} task
  * @returns {string} the due date and priority rows
  */
 function metaHtml(task) {
@@ -104,7 +104,7 @@ function metaHtml(task) {
 
 
 /**
- * @param {import('../utils/task-view.js').TaskView} task
+ * @param {import('../../utils/task-view.js').TaskView} task
  * @returns {string} the assignees and subtasks sections
  */
 function sectionsHtml(task) {
@@ -144,7 +144,7 @@ export class TaskDetailModal {
 
 
     /**
-     * @param {import('../utils/task-view.js').TaskView} task
+     * @param {import('../../utils/task-view.js').TaskView} task
      * @param {{ onDelete: (id: string) => Promise<void>, onSave: (id: string, values: Object) => Promise<void>, onToggleSubtask: (id: string, subtasks: Object) => Promise<void> }} callbacks
      */
     constructor(task, callbacks) {

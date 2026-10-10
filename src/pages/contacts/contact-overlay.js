@@ -1,7 +1,7 @@
-import { Modal } from './modal.js';
-import { showToast } from './toast.js';
-import { getAvatarColorForId, getInitials } from '../utils/helpers.js';
-import { validateField, validateOnBlur, isValidEmail, isValidPhone, restrictToDigits } from '../utils/form-validation.js';
+import { Modal } from '../../components/modal.js';
+import { showToast } from '../../components/toast.js';
+import { getAvatarColorForId, getInitials } from '../../utils/helpers.js';
+import { validateField, validateOnBlur, isValidEmail, isValidPhone, restrictToDigits } from '../../utils/form-validation.js';
 
 /** Validation per contact field; the input ids are `<prefix><Key>` (e.g. addContactName). */
 const FIELD_RULES = [

@@ -1,9 +1,9 @@
 import '../../utils/auth-guard.js';
 import { initNavbar } from '../../components/navbar.js';
 import { showToast } from '../../components/toast.js';
-import { ContactList } from '../../components/contact-list.js';
-import { ContactDetails } from '../../components/contact-details.js';
-import { ContactOverlay } from '../../components/contact-overlay.js';
+import { ContactList } from './contact-list.js';
+import { ContactDetails } from './contact-details.js';
+import { ContactOverlay } from './contact-overlay.js';
 import { authService } from '../../services/auth-service.js';
 import { contactStore } from '../../services/contact-store.js';
 
