@@ -1,5 +1,5 @@
 import { Modal } from './modal.js';
-import { initAddTaskForm } from './add-task-form.js';
+import { TaskForm } from './task-form/task-form.js';
 import { PRIORITY_META, escapeHtml, getSubtaskProgress } from '../utils/helpers.js';
 import { iconUrl } from '../utils/paths.js';
 
@@ -218,9 +218,9 @@ function switchToEditMode(dialog, todo, { onSave, onClose }) {
     node.querySelector('.add-task-modal h1')?.remove();
     dialog.classList.replace('modal--center', 'modal--right');
     dialog.replaceChildren(node);
-    initAddTaskForm(dialog, {
-        editTask: todo.raw,
-        onSubmitSuccess: (data) => { onSave?.(todo.id, todo.raw, data); onClose(); },
+    new TaskForm(dialog, {
+        task: todo.raw,
+        onSubmit: async (values) => { await onSave?.(todo.id, values); onClose(); },
         onCancel: onClose,
     });
     dialog.querySelector('.close-btn')?.addEventListener('click', onClose);
@@ -231,7 +231,7 @@ function switchToEditMode(dialog, todo, { onSave, onClose }) {
  * Opens a centered modal showing the detail view of the given task, with an
  * Edit action that turns the same modal into an in-place edit form.
  * @param {object} todo
- * @param {{ onDelete?: (id: string) => void|Promise<void>, onSave?: (id: string, task: Object, data: Object) => void, onToggleSubtask?: (id: string, subtasks: Object) => void }} [options]
+ * @param {{ onDelete?: (id: string) => void|Promise<void>, onSave?: (id: string, values: Object) => Promise<void>, onToggleSubtask?: (id: string, subtasks: Object) => void }} [options]
  */
 export function openTaskDetailModal(todo, { onDelete, onSave, onToggleSubtask } = {}) {
     const template = document.createElement('template');

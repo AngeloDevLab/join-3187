@@ -2,7 +2,7 @@ import '../../utils/auth-guard.js';
 import { initNavbar } from '../../components/navbar.js';
 import { Modal } from '../../components/modal.js';
 import { Dropdown } from '../../components/dropdown.js';
-import { initAddTaskForm, toFirebaseTask } from '../../components/add-task-form.js';
+import { TaskForm } from '../../components/task-form/task-form.js';
 import { openTaskDetailModal } from '../../components/task-detail-modal.js';
 import { showToast } from '../../components/toast.js';
 import { taskStore } from '../../services/task-store.js';
@@ -211,12 +211,12 @@ async function moveTo(category) {
 
 /**
  * Saves a new task to Firebase for the given column; the live store re-renders the board.
- * @param {Parameters<typeof toFirebaseTask>[0]} data
+ * @param {import('../../components/task-form/task-form.js').TaskFormValues} values
  * @param {string} status
  * @param {() => void} close
  */
-async function handleNewTask(data, status, close) {
-    await taskStore.add({ ...toFirebaseTask(data, status), order: Date.now() });
+async function handleNewTask(values, status, close) {
+    await taskStore.create(values, status);
     close();
 }
 
@@ -230,19 +230,18 @@ function openAddTaskModal(status) {
     const modal = new Modal(node, { animation: 'right' }).open();
     const dialog = modal.element;
     const close = () => modal.close();
-    initAddTaskForm(dialog, { onSubmitSuccess: (data) => handleNewTask(data, status, close), onCancel: close });
+    new TaskForm(dialog, { onSubmit: (values) => handleNewTask(values, status, close), onCancel: close });
     dialog.querySelector('.close-btn')?.addEventListener('click', close);
 }
 
 
 /**
- * Persists edited task data to Firebase, keeping its column and creation date.
+ * Persists edited task fields; column, order and creation date stay untouched.
  * @param {string} id
- * @param {Object} task
- * @param {Parameters<typeof toFirebaseTask>[0]} data
+ * @param {import('../../components/task-form/task-form.js').TaskFormValues} values
  */
-async function handleSaveTask(id, task, data) {
-    await taskStore.update(id, toFirebaseTask(data, task.column, task.createdAt));
+async function handleSaveTask(id, values) {
+    await taskStore.update(id, values);
 }
 
 

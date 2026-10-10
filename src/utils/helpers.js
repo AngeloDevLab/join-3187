@@ -99,6 +99,16 @@ export function computeOrderBetween(before, after) {
 
 
 /**
+ * Returns today's date as a local YYYY-MM-DD string (the format of date inputs).
+ * @returns {string}
+ */
+export function todayIsoDate() {
+    const now = new Date();
+    return new Date(now - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+}
+
+
+/**
  * Adds a class after two animation frames, so a CSS transition reliably plays
  * from the element's current style instead of jumping straight to the end state.
  * @param {HTMLElement} el
