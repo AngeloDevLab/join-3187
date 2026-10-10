@@ -75,33 +75,38 @@ function getGreetingDate() {
 // ── Summary counts ───────────────────────────────────────
 
 /**
- * Counts tasks per board column and priority from the raw tasks object.
+ * Counts tasks per board column and priority from the raw tasks object. The
+ * upcoming deadline only considers urgent tasks that are not done yet.
  * @param {Object<string, {column: string, priority: string, dueDate: string}>} tasks
  * @returns {{ todo: number, done: number, inProgress: number, awaitingFeedback: number, total: number, urgent: number, nextUrgentDue: string|null }}
  */
 function computeSummaryCounts(tasks) {
     const list = Object.values(tasks ?? {});
     const byColumn = (col) => list.filter((t) => t.column === col).length;
-    const urgentDueDates = list.filter((t) => t.priority === 'urgent').map((t) => t.dueDate).sort();
+    const urgent = list.filter((t) => t.priority === 'urgent');
+    const openDueDates = urgent.filter((t) => t.column !== 'done' && t.dueDate).map((t) => t.dueDate).sort();
     return {
         todo: byColumn('todo'),
         done: byColumn('done'),
         inProgress: byColumn('inProgress'),
         awaitingFeedback: byColumn('awaitFeedback'),
         total: list.length,
-        urgent: urgentDueDates.length,
-        nextUrgentDue: urgentDueDates[0] ?? null,
+        urgent: urgent.length,
+        nextUrgentDue: openDueDates[0] ?? null,
     };
 }
 
 
 /**
- * Formats an ISO date string (YYYY-MM-DD) as "Month D, YYYY".
+ * Formats an ISO date string (YYYY-MM-DD) as "Month D, YYYY". Parsed as a
+ * local date — `new Date('YYYY-MM-DD')` alone would be UTC and show the
+ * previous day in time zones west of UTC.
  * @param {string} isoDate
  * @returns {string}
  */
 function formatDueDate(isoDate) {
-    return new Date(isoDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const [year, month, day] = isoDate.split('-').map(Number);
+    return new Date(year, month - 1, day).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
 
