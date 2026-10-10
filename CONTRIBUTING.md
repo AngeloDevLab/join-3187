@@ -1,10 +1,11 @@
 ## Git Workflow
-- `main` is always stable
-- For each feature/fix: branch off `main`
+- `main` is always stable — it is what gets deployed
+- Small, self-contained changes (typos, docs, a single bug fix) may be committed directly to `main`
+- Larger work that needs several commits (new features, redesigns): branch off `main`
   - Naming: `feature/short-description` or `fix/short-description`
-- Done? Open a PR to `main`
-- At least 1 other team member reviews and merges
-- Delete branch after merge
+  - Merge back into `main` once it works end to end; a PR is optional but useful as a record of bigger changes
+  - Delete the branch after merging
+- Commit messages follow Conventional Commits: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`
 
 ## Code Conventions
 
