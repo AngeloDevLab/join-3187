@@ -1,10 +1,13 @@
-import { getCurrentUser } from '../services/auth.js';
+import { authService } from '../services/auth-service.js';
 import { pageUrl } from './paths.js';
 
-/**
- * Redirects to the login page if no user session exists.
- * Import this module at the top of every protected page.
+/*
+ * Import this module first in every protected page script. Its top-level await
+ * holds the page script back until Firebase has restored the session; without a
+ * logged-in user it redirects to the login page and never resolves, so the page
+ * script does not run at all.
  */
-if (!getCurrentUser()) {
-    window.location.href = pageUrl('login');
+if (!(await authService.ready())) {
+    window.location.replace(pageUrl('login'));
+    await new Promise(() => {});
 }

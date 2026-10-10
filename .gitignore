@@ -1,5 +1,4 @@
 .DS_Store
-src/services/config.js
 out/
 node_modules/
 

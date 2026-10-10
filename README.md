@@ -31,7 +31,7 @@ A collaborative Kanban board built as a Multi-Page Application (MPA), developed 
 
 2. Create a Firebase project at [firebase.google.com](https://firebase.google.com)
 
-3. Copy `src/services/config.example.js` to `src/services/config.js` and fill in your Firebase Realtime Database URL (see `docs/database-setup.md` for the full walkthrough) – **never push `config.js` to the repository**, it's already excluded via `.gitignore`
+3. In the Firebase console, enable **Authentication** with the *Email/Password* and *Anonymous* providers, then put your web app config into `src/services/firebase-config.js` (see `docs/database-setup.md`). The web config is not a secret — access is protected by Firebase Auth and the database rules
 
 4. Open `index.html` in your browser – no build step required
 

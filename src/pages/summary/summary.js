@@ -1,6 +1,6 @@
 import '../../utils/auth-guard.js';
 import { initNavbar } from '../../components/navbar.js';
-import { getCurrentUser } from '../../services/auth.js';
+import { authService } from '../../services/auth-service.js';
 import { getTasks } from '../../services/cache.js';
 import { escapeHtml } from '../../utils/helpers.js';
 import { pageUrl } from '../../utils/paths.js';
@@ -49,12 +49,14 @@ function playMobileGreeting(overlay) {
  * @param {HTMLElement} overlay
  */
 function setGreetingName(overlay) {
-    let user = getCurrentUser();
-    let greeting = getGreetingDate();
-    overlay.querySelector('p').innerHTML = `${greeting}, <span  class="username">${escapeHtml(user.name)}</span>`;
-    if (user.name === 'Guest') {
-     overlay.querySelector('p').textContent = `${greeting}!`;
+    const user = authService.currentUser;
+    const greeting = getGreetingDate();
+    const text = overlay.querySelector('p');
+    if (user.isGuest) {
+        text.textContent = `${greeting}!`;
+        return;
     }
+    text.innerHTML = `${greeting}, <span class="username">${escapeHtml(user.name)}</span>`;
 }
 
 

@@ -1,4 +1,6 @@
-import { DB_URL } from './config.js';
+import { firebaseConfig } from './firebase-config.js';
+
+const DB_URL = firebaseConfig.databaseURL;
 
 /**
  * Throws a descriptive error if a Firebase response was not successful,

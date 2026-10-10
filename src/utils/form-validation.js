@@ -1,6 +1,9 @@
 const EMAIL_RE = /^[^\s@.]+(?:\.[^\s@.]+)*@[^\s@.]+(?:\.[^\s@.]+)*\.[^\s@.]{2,}$/;
 const PHONE_RE = /^\+?[0-9]+$/;
 
+/** Firebase Auth rejects shorter passwords, so signup validates against the same limit. */
+export const MIN_PASSWORD_LENGTH = 6;
+
 /**
  * @param {string} value
  * @returns {boolean}
@@ -16,6 +19,15 @@ export function isValidEmail(value) {
  */
 export function isValidPhone(value) {
     return PHONE_RE.test(value.trim());
+}
+
+
+/**
+ * @param {string} value
+ * @returns {boolean} true if the password meets Firebase's minimum length
+ */
+export function isValidPassword(value) {
+    return value.length >= MIN_PASSWORD_LENGTH;
 }
 
 

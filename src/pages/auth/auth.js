@@ -1,5 +1,5 @@
-import { validateField, validateOnBlur, setError, isValidEmail } from '../../utils/form-validation.js';
-import { loginUser, registerUser, loginAsGuest } from '../../services/auth.js';
+import { validateField, validateOnBlur, setError, isValidEmail, isValidPassword, MIN_PASSWORD_LENGTH } from '../../utils/form-validation.js';
+import { authService } from '../../services/auth-service.js';
 import { showToast } from '../../components/toast.js';
 import { iconUrl, pageUrl } from '../../utils/paths.js';
 
@@ -176,10 +176,21 @@ async function handleLoginSubmit(e, fields) {
         return;
     }
     try {
-        await loginUser(fields.emailInput.value);
+        await authService.login(fields.emailInput.value, fields.passwordInput.value);
         exitAndRedirect(document.getElementById('loginCard'), "You're logged in!", pageUrl('summary'));
     } catch {
         setLoginError(fields);
+    }
+}
+
+
+/** Logs in as guest (anonymous Firebase account) and redirects to the summary. */
+async function handleGuestLogin() {
+    try {
+        await authService.loginAsGuest();
+        exitAndRedirect(document.getElementById('loginCard'), 'Logged in as guest!', pageUrl('summary'));
+    } catch {
+        showToast('Guest login is currently unavailable. Please try again later.');
     }
 }
 
@@ -194,15 +205,15 @@ function initLoginForm() {
         passwordInput: form.querySelector('input[type="password"]'),
         passwordError: document.getElementById('loginPasswordError'),
     };
-    document.getElementById('guestLoginBtn').addEventListener('click', () => {
-        loginAsGuest();
-        exitAndRedirect(document.getElementById('loginCard'), 'Logged in as guest!', pageUrl('summary'));
-    });
+    document.getElementById('guestLoginBtn').addEventListener('click', handleGuestLogin);
     form.addEventListener('submit', (e) => handleLoginSubmit(e, fields));
 }
 
 
 // ── Signup ───────────────────────────────────────────────
+
+const PASSWORD_LENGTH_MESSAGE = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`;
+
 
 /**
  * Collects all signup form field elements into one object.
@@ -233,7 +244,7 @@ function getSignupFields(form) {
 function isSignupReady(fields) {
     return !!fields.nameInput.value.trim()
         && isValidEmail(fields.emailInput.value)
-        && !!fields.passwordInput.value.trim()
+        && isValidPassword(fields.passwordInput.value)
         && !!fields.confirmInput.value
         && fields.confirmInput.value === fields.passwordInput.value
         && fields.checkbox.checked;
@@ -261,7 +272,7 @@ function validateSignup(fields) {
     return [
         validateField(nameInput, nameError, !!nameInput.value.trim(), 'Please enter your name.'),
         validateField(emailInput, emailError, isValidEmail(emailInput.value), 'Please enter a valid email address.'),
-        validateField(passwordInput, passwordError, !!passwordInput.value.trim(), 'Please enter a password.'),
+        validateField(passwordInput, passwordError, isValidPassword(passwordInput.value), PASSWORD_LENGTH_MESSAGE),
         validateField(confirmInput, confirmError, confirmInput.value === passwordInput.value, "Your passwords don't match. Please try again."),
         validateField(checkbox, checkboxError, checkbox.checked, 'Please accept the Privacy Policy.'),
     ].every(Boolean);
@@ -277,7 +288,7 @@ async function handleSignupSubmit(e, fields) {
     e.preventDefault();
     if (!validateSignup(fields)) return;
     try {
-        await registerUser(fields.nameInput.value, fields.emailInput.value);
+        await authService.register(fields.nameInput.value, fields.emailInput.value, fields.passwordInput.value);
         exitToLogin(document.getElementById('signupCard'), 'Account created!');
     } catch (err) {
         setError(fields.emailInput.closest('.input-wrapper'), fields.emailError, err.message);
@@ -292,7 +303,7 @@ async function handleSignupSubmit(e, fields) {
 function wireSignupBlurValidation(fields) {
     validateOnBlur(fields.nameInput, fields.nameError, () => !!fields.nameInput.value.trim(), 'Please enter your name.');
     validateOnBlur(fields.emailInput, fields.emailError, () => isValidEmail(fields.emailInput.value), 'Please enter a valid email address.');
-    validateOnBlur(fields.passwordInput, fields.passwordError, () => !!fields.passwordInput.value.trim(), 'Please enter a password.');
+    validateOnBlur(fields.passwordInput, fields.passwordError, () => isValidPassword(fields.passwordInput.value), PASSWORD_LENGTH_MESSAGE);
     validateOnBlur(fields.confirmInput, fields.confirmError, () => fields.confirmInput.value === fields.passwordInput.value, "Your passwords don't match. Please try again.");
     validateOnBlur(fields.checkbox, fields.checkboxError, () => fields.checkbox.checked, 'Please accept the Privacy Policy.');
 }

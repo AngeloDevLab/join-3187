@@ -1,12 +1,12 @@
 import { initNavbar } from '../../components/navbar.js';
-import { getCurrentUser } from '../../services/auth.js';
+import { authService } from '../../services/auth-service.js';
 import { escapeHtml } from '../../utils/helpers.js';
 import { iconUrl } from '../../utils/paths.js';
 
 
 /** Fills the header user bar and nav list based on whether a user is logged in. */
 function updateNavForAuthStatus() {
-    const user = getCurrentUser();
+    const user = authService.currentUser;
     const navList = document.querySelector('.nav-list');
     const userBar = document.querySelector('.header-user');
     userBar.innerHTML = user ? getUserBarHTML(user) : '';
@@ -60,6 +60,13 @@ function goBack() {
 }
 
 
-updateNavForAuthStatus();
-initNavbar();
-document.getElementById('legalBackBtn').addEventListener('click', goBack);
+/** Waits for the restored session (legal pages are public), then renders the nav and wires the page. */
+async function initLegalPage() {
+    await authService.ready();
+    updateNavForAuthStatus();
+    initNavbar();
+    document.getElementById('legalBackBtn').addEventListener('click', goBack);
+}
+
+
+initLegalPage();

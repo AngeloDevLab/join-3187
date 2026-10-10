@@ -1,6 +1,6 @@
 import '../../utils/auth-guard.js';
 import { initNavbar } from '../../components/navbar.js';
-import { getCurrentUser } from '../../services/auth.js';
+import { authService } from '../../services/auth-service.js';
 import { getAvatarColorForId, getInitials, triggerTransitionIn } from '../../utils/helpers.js';
 import { showToast } from '../../components/toast.js';
 import { getContacts, saveContact, updateContact, removeContact } from '../../services/cache.js';
@@ -23,7 +23,7 @@ async function init() {
 
 /** Adds the logged-in user to the contact list once, if available. */
 async function addCurrentUserToContacts() {
-    const currentUser = getCurrentUser();
+    const currentUser = authService.currentUser;
     if (!currentUser?.email) return;
     const contacts = (await getContacts()) || {};
     if (hasContactWithEmail(contacts, currentUser.email)) return;

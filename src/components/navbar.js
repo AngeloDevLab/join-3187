@@ -1,4 +1,4 @@
-import { getCurrentUser, logoutUser } from '../services/auth.js';
+import { authService } from '../services/auth-service.js';
 import { toggleDropdown, initDropdownAutoClose } from './task-category-dropdown.js';
 import { pageUrl } from '../utils/paths.js';
 
@@ -21,7 +21,7 @@ function setActiveLink(sidebar) {
 /** Fills the header avatar button with the current user's initials. */
 function initHeaderAvatar() {
     const btn = document.getElementById('headerAvatarBtn');
-    if (btn) btn.textContent = getCurrentUser()?.initials ?? '?';
+    if (btn) btn.textContent = authService.currentUser?.initials ?? '?';
 }
 
 
@@ -39,10 +39,10 @@ function initHeaderDropdown() {
 }
 
 
-/** Clears session and redirects to login. */
+/** Logs the user out and redirects to login. */
 function initLogoutBtn() {
-    document.getElementById('headerLogoutBtn')?.addEventListener('click', () => {
-        logoutUser();
+    document.getElementById('headerLogoutBtn')?.addEventListener('click', async () => {
+        await authService.logout();
         window.location.href = pageUrl('login');
     });
 }
