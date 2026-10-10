@@ -1,104 +1,104 @@
 # Data Layer — Flow & Decisions
 
-## Architecture
+All data access goes through **live stores**: one per collection, built on the Firebase JS SDK. Pages subscribe to a store and re-render whenever its data changes — whether the change came from this tab, another user or an external automation.
 
 ```
-Page Script (e.g. board.js, summary.js)
-  └── js/firebase/cache.js       — single entry point for all data access
-        ├── Memory (module-level object, lives only as long as the current page)
-        └── js/firebase/database.js — raw Firebase REST calls (on a cache miss)
+Page (BoardPage, ContactsPage, summary, TaskForm, …)
+  └── taskStore / contactStore             src/services/task-store.js, contact-store.js
+        └── Store (base class)             src/services/store.js
+              └── one onValue listener per collection
+                    └── Firebase Realtime Database (SDK, src/services/firebase.js)
 ```
 
-**Rule: page scripts never import `database.js` directly. Only `cache.js`.**
+**Rule:** page scripts and components never import the Firebase SDK. They only use `taskStore`, `contactStore` and `authService`.
 
-Because this is an MPA, every page navigation is a full browser navigation — the JS module
-graph (and with it the `memory` object) is torn down and rebuilt from scratch. The cache
-only avoids repeat Firebase calls for reads that happen *within* one page's lifetime
-(e.g. re-rendering the board after a drag-and-drop); it does not persist across pages.
+---
+
+## Store API
+
+`Store` is the base class; `TaskStore` (`tasks/`) and `ContactStore` (`contacts/`) extend it. Each exports one shared instance.
+
+| Method | Purpose |
+|---|---|
+| `subscribe(callback)` | Calls `callback(entries)` once the data is loaded and again after every change. Returns an unsubscribe function. |
+| `getAll()` | Resolves to all entries, keyed by id (`{}` when empty) |
+| `getById(id)` | Resolves to one entry or `undefined` |
+| `add(data)` | Creates an entry with a Firebase-generated id; resolves to the id |
+| `update(id, data)` | Merges fields into an entry |
+| `remove(id)` | Deletes an entry |
+| `taskStore.create(values, column)` | Adds a task from form values and sets `column`, `order` (end of column) and `createdAt` |
+| `contactStore.remove(id)` | Override: also removes the contact from every task's `assignedTo` |
+
+The listener starts **lazily**, on the first `subscribe`/`getAll`/`getById`. The login page, for example, can add a contact during signup without ever loading the contact list.
 
 ---
 
 ## Read Flow
 
 ```
-getTasks() / getContacts() / getUsers()
-  │
-  ├─ memory hit?  → return immediately (no I/O)
-  │
-  └─ cache miss   → fetch from Firebase
-                     → write to memory
-                     → return
+first subscribe() / getAll()
+  └── onValue(ref)  ── first snapshot ──► data kept in the store
+                                          └── every subscriber is called
+
+every later change (any user, any tab, n8n, the console)
+  └── onValue fires again ──► data replaced ──► subscribers re-render
 ```
 
-Within a single page load, Firebase is called **once per collection**. Navigating to a
-different page always triggers a fresh fetch, since the memory cache doesn't survive
-the navigation.
-
----
+There is exactly one listener per collection and page. `getAll()` and `getById()` read from the store's copy; they do not trigger requests.
 
 ## Write Flow
 
 ```
-saveTask(data) / saveContact(data)
-  │
-  ├─ write to Firebase (POST)
-  └─ update memory in place  ← no refetch needed
-     (addToCache adds the new entry by ID)
-
-removeTask(id)
-  │
-  ├─ delete from Firebase (DELETE)
-  └─ remove from memory in place
-
-removeContact(id)
-  │
-  ├─ strip this contact's id from every task's assignedTo list (updateTask per affected task)
-  ├─ delete the contact from Firebase (DELETE)
-  └─ remove from memory in place
+taskStore.update(id, { column: 'done' })
+  ├── Firebase applies the write locally right away → onValue fires → page re-renders
+  └── the write is sent to the server
+        ├── success → nothing else to do
+        └── failure → Firebase rolls the local change back → onValue fires → page shows the old state
+                      the caller catches the error and shows an error toast
 ```
 
-Writes never trigger a refetch — the cache is updated directly with the
-known change, keeping reads fast and Firebase calls minimal.
-`removeContact` is the one write that fans out to a second collection: it must clean up
-`tasks` before the contact itself disappears, otherwise a task could keep referencing a
-contact id that no longer exists.
+Pages therefore never re-render manually after a write. Saving and rendering are decoupled: the write goes to the store, and the subscription handles the UI.
+
+`contactStore.remove(id)` is one **multi-path update**: it deletes `contacts/<id>` and rewrites the `assignedTo` list of every affected task in one atomic write. No task is ever left pointing at a deleted contact.
 
 ---
 
-## Known Limitations
+## Error Handling
 
-| Scenario | Behaviour |
+Every write is awaited by its caller, and failures end in an error toast instead of an unhandled rejection:
+
+| Where | On failure |
 |---|---|
-| Same page, own writes | Always consistent — cache updated on every write |
-| Navigating to another page | Fresh Firebase fetch — memory cache doesn't survive navigation |
-| Multiple tabs, same user | Each page/tab has its own cache — no sync between them |
-| Two users simultaneously | Stale until the next page load — accepted trade-off |
+| `TaskForm` submit | Error toast; form stays filled; submit button re-enabled |
+| `BoardPage` moves (drag & drop, "Move to") | Error toast; Firebase rollback restores the card |
+| `TaskDetailModal` delete / subtask toggle | Error toast; the checkbox jumps back |
+| Contact dialogs | Error toast; dialog stays open |
 
-Multi-tab / multi-user synchronisation is **out of scope** for this project.
-Firebase Realtime listeners (`onValue`) would be needed for that.
+Submit buttons are disabled while a save is running, so a double click cannot create duplicates.
+
+---
+
+## Security
+
+The database only accepts requests with a valid Firebase Auth token. The rules live in [database.rules.json](../database.rules.json):
+
+- `tasks` and `contacts`: read and write for any logged-in user (`auth != null`), guests included
+- everything else: denied
+
+External services such as an n8n workflow authenticate with a **service account**, which bypasses the rules — the rules do not need loosening for automations.
 
 ---
 
 ## Decisions
 
-**Why an in-memory layer at all, if it doesn't survive navigation?**
-It still avoids redundant Firebase round-trips for the many reads that happen within a
-single page's lifetime (e.g. re-rendering the board after every drag-and-drop, or
-re-reading contacts after every add/edit/delete).
+**Why realtime listeners instead of the earlier request cache?**
+The first version fetched each collection once per page over REST and cached it in memory, so other users' changes only appeared after a reload. With `onValue`, the board stays in sync across users and shows tasks created by external automations instantly. The listener's local copy also covers the cache's original purpose.
 
-**Why not sessionStorage or localStorage for the data cache?**
-That was the original plan, but it turned out unnecessary: each page already does exactly
-one fetch per collection on load, and reads within that page hit memory. Persisting across
-navigations would mean writing extra cache-invalidation logic (staleness after another
-tab's write) for a saving that doesn't matter at this project's data volume.
+**Why the Firebase SDK instead of REST?**
+The SDK attaches the auth token to every request automatically, so the security rules can protect the data. It also provides realtime listeners and local write handling. It loads as ES modules from the official CDN, so the app still runs without npm or a build step.
 
-**Why update the cache in place on writes instead of invalidating?**
-Invalidating forces a Firebase refetch on the next read. Updating in place
-is cheaper and correct — we know exactly what changed.
-The only edge case is concurrent writes from another user, which is already
-a known limitation (see above).
+**Why a base class?**
+Tasks and contacts need identical read, write and subscribe behaviour. `Store` implements it once, and the subclasses only add what is specific to them.
 
-**Why not use the Firebase SDK with real-time listeners?**
-The SDK adds significant bundle weight and requires `npm`. This project runs
-without a build tool and uses the Firebase REST API directly. Real-time sync
-can be added later if the project requirements change.
+**Why keep the data keyed by id (`Object<string, …>`) instead of arrays?**
+That is how the Realtime Database stores collections. Pages convert to arrays where they need sorting, for example the board via `toTaskView()`.

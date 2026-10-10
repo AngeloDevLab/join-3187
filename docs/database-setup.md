@@ -1,71 +1,71 @@
 # Firebase Setup
 
-## Prerequisites
+How to run Join against your own Firebase project. The free **Spark plan** is enough.
 
-- Google Account
-- Firebase Project (free Spark Plan is sufficient)
+## 1. Create a Project and a Realtime Database
 
-## 1. Create a Firebase Project
+1. Open the [Firebase Console](https://console.firebase.google.com/) → **Add project** (Google Analytics can be disabled).
+2. **Build → Realtime Database → Create database**, choose a location (e.g. `europe-west1`) and start in *locked mode*. The real rules follow in step 4.
 
-1. Open the [Firebase Console](https://console.firebase.google.com/)
-2. Click "Add project"
-3. Enter a project name — Google Analytics can be disabled
+## 2. Enable Authentication
 
-## 2. Create a Realtime Database
+1. **Build → Authentication → Get started**.
+2. Under **Sign-in method**, enable:
+   - **Email/Password** (only the first toggle; the passwordless email link stays off)
+   - **Anonymous**: guests sign in this way
+3. Optional: under **Settings**, enable the automatic clean-up of anonymous accounts. Every guest login creates one.
+4. Under **Settings → Authorized domains**, add every domain the app runs on:
+   - `127.0.0.1`: VS Code Live Server opens the app there (`localhost` is listed by default)
+   - your GitHub Pages domain (`<user>.github.io`) and any custom domain
 
-1. In the left menu under "Build" → "Realtime Database"
-2. Click "Create database"
-3. Choose a location (e.g. `europe-west1`)
-4. Select test mode — rules can be adjusted later
+## 3. Register the Web App
 
-## 3. Configure the Project
-
-1. Click the gear icon (top left) → "Project settings"
-2. Scroll down to "Your apps" → register a Web App
-3. Enter the base URL into `config.js`:
+1. Gear icon → **Project settings → General → Your apps** → web icon `</>` → register the app (Firebase Hosting is not needed).
+2. Copy the config object into [src/services/firebase-config.js](../src/services/firebase-config.js):
 
 ```javascript
-// config.js
-export const DB_URL = 'https://{your-project}-default-rtdb.{region}.firebasedatabase.app';
+export const firebaseConfig = {
+    apiKey: '…',
+    authDomain: '<project>.firebaseapp.com',
+    databaseURL: 'https://<project>-default-rtdb.<region>.firebasedatabase.app',
+    projectId: '<project>',
+    storageBucket: '<project>.firebasestorage.app',
+    messagingSenderId: '…',
+    appId: '…',
+};
 ```
 
-The base URL can be found in the Realtime Database under "Data" — it is displayed directly above the data tree. Copy `config.example.js` to `config.js` and fill it in, rather than writing this file from scratch.
+> This file is **committed on purpose**. A Firebase web config is not a secret. Anyone loading the site can read it, and GitHub Pages needs it to run the app. Access is protected by Authentication and the security rules. Real secrets, such as service account keys or n8n credentials, must never be committed.
 
-> `config.js` is listed in `.gitignore` — do not commit it. Only `config.example.js` goes into the repo.
+## 4. Security Rules
 
-## 4. Database Rules
-
-In test mode, read and write access is open. For production the rules should be adjusted:
+**Realtime Database → Rules**: paste the content of [database.rules.json](../database.rules.json) and publish:
 
 ```json
 {
   "rules": {
-    ".read": true,
-    ".write": true
+    ".read": false,
+    ".write": false,
+    "tasks":    { ".read": "auth != null", ".write": "auth != null" },
+    "contacts": { ".read": "auth != null", ".write": "auth != null" }
   }
 }
 ```
 
-## 5. API Usage
+Only logged-in users, guests included, can access `tasks` and `contacts`; everything else is denied. Requests without a token, for example a plain `curl` against the REST API, get `401 Unauthorized`.
 
-All requests go against:
-```
-{FIREBASE_BASE_URL}/{collection}.json
-```
+## 5. Seed Data (optional)
 
-| Method | Description |
-|---|---|
-| `GET` | Read data |
-| `POST` | Create a new entry (Firebase generates the ID) |
-| `PUT` | Overwrite an entry |
-| `PATCH` | Partially update an entry |
-| `DELETE` | Delete an entry |
+[docs/initial-data.json](initial-data.json) contains sample tasks and contacts. In **Realtime Database → Data**, use ⋮ → **Import JSON** to load it.
 
-Example:
-```javascript
-import { DB_URL } from './config.js'
+> Importing **replaces the whole database**, including contacts created by registered users. Only import into an empty or test database.
 
-// Fetch all tasks
-const res = await fetch(`${DB_URL}/tasks.json`)
-const data = await res.json()
-```
+## 6. Run
+
+Serve the project root over HTTP (e.g. VS Code Live Server or `npx serve .`) and open `index.html`. ES modules do not load from `file://`.
+
+---
+
+## External Access (e.g. n8n)
+
+Automations that write to the database, such as the planned email issue collector, should authenticate with a **service account** (Project settings → Service accounts). Service accounts bypass the security rules. Keep their keys out of the repository.
