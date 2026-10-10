@@ -1,78 +1,92 @@
 # Join
 
-A collaborative Kanban board built as a Multi-Page Application (MPA), developed as part of an agile group project.
-
-## Tech Stack
-
-- HTML, CSS, JavaScript (Vanilla)
-- Firebase (Realtime Database / Authentication)
+A Kanban project management tool built as a Multi-Page Application (MPA) with vanilla JavaScript and Firebase — originally developed as an agile group project at Developer Akademie.
 
 ## Features
 
-- User registration & login (incl. guest login)
-- Kanban board with columns: To Do, In Progress, Awaiting Feedback, Done
-- Create, edit, and delete tasks
-- Subtasks with progress indicator
-- Drag & drop between columns (desktop)
-- Real-time task search
-- Contact management (add, edit, delete — deleting a contact also unassigns it from any tasks)
-- Responsive design (from 320px, mobile-first)
-- Time-based greeting message
-- Dashboard with task overview
-- Help / FAQ page
-- Legal Notice & Privacy Policy
+- Sign up and log in with email and password (Firebase Authentication), or log in as a guest
+- Kanban board with the columns To Do, In Progress, Awaiting Feedback and Done
+- Create, edit and delete tasks — with category, priority, due date, assignees and subtasks
+- Drag & drop between columns (desktop), "Move to" menu (mobile)
+- **Live updates:** changes by other users show up instantly on every open page, without a reload
+- Task search by title and description
+- Contact management (add, edit, delete — deleting a contact also unassigns it from all tasks)
+- Summary dashboard with task counts, next urgent deadline and a time-based greeting
+- Responsive from 320px, mobile-first
+- Help page, Legal Notice and Privacy Policy
 
-## Setup
+## Tech Stack
+
+- HTML, CSS, JavaScript (ES modules, ES2022 classes) — no framework, no build step
+- Firebase Authentication (email/password + anonymous guest login)
+- Firebase Realtime Database via the Firebase JS SDK, loaded from the gstatic CDN
+
+## Getting Started
+
+The app runs straight from the repository, but it has to be **served over HTTP** — ES modules do not load from `file://`.
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/AngeloDevLab/join-3187.git
    ```
+2. Serve the project root with any static server, e.g. the VS Code *Live Server* extension, or:
+   ```bash
+   npx serve .
+   ```
+3. Open `index.html` through that server, then log in as a guest or create an account.
 
-2. Create a Firebase project at [firebase.google.com](https://firebase.google.com)
-
-3. Copy `js/firebase/config.example.js` to `js/firebase/config.js` and fill in your Firebase Realtime Database URL (see `docs/database-setup.md` for the full walkthrough) – **never push `config.js` to the repository**, it's already excluded via `.gitignore`
-
-4. Open `index.html` in your browser – no build step required
+The repository is already connected to its Firebase project. To run it against your own project, follow [docs/database-setup.md](docs/database-setup.md).
 
 ## Project Structure
 
 ```
 join/
-├── index.html          # Login / Landing page
-├── pages/              # All other HTML pages
-│   ├── board.html
-│   ├── add-task.html
-│   ├── contacts.html
-│   ├── summary.html
-│   ├── help.html
-│   ├── imprint.html
-│   └── privacy.html
-├── css/                # Global and page-specific stylesheets
-├── js/
-│   ├── pages/          # One JS module per page
-│   ├── components/     # Reusable UI components
-│   ├── utils/          # Utility functions
-│   └── firebase/       # Firebase config and database access
-└── assets/
-    ├── fonts/
-    └── icons/
+├── index.html              # Login / Sign up (entry point)
+├── database.rules.json     # Realtime Database security rules
+├── public/                 # Static files: fonts, icons
+├── docs/                   # Architecture and setup documentation
+└── src/
+    ├── styles/             # Design tokens (variables.css) and shared styles
+    ├── components/         # UI used by several pages: Modal, Dropdown, navbar, toast, task-form/
+    ├── services/           # Firebase setup, AuthService, live data stores
+    ├── utils/              # Plain helper functions (validation, paths, auth guard, …)
+    └── pages/              # One folder per page: its HTML, CSS, page script and page-only classes
+        ├── auth/           #   used by index.html
+        ├── summary/  board/  add-task/  contacts/  help/
+        └── legal/          #   imprint.html + privacy.html
 ```
 
-## Notes
+## Architecture
 
-- All users (incl. guest) share the same board and contacts
-- Sensitive data (Firebase credentials etc.) must **not** be pushed to the repository
-- Before submission: add at least 5 tasks and 10 contacts
-- Tested in: Chrome, Firefox, Safari, Edge (latest versions)
+```
+Page script (e.g. BoardPage)
+  ├── authService     — who is logged in (Firebase Auth)
+  └── taskStore / contactStore
+        └── one realtime listener per collection (Firebase SDK, onValue)
+              → every change re-renders the subscribed pages
+```
+
+- **Diagrams:** [docs/architecture.md](docs/architecture.md) — layers, page load and save flow (Mermaid, rendered by GitHub)
+- **Auth:** [docs/auth.md](docs/auth.md) — login, signup, guest, route protection
+- **Data:** [docs/data-layer.md](docs/data-layer.md) — stores, live updates, writes
+- **Schema:** [docs/database-schema.md](docs/database-schema.md) — collections and fields
 
 ## Tech Decisions
 
-- **Vanilla JS over a framework** — kept simple per project requirements, no build step needed
-- **MPA over SPA** — each page is independent, no client-side routing required
-- **Firebase Realtime Database over Firestore** — simpler API for this use case
-- **CSS custom properties** — all design tokens (colors, spacing, typography) defined in `css/variables.css`
-- **Avatar colors assigned by contact ID hash** — deterministic, same contact always gets the same color everywhere (contacts list, task cards, assigned-to dropdown)
+- **Vanilla JS, no build step** — the project requirement; the Firebase SDK comes from its official CDN as ES modules, so no npm is needed
+- **MPA over SPA** — every page is a static HTML file; markup lives in the HTML (`<template>` for repeated parts), JavaScript only adds behaviour
+- **Classes where state and behaviour belong together** — services, stores, forms and page controllers are classes with native private members (`#field`); stateless helpers stay plain functions
+- **Firebase Authentication** — real password check and session handling; guests get an anonymous account with the same rights as registered users
+- **Realtime listeners instead of a request cache** — pages subscribe to the stores, so the board stays in sync across users and with external automations
+- **Security rules** — only logged-in users (incl. guests) can read or write; see [database.rules.json](database.rules.json)
+- **CSS custom properties** — all design tokens live in `src/styles/variables.css`
+- **Avatar colors derived from the contact id** — the same contact always gets the same color everywhere
+
+## Notes
+
+- All users (incl. guests) share the same board and contacts
+- The Firebase web config in `src/services/firebase-config.js` is public by design; access is protected by Authentication and the security rules — never commit service account keys or other credentials
+- Tested in current Chrome, Firefox, Safari and Edge
 
 ## Team
 

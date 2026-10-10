@@ -1,107 +1,98 @@
 # Auth — Flow & Decisions
 
-## Protected Pages
+Join uses **Firebase Authentication** with two sign-in methods:
 
-All pages except `index.html`, `imprint.html`, and `privacy.html` require a logged-in user.
-Protection is enforced by importing the auth guard as the **first import** in each page script:
+- **Email/password** for registered users
+- **Anonymous** sign-in for guests
 
-```javascript
-import '../utils/auth-guard.js'; // runs immediately, redirects if no session
+All auth logic lives in one class, `AuthService` ([src/services/auth-service.js](../src/services/auth-service.js)). Pages use the shared instance `authService` and never call the Firebase SDK themselves.
+
 ```
-
-`auth-guard.js` checks `sessionStorage` for a current user and redirects to `index.html`
-if none is found. Because it runs at module parse time (before `DOMContentLoaded`),
-the page never renders for unauthenticated users.
+index.html
+  └── src/pages/auth/auth.js           AuthPage — intro, card switch, transitions
+        ├── login-form.js              LoginForm — login + guest button
+        ├── signup-form.js             SignupForm — validation rules + register
+        └── password-toggle.js         PasswordToggle — show/hide password
+              └── authService          (src/services/auth-service.js)
+                    └── Firebase Auth  (initialized in src/services/firebase.js)
+```
 
 ---
 
-## Flow Overview
+## AuthService API
 
-```
-index.html (Login/Signup)
-  └── js/pages/auth.js          — UI logic (forms, animations, validation)
-        ├── js/firebase/auth.js  — session management, DB reads/writes
-        └── js/firebase/database.js — raw fetch wrapper (REST)
+| Member | Purpose |
+|---|---|
+| `ready()` | Resolves once Firebase has restored any existing session; resolves to `true` if someone is logged in |
+| `currentUser` | `{ id, name, initials, email, isGuest }` or `null` — only reliable after `ready()` |
+| `login(email, password)` | Signs a registered user in; rejects on wrong credentials |
+| `register(name, email, password)` | Creates the account, sets the display name, adds a matching contact, then signs out again |
+| `loginAsGuest()` | Signs in anonymously |
+| `logout()` | Signs out |
+
+For guests, `currentUser` is `{ name: 'Guest', initials: 'G', email: null, isGuest: true }`. Pages check `isGuest` — never the name — to tell guests apart.
+
+---
+
+## Protected Pages
+
+Every page except `index.html`, `imprint.html` and `privacy.html` requires a logged-in user (registered or guest). The page script imports the guard as its **first import**:
+
+```javascript
+import '../../utils/auth-guard.js';
 ```
 
-On every protected page:
-```
-js/utils/auth-guard.js  — reads sessionStorage, redirects to index.html if no user
-```
+The guard ([src/utils/auth-guard.js](../src/utils/auth-guard.js)) uses a top-level `await`:
+
+1. It waits for `authService.ready()`, so the page script never runs before the session is known.
+2. Without a user it redirects to the login page with `location.replace()`, then waits on a promise that never resolves. The page script therefore never runs, and no data is requested.
+
+The legal pages are public but adapt their navigation to the login state, so they also await `authService.ready()` before rendering.
 
 ---
 
 ## Login Flow
 
-1. User fills email + password → clicks "Log in"
-2. `handleLoginSubmit` validates: email format + password non-empty
-3. `loginUser(email)` calls `findUserByEmail` → `getAll('users')` from Firebase
-4. Match found → `setSession({ id, name, initials, email })` writes to `sessionStorage`
-5. `exitAndRedirect` fades the card, shows toast, navigates to `pages/summary.html`
-
-No password check on login — passwords are not stored in Firebase.
-The email alone identifies the user. This is intentional for this project scope.
-
----
+1. `LoginForm` checks that the email is well-formed and the password is not empty.
+2. `authService.login()` → Firebase verifies the credentials.
+3. Both buttons stay disabled while the request runs. After a success they stay disabled until the page navigates away.
+4. On success, `AuthPage` fades out the card, shows a toast and opens the summary. It also sets `sessionStorage.justLoggedIn` so the summary plays its mobile greeting once.
+5. On failure, both fields are marked invalid with **one unspecific message**, so a failed attempt never reveals whether the email exists.
 
 ## Signup Flow
 
-1. Submit button is **disabled** until all fields pass live validation:
-   - Name non-empty
-   - Email matches `/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/` (requires TLD)
-   - Password non-empty
-   - Confirm password matches password
-   - Privacy Policy checkbox checked
-2. `registerUser(name, email)` checks for duplicate email via `findUserByEmail`
-3. Duplicate → throws, error shown on email field
-4. New user → `create('users', { name, email })`, then `saveContact({ name, email, phone: '' })` so the
-   new user immediately shows up in Contacts. No session is created — the user is not logged in.
-5. Toast + card switch back to the login form (same page, no navigation)
-
-Note: `contacts.js` also runs `addCurrentUserToContacts()` on every Contacts page load as a
-safety net (deduped by email) — the explicit save in step 4 covers the common case, this
-just guards against a user record that predates this behavior.
-
----
+1. `SignupForm` defines one validation rule per field (name, email, password ≥ 6 characters, matching confirmation, accepted privacy policy). Each rule is checked on blur and on submit; the submit button is dimmed until all rules pass.
+2. `authService.register()` creates the Firebase account, sets the display name and adds the user to `contacts/`, so they can be assigned to tasks right away.
+3. The service then signs out again. The user lands back on the login card and logs in explicitly.
+4. Firebase error codes (e.g. `auth/email-already-in-use`) are mapped to readable messages and shown on the email field.
 
 ## Guest Login
 
-`loginAsGuest()` writes `{ id: 'guest', name: 'Guest', initials: 'G' }` to sessionStorage.
-No DB entry is created. Guest data is lost when the tab closes.
-
----
+`authService.loginAsGuest()` creates an anonymous Firebase account. Guests have the same read/write rights as registered users, so reviewers can try every feature without signing up. Old anonymous accounts can be cleaned up automatically in the Firebase console (Authentication → Settings).
 
 ## Session
 
-- Storage: `sessionStorage` (cleared on tab close, survives page navigation)
-- Key: `currentUser` → `{ id, name, initials, email }`
-- Read via `getCurrentUser()` — used by auth-guard and any page that needs the current user
-- Cleared via `logoutUser()` + redirect to `index.html` (caller handles redirect so the intro animation replays)
+- Firebase Auth runs with **session persistence**: the login survives page navigation but ends when the tab is closed.
+- `logout()` signs out; the navbar then redirects to the login page, which replays the intro.
 
 ---
 
 ## Decisions
 
-**Why sessionStorage and not Firebase Auth?**
-Firebase Auth adds SDK overhead and complexity (token refresh, onAuthStateChanged, etc.).
-For this project, a simple email lookup + sessionStorage is sufficient. If real security
-becomes a requirement, migrating to Firebase Auth is the natural next step.
+**Why Firebase Authentication instead of a custom session?**
+The first version only checked that an email existed and kept the user in `sessionStorage` — there was no password check. Firebase Auth gives real password verification and a token that the database can check through its security rules. The SDK loads from the CDN, so the app still needs no build step.
 
-**Why no password storage?**
-Storing passwords securely requires hashing (bcrypt etc.) which isn't available in plain
-Firebase Realtime Database without a backend function. Omitted intentionally for project scope.
+**Why anonymous sign-in for guests?**
+A guest needs a real auth token, otherwise the security rules (`auth != null`) would lock them out. Anonymous accounts give guests that token without an email.
 
-**Why disable the signup button instead of showing errors on submit?**
-Prevents the empty-submit error flash. The user knows what's missing before clicking,
-rather than after. Login button stays always-enabled (fewer fields, less friction).
+**Why sign out right after signup?**
+This keeps the original UX: register, see "Account created!", then log in. It also confirms the password the user just chose.
+
+**Why validate the password length on the client?**
+Firebase rejects passwords shorter than 6 characters. Checking the same limit in the form shows the error at the field before a request is sent.
 
 **Why a custom email regex instead of `input.validity.valid`?**
-The browser's built-in email validation (`validity.valid`) accepts `user@domain` without
-a TLD. The regex `/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/` requires at least a two-character TLD.
+The browser accepts `user@domain` without a TLD. `isValidEmail()` in [form-validation.js](../src/utils/form-validation.js) requires one.
 
-**Why are `initials` computed via `getInitials(name)` instead of stored in Firebase?**
-Initials are derived from `name` on the fly wherever an avatar renders (contacts, task
-cards, dropdowns) via `getInitials()` in `helpers.js` — never persisted to the `users` or
-`contacts` collections. The one exception is the session object in `sessionStorage`, where
-`initials` is computed once at login/signup and cached there purely so the navbar avatar
-doesn't need to re-derive it on every page load.
+**Why are initials never stored?**
+They are derived from the name via `getInitials()` wherever an avatar renders. For the current user, `AuthService` derives them from the Firebase display name.

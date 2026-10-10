@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Join | Board</title>
+    <link rel="icon" type="image/svg+xml" href="../../../public/icons/favicon.svg">
+    <link rel="stylesheet" href="../../styles/variables.css" />
+    <link rel="stylesheet" href="../../styles/base.css" />
+    <link rel="stylesheet" href="../../styles/layout.css" />
+    <link rel="stylesheet" href="../../styles/navbar.css" />
+    <link rel="stylesheet" href="../../styles/buttons.css" />
+    <link rel="stylesheet" href="../../styles/inputs.css" />
+    <link rel="stylesheet" href="../../styles/dropdown.css" />
+    <link rel="stylesheet" href="../../styles/avatar.css" />
+    <link rel="stylesheet" href="../../styles/modal.css" />
+    <link rel="stylesheet" href="../add-task/add-task.css" />
+    <link rel="stylesheet" href="board.css" />
+</head>
+
+<body>
+    <div class="app-layout">
+        <aside id="app-sidebar" class="app-sidebar">
+            <img src="../../../public/icons/join_logo.svg" alt="Join" class="nav-logo">
+            <ul class="nav-list">
+                <li class="nav-item"><a href="../summary/summary.html" class="nav-link" data-page="summary.html"><img
+                            src="../../../public/icons/summary.svg" class="nav-icon" alt="">Summary</a></li>
+                <li class="nav-item"><a href="../add-task/add-task.html" class="nav-link" data-page="add-task.html"><img
+                            src="../../../public/icons/edit_square.svg" class="nav-icon" alt="">Add Task</a></li>
+                <li class="nav-item"><a href="../board/board.html" class="nav-link" data-page="board.html"><img
+                            src="../../../public/icons/board.svg" class="nav-icon" alt="">Board</a></li>
+                <li class="nav-item"><a href="../contacts/contacts.html" class="nav-link" data-page="contacts.html"><img
+                            src="../../../public/icons/contact.svg" class="nav-icon" alt="">Contacts</a></li>
+            </ul>
+            <div class="nav-legal">
+                <a href="../legal/privacy.html">Privacy Policy</a>
+                <a href="../legal/imprint.html">Legal Notice</a>
+            </div>
+        </aside>
+
+        <header id="app-header" class="app-header">
+            <img src="../../../public/icons/favicon.svg" alt="Join" class="header-logo-mobile">
+            <p class="header-tagline">Kanban Project Management Tool</p>
+            <div class="header-user">
+                <a href="../help/help.html" class="header-help"><img src="../../../public/icons/help.svg" alt="Help"></a>
+                <button type="button" class="header-avatar" id="headerAvatarBtn"></button>
+                <nav class="header-dropdown popup-menu dropdown" id="headerDropdown">
+                    <ul>
+                        <li class="header-help-mobile"><a href="../help/help.html">Help</a></li>
+                        <li><a href="../legal/imprint.html">Legal Notice</a></li>
+                        <li><a href="../legal/privacy.html">Privacy Policy</a></li>
+                        <li><button type="button" id="headerLogoutBtn">Logout</button></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main class="app-main">
+            <section class="board-section">
+                <div class="board-top">
+                    <h1>Board</h1>
+
+                    <div class="search-wrapper">
+                        <input type="text" id="boardSearch" placeholder="Find Task" />
+                        <div class="linediv"></div>
+                        <img src="../../../public/icons/search.svg" alt="search" class="search-icon" />
+                    </div>
+
+                    <button class="btn btn-primary add-task-trigger" data-status="todo">
+                        <span class="add-task-trigger-label">Add task</span> +
+                    </button>
+                </div>
+
+                <p class="board-search-message" id="boardSearchMessage" hidden>No matching tasks found.</p>
+
+                <div class="board-columns">
+                    <div class="board-column">
+                        <div class="column-head">
+                            <h3>To do</h3>
+                            <button class="plus-sign" data-status="todo">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg" aria-label="Add Task">
+                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#2A3647" stroke-width="2" />
+                                    <path d="M12 8V16" stroke="#2A3647" stroke-width="2" stroke-linecap="round" />
+                                    <path d="M16 12.0754L8 12.0754" stroke="#2A3647" stroke-width="2"
+                                        stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="drag-area" id="todo" ondrop="board.moveTo('todo')" ondragover="board.allowDrop(event)" ondragenter="board.highlightColumn('todo')" ondragleave="board.unhighlightColumn(event, 'todo')">
+                            <div class="empty-task">No tasks To do</div>
+                        </div>
+                    </div>
+
+                    <div class="board-column">
+                        <div class="column-head">
+                            <h3>In progress</h3>
+                            <button class="plus-sign" data-status="inProgress">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg" aria-label="Add Task">
+                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#2A3647" stroke-width="2" />
+                                    <path d="M12 8V16" stroke="#2A3647" stroke-width="2" stroke-linecap="round" />
+                                    <path d="M16 12.0754L8 12.0754" stroke="#2A3647" stroke-width="2"
+                                        stroke-linecap="round" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="drag-area" id="inProgress" ondrop="board.moveTo('inProgress')"
+                            ondragover="board.allowDrop(event)" ondragenter="board.highlightColumn('inProgress')" ondragleave="board.unhighlightColumn(event, 'inProgress')"></div>
+                    </div>
+
+                    <div class="board-column">
+                        <div class="column-head">
+                            <h3>Await feedback</h3>
+                            <button class="plus-sign" data-status="awaitFeedback">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg" aria-label="Add Task">
+                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#2A3647" stroke-width="2" />
+                                    <path d="M12 8V16" stroke="#2A3647" stroke-width="2" stroke-linecap="round" />
+                                    <path d="M16 12.0754L8 12.0754" stroke="#2A3647" stroke-width="2"
+                                        stroke-linecap="round" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="drag-area" id="awaitFeedback" ondrop="board.moveTo('awaitFeedback')"
+                            ondragover="board.allowDrop(event)" ondragenter="board.highlightColumn('awaitFeedback')" ondragleave="board.unhighlightColumn(event, 'awaitFeedback')"></div>
+                    </div>
+
+                    <div class="board-column">
+                        <div class="column-head">
+                            <h3>Done</h3>
+                        </div>
+                        <div class="drag-area" id="done" ondrop="board.moveTo('done')" ondragover="board.allowDrop(event)" ondragenter="board.highlightColumn('done')" ondragleave="board.unhighlightColumn(event, 'done')"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <template id="addTaskTemplate">
+        <div class="add-task-modal">
+            <button type="button" class="close-btn" aria-label="Close">✕</button>
+            <h1>Add Task</h1>
+
+            <form class="task-form" novalidate>
+                <div class="form-columns">
+
+                    <!-- ── Left Column ───────────────────────── -->
+                    <div class="form-col">
+
+                        <div class="input-field">
+                            <label class="field-label" for="task-title">
+                                Title <span class="required-star">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="text" id="task-title" placeholder="Enter a title" required>
+                            </div>
+                            <p class="input-error-msg" id="taskTitleError"></p>
+                        </div>
+
+                        <div class="input-field">
+                            <label class="field-label" for="task-description">Description</label>
+                            <div class="input-wrapper">
+                                <textarea id="task-description" placeholder="Enter a description" rows="4"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="input-field">
+                            <label class="field-label" for="task-due-date">
+                                Due date <span class="required-star">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="date" id="task-due-date" required>
+                                <span class="input-icon">
+                                    <img src="../../../public/icons/event.svg" alt="Calendar" width="18" height="20">
+                                </span>
+                            </div>
+                            <p class="input-error-msg" id="taskDueDateError"></p>
+                        </div>
+
+                    </div>
+
+                    <!-- ── Divider ─────────────────────────── -->
+                    <div class="form-divider" aria-hidden="true"></div>
+
+                    <!-- ── Right Column ──────────────────────── -->
+                    <div class="form-col">
+
+                        <div class="input-field">
+                            <p class="field-label">Priority</p>
+                            <div class="priority-buttons">
+
+                                <button type="button" class="priority-btn" data-priority="urgent">
+                                    Urgent
+                                    <span class="priority-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="16"
+                                            viewBox="0 0 21 16" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M2 7L10.5 1L19 7" />
+                                            <path d="M2 14L10.5 8L19 14" />
+                                        </svg>
+                                    </span>
+                                </button>
+
+                                <button type="button" class="priority-btn selected" data-priority="medium">
+                                    Medium
+                                    <span class="priority-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="16"
+                                            viewBox="0 0 21 16" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M2 5H19" />
+                                            <path d="M2 11H19" />
+                                        </svg>
+                                    </span>
+                                </button>
+
+                                <button type="button" class="priority-btn" data-priority="low">
+                                    Low
+                                    <span class="priority-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="16"
+                                            viewBox="0 0 21 16" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M2 1L10.5 7L19 1" />
+                                            <path d="M2 8L10.5 14L19 8" />
+                                        </svg>
+                                    </span>
+                                </button>
+
+                            </div>
+                        </div>
+
+                        <div class="input-field">
+                            <label class="field-label" for="assignedValue">Assigned to</label>
+                            <div class="input-wrapper">
+                                <div class="dropdown" id="assignedDropdown">
+                                    <div id="assignedTrigger" class="dropdown-trigger"
+                                        aria-haspopup="listbox" aria-expanded="false" aria-multiselectable="true">
+                                        <input type="text" id="assignedValue" class="dropdown-value"
+                                            placeholder="Select contacts to assign" autocomplete="off">
+                                        <img src="../../../public/icons/arrow_drop_down.svg" class="dropdown-arrow" alt=""
+                                            width="12" height="12">
+                                    </div>
+                                    <ul class="dropdown-panel" role="listbox" id="assignedList"></ul>
+                                </div>
+                            </div>
+                            <div class="assigned-chips" id="assignedChipsDisplay"></div>
+                        </div>
+
+                        <div class="input-field">
+                            <label class="field-label" for="categoryTrigger">
+                                Category <span class="required-star">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="hidden" id="task-category">
+                                <div class="dropdown" id="categoryDropdown">
+                                    <button type="button" id="categoryTrigger" class="dropdown-trigger"
+                                        aria-haspopup="listbox" aria-expanded="false">
+                                        <span class="dropdown-value dropdown-placeholder">Select task category</span>
+                                        <img src="../../../public/icons/arrow_drop_down.svg" class="dropdown-arrow" alt=""
+                                            width="12" height="12">
+                                    </button>
+                                    <ul class="dropdown-panel" role="listbox">
+                                        <li class="dropdown-option" data-value="userStory" role="option">User Story
+                                        </li>
+                                        <li class="dropdown-option" data-value="technicalTask" role="option">Technical
+                                            Task</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <p class="input-error-msg" id="taskCategoryError"></p>
+                        </div>
+
+                        <div class="input-field">
+                            <label class="field-label" for="task-subtask">Subtasks</label>
+                            <div class="input-wrapper subtask-input-wrapper">
+                                <input type="text" id="task-subtask" placeholder="Add new subtask" autocomplete="off">
+                                <div class="subtask-actions">
+                                    <button type="button" class="subtask-action-btn" id="subtaskClear"
+                                        aria-label="Clear subtask input">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M18 6 6 18" />
+                                            <path d="m6 6 12 12" />
+                                        </svg>
+                                    </button>
+                                    <span class="subtask-action-divider"></span>
+                                    <button type="button" class="subtask-action-btn" id="subtaskConfirm"
+                                        aria-label="Add subtask">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 6 9 17l-5-5" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <ul class="subtask-list" id="subtaskList"></ul>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ── Form Footer ───────────────────────── -->
+                <div class="form-footer">
+                    <p class="required-note">
+                        <span class="required-star">*</span> This field is required
+                    </p>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary clear-btn">
+                            Cancel
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M18 6 6 18" />
+                                <path d="m6 6 12 12" />
+                            </svg>
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Create Task
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M20 6 9 17l-5-5" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </template>
+
+    <script type="module" src="board.js"></script>
+</body>
+
+</html>

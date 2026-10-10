@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join | Contacts</title>
+    <link rel="icon" type="image/svg+xml" href="../../../public/icons/favicon.svg">
+    <link rel="stylesheet" href="../../styles/variables.css">
+    <link rel="stylesheet" href="../../styles/base.css">
+    <link rel="stylesheet" href="../../styles/layout.css">
+    <link rel="stylesheet" href="../../styles/navbar.css">
+    <link rel="stylesheet" href="../../styles/buttons.css">
+    <link rel="stylesheet" href="../../styles/dropdown.css">
+    <link rel="stylesheet" href="../../styles/avatar.css">
+    <link rel="stylesheet" href="../../styles/inputs.css">
+    <link rel="stylesheet" href="../../styles/modal.css">
+    <link rel="stylesheet" href="contacts.css">
+</head>
+<body>
+    <div class="app-layout">
+        <aside id="app-sidebar" class="app-sidebar">
+            <img src="../../../public/icons/join_logo.svg" alt="Join" class="nav-logo">
+            <ul class="nav-list">
+                <li class="nav-item"><a href="../summary/summary.html" class="nav-link" data-page="summary.html"><img src="../../../public/icons/summary.svg" class="nav-icon" alt="">Summary</a></li>
+                <li class="nav-item"><a href="../add-task/add-task.html" class="nav-link" data-page="add-task.html"><img src="../../../public/icons/edit_square.svg" class="nav-icon" alt="">Add Task</a></li>
+                <li class="nav-item"><a href="../board/board.html" class="nav-link" data-page="board.html"><img src="../../../public/icons/board.svg" class="nav-icon" alt="">Board</a></li>
+                <li class="nav-item"><a href="../contacts/contacts.html" class="nav-link" data-page="contacts.html"><img src="../../../public/icons/contact.svg" class="nav-icon" alt="">Contacts</a></li>
+            </ul>
+            <div class="nav-legal">
+                <a href="../legal/privacy.html">Privacy Policy</a>
+                <a href="../legal/imprint.html">Legal Notice</a>
+            </div>
+        </aside>
+        <header id="app-header" class="app-header">
+            <img src="../../../public/icons/favicon.svg" alt="Join" class="header-logo-mobile">
+            <p class="header-tagline">Kanban Project Management Tool</p>
+            <div class="header-user">
+                <a href="../help/help.html" class="header-help"><img src="../../../public/icons/help.svg" alt="Help"></a>
+                <button type="button" class="header-avatar" id="headerAvatarBtn"></button>
+                <nav class="header-dropdown popup-menu dropdown" id="headerDropdown">
+                    <ul>
+                        <li class="header-help-mobile"><a href="../help/help.html">Help</a></li>
+                        <li><a href="../legal/imprint.html">Legal Notice</a></li>
+                        <li><a href="../legal/privacy.html">Privacy Policy</a></li>
+                        <li><button type="button" id="headerLogoutBtn">Logout</button></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main class="app-main">
+            <div class="contacts-main">
+                <section id="contactsList" class="contacts-list">
+                    <div class="desktop-add-contact-wrapper">
+                        <button class="btn btn-primary desktop-add-contact-btn">
+                            Add new contact
+                            <img src="../../../public/icons/add_contact.svg" alt="">
+                        </button>
+                    </div>
+
+                    <div id="contactsContainer" class="contacts-scroll-container"></div>
+
+                    <button class="add-contact-btn" aria-label="Add contact">
+                        <img src="../../../public/icons/add_contact.svg" alt="">
+                    </button>
+                </section>
+
+                <section id="contactDetails" class="contact-details d-none">
+                    <div class="desktop-contact-placeholder contact-panel-heading">
+                        <h1>Contacts</h1>
+                        <hr class="title-hr">
+                        <p class="subline">Better with a team</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <template id="contactCardTemplate">
+        <div class="contact-card">
+            <div class="contact-avatar avatar-circle"></div>
+            <div class="contact-card-info">
+                <h4 class="contact-card-name"></h4>
+                <p class="contact-card-email"></p>
+            </div>
+        </div>
+    </template>
+
+    <template id="contactDetailsTemplate">
+        <div class="contact-details-header contact-panel-heading">
+            <div class="contact-details-title-row">
+                <h1>Contacts</h1>
+                <button class="back-to-contacts-btn">←</button>
+            </div>
+            <hr class="title-hr">
+            <p class="subline">Better with a team</p>
+        </div>
+        <div id="contactDetailsCard" class="contact-details-card d-none">
+            <div class="contact-details-profile">
+                <div class="contact-details-avatar avatar-circle"></div>
+                <div class="contact-details-name-actions">
+                    <h2 class="contact-details-name"></h2>
+                    <div class="desktop-contact-actions">
+                        <button class="contact-details-edit-btn"><img src="../../../public/icons/menu_contact_pencil.svg" alt="">Edit</button>
+                        <button class="contact-details-delete-btn"><img src="../../../public/icons/menu_contact_trash.svg" alt="">Delete</button>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-information-title">Contact Information</div>
+            <div class="contact-information">
+                <h4>Email</h4>
+                <a class="contact-details-email"></a>
+                <h4>Phone</h4>
+                <p class="contact-details-phone"></p>
+                <button id="menuContactBtn" class="menu_contact_btn" aria-label="Contact menu">
+                    <img src="../../../public/icons/menu_contact.svg" alt="">
+                </button>
+                <div id="contactMenuBackdrop" class="contact_menu_backdrop"></div>
+                <div id="contactMenu" class="contact_menu">
+                    <button class="contact_menu_option contact-details-edit-btn"><img src="../../../public/icons/menu_contact_pencil.svg" alt="">Edit</button>
+                    <button class="contact_menu_option contact-details-delete-btn"><img src="../../../public/icons/menu_contact_trash.svg" alt="">Delete</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="contactDetailsPlaceholderTemplate">
+        <div class="desktop-contact-placeholder contact-panel-heading">
+            <h1>Contacts</h1>
+            <hr class="title-hr">
+            <p class="subline">Better with a team</p>
+        </div>
+    </template>
+
+    <template id="addContactOverlayTemplate">
+        <section class="contact-overlay contact-add-overlay">
+            <button type="button" class="close-btn contact-add-close-btn-mobile" aria-label="Close">✕</button>
+            <div class="contact-overlay-brand">
+                <img src="../../../public/icons/join_logo.svg" alt="Join">
+                <h2>Add contact</h2>
+                <p>Tasks are better with a team!</p>
+                <div></div>
+            </div>
+            <form class="contact-edit-form contact-add-form" novalidate>
+                <div class="contact-add-avatar avatar-circle" aria-hidden="true">
+                    <img src="../../../public/icons/person.svg" alt="">
+                </div>
+                <div class="contact-add-fields">
+                    <button type="button" class="close-btn contact-add-close-btn-desktop" aria-label="Close">✕</button>
+                    <div class="input-field">
+                        <label class="input-wrapper">
+                            <input id="addContactName" type="text" placeholder="Name" autocomplete="name" required>
+                            <img src="../../../public/icons/person.svg" alt="" class="input-icon">
+                        </label>
+                        <p class="input-error-msg" id="addContactNameError"></p>
+                    </div>
+                    <div class="input-field">
+                        <label class="input-wrapper">
+                            <input id="addContactEmail" type="email" placeholder="Email" autocomplete="email" required>
+                            <img src="../../../public/icons/mail.svg" alt="" class="input-icon">
+                        </label>
+                        <p class="input-error-msg" id="addContactEmailError"></p>
+                    </div>
+                    <div class="input-field">
+                        <label class="input-wrapper">
+                            <input id="addContactPhone" type="tel" placeholder="Phone" autocomplete="tel" required>
+                            <img src="../../../public/icons/call.svg" alt="" class="input-icon">
+                        </label>
+                        <p class="input-error-msg" id="addContactPhoneError"></p>
+                    </div>
+                    <div class="contact-overlay-actions contact-add-actions">
+                        <button type="button" class="btn btn-secondary overlay-cancel-btn">Cancel &times;</button>
+                        <button type="submit" class="btn btn-primary">Create contact &#10003;</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </template>
+
+    <template id="editContactOverlayTemplate">
+        <section class="contact-overlay contact-edit-overlay">
+            <button type="button" class="close-btn contact-edit-close-btn-mobile" aria-label="Close">✕</button>
+            <div class="contact-overlay-brand">
+                <img src="../../../public/icons/join_logo.svg" alt="Join">
+                <h2>Edit contact</h2>
+                <div></div>
+            </div>
+            <form class="contact-edit-form" novalidate>
+                <div class="contact-edit-avatar avatar-circle"></div>
+                <div class="contact-edit-fields">
+                    <button type="button" class="close-btn contact-edit-close-btn-desktop" aria-label="Close">✕</button>
+                    <div class="input-field">
+                        <label class="input-wrapper">
+                            <input id="editContactName" class="contact-edit-name-input" type="text" placeholder="Name" autocomplete="name" required>
+                            <img src="../../../public/icons/person.svg" alt="" class="input-icon">
+                        </label>
+                        <p class="input-error-msg" id="editContactNameError"></p>
+                    </div>
+                    <div class="input-field">
+                        <label class="input-wrapper">
+                            <input id="editContactEmail" class="contact-edit-email-input" type="email" placeholder="Email" autocomplete="email" required>
+                            <img src="../../../public/icons/mail.svg" alt="" class="input-icon">
+                        </label>
+                        <p class="input-error-msg" id="editContactEmailError"></p>
+                    </div>
+                    <div class="input-field">
+                        <label class="input-wrapper">
+                            <input id="editContactPhone" class="contact-edit-phone-input" type="tel" placeholder="Phone" autocomplete="tel" required>
+                            <img src="../../../public/icons/call.svg" alt="" class="input-icon">
+                        </label>
+                        <p class="input-error-msg" id="editContactPhoneError"></p>
+                    </div>
+                    <div class="contact-overlay-actions">
+                        <button type="button" class="btn btn-secondary contact-edit-delete-btn">Delete</button>
+                        <button type="submit" class="btn btn-primary">Save &#10003;</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </template>
+
+    <template id="deleteContactOverlayTemplate">
+        <section class="contact-overlay contact-delete-overlay">
+            <button type="button" class="close-btn" aria-label="Close">✕</button>
+            <div class="contact-overlay-brand">
+                <img src="../../../public/icons/join_logo.svg" alt="Join">
+                <h2>Delete contact</h2>
+                <div></div>
+            </div>
+            <div class="contact-delete-content">
+                <p class="contact-delete-message"></p>
+                <div class="contact-overlay-actions">
+                    <button type="button" class="btn btn-secondary overlay-cancel-btn">Cancel</button>
+                    <button type="button" class="btn btn-primary contact-delete-confirm-btn">Delete</button>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <script type="module" src="contacts.js"></script>
+</body>
+</html>

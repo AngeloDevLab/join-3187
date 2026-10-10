@@ -1,22 +1,4 @@
 {
-    "users": {
-        "-OwJpCu33NwCD7HIktwG": {
-            "email": "apietsch94@gmail.com",
-            "name": "Angelo Pietsch"
-        },
-        "-OwJxwUZw1570Bs8h1wn": {
-            "email": "mahadyussufnur@gmail.com",
-            "name": "Mahad Yussuf Nur"
-        },
-        "-OwKDZyu69h1J9at4L9s": {
-            "email": "louis.juchem@web.de",
-            "name": "Louis Juchem"
-        },
-        "-OwTWyye2-1VO7gf97kQ": {
-            "email": "christiantatek.m@gmail.com",
-            "name": "Christian Mulugeta"
-        }
-    },
     "tasks": {
         "task1": {
             "title": "Set up project structure",
@@ -27,8 +9,8 @@
             "assignedTo": [
                 "contact1"
             ],
-            "dueDate": "2024-01-15",
-            "createdAt": "2024-01-10",
+            "dueDate": "2026-10-12",
+            "createdAt": "2026-10-01",
             "subtasks": {
                 "subtask1": {
                     "title": "Create index.html",
@@ -50,8 +32,8 @@
                 "contact1",
                 "contact2"
             ],
-            "dueDate": "2024-01-20",
-            "createdAt": "2024-01-10",
+            "dueDate": "2026-11-06",
+            "createdAt": "2026-10-05",
             "subtasks": {
                 "subtask1": {
                     "title": "Login form",
@@ -76,8 +58,8 @@
             "assignedTo": [
                 "contact2"
             ],
-            "dueDate": "2024-01-28",
-            "createdAt": "2024-01-10",
+            "dueDate": "2026-11-20",
+            "createdAt": "2026-10-08",
             "subtasks": {
                 "subtask1": {
                     "title": "Column layout",
@@ -102,8 +84,8 @@
             "assignedTo": [
                 "contact1"
             ],
-            "dueDate": "2024-01-25",
-            "createdAt": "2024-01-10",
+            "dueDate": "2026-11-13",
+            "createdAt": "2026-10-08",
             "subtasks": {
                 "subtask1": {
                     "title": "Contact overview",
@@ -125,8 +107,8 @@
                 "contact2",
                 "contact3"
             ],
-            "dueDate": "2024-02-01",
-            "createdAt": "2024-01-12",
+            "dueDate": "2026-10-20",
+            "createdAt": "2026-10-02",
             "subtasks": {
                 "subtask1": {
                     "title": "Form fields and validation",
