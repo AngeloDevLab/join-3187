@@ -11,11 +11,13 @@
     --color-primary-dark: #091931;
     --color-accent: #29abe2;
     --color-accent-rgb: 41, 171, 226;
+    --color-accent-strong: #177da8;
 
     /* Backgrounds */
     --color-bg: #f6f7f8;
     --color-white: #ffffff;
     --color-empty-task-bg: #e7e7e7;
+    --color-warning-bg: rgba(255, 210, 210, 0.52);
 
     /* Text */
     --color-text: #000000;
@@ -63,6 +65,9 @@
     --fs-title-lg: clamp(32px, 42.82px - 0.75vw, 40px); /* fluid(40px, 32px) */
     --fs-body-lg: clamp(16px, 13.54px + 0.66vw, 23px); /* fluid(16px, 23px) */
     --fs-label-lg: clamp(18px, 16.24px + 0.47vw, 23px); /* fluid(18px, 23px) */
+    --fs-display: clamp(40px, 31.55px + 2.25vw, 64px); /* fluid(40px, 64px) */
+    --fs-lead: clamp(22px, 19.89px + 0.56vw, 28px); /* fluid(22px, 28px) */
+    --fs-body: clamp(16px, 14.94px + 0.28vw, 19px); /* fluid(16px, 19px) */
     --space-card-y: clamp(56px, 66.82px - 0.75vw, 64px); /* fluid(64px, 56px) */
     --space-card-x: clamp(16px, 5.26vw - 3.72px, 72px); /* fluid(16px, 72px) */
 

@@ -32,6 +32,9 @@ class AuthPage {
         PasswordToggle.initAll();
         document.querySelectorAll('[data-show-auth]').forEach((trigger) =>
             trigger.addEventListener('click', () => this.#show(trigger.dataset.showAuth)));
+        document.getElementById('createRequestBtn').addEventListener('click', () => {
+            window.location.href = pageUrl('request');
+        });
         new LoginForm((message) => this.#enterApp(message));
         new SignupForm(() => this.#returnToLogin('Account created!'));
     }

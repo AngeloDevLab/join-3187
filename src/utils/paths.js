@@ -6,6 +6,7 @@ const PAGE_FOLDER = {
     help: 'help',
     imprint: 'legal',
     privacy: 'legal',
+    request: 'request',
 };
 
 
