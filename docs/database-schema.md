@@ -7,13 +7,18 @@ tasks/
   {taskId}/                     # Firebase push id
     title: ""
     description: ""             # may be empty
-    category: "userStory"       # userStory | technicalTask
+    category: "userStory"       # userStory | technicalTask | bug
     priority: "medium"          # urgent | medium | low
-    column: "todo"              # todo | inProgress | awaitFeedback | done
+    column: "triage"            # triage | todo | inProgress | awaitFeedback | done
     order: 1791637043949        # sort position within the column (see below)
     assignedTo: [contactId, …]  # optional — omitted when nobody is assigned
     dueDate: "2026-11-30"       # YYYY-MM-DD (date input format)
     createdAt: "2026-10-10"     # YYYY-MM-DD, set once on creation
+    aiGenerated: true           # optional — set by n8n on tickets created from emails
+    creator/                    # who created the task (missing on tasks from before 2026-10)
+      name: ""
+      email: ""                 # omitted for guests
+      type: "internal"          # internal (team member, set by TaskStore.create) | external (stakeholder, set by n8n)
     subtasks/                   # optional — omitted when there are none
       subtask1/
         title: ""
@@ -35,6 +40,7 @@ There is no `users/` collection: accounts live in **Firebase Authentication**, w
 | `category` | The database key. Labels ("User Story") and badge classes come from `CATEGORY_META` in [task-view.js](../src/utils/task-view.js); the task form's options use the keys as `data-value` |
 | `order` | New tasks get `Date.now()` and land at the end of their column. Drag & drop places a task between two neighbours with the midpoint of their orders (`computeOrderBetween()` in [helpers.js](../src/utils/helpers.js)), so no other task has to be rewritten |
 | `assignedTo` | Contact ids. Ids of deleted contacts are removed together with the contact (see below); the UI also skips unknown ids |
+| `creator` | Stored by value, not as a contact id, so it survives deleting the contact and also works for stakeholders who are no contact. The task detail finds the member's contact by email for the "Profile" link; external creators get a mailto "E-mail" link |
 | `subtasks` | Keyed `subtask1…n` in list order; the keys are regenerated whenever the task is saved from the form |
 | empty values | The Realtime Database does not store empty arrays or objects, so `assignedTo: []` or `subtasks: {}` simply disappear. Readers treat a missing field as empty |
 
@@ -55,6 +61,7 @@ There is no `users/` collection: accounts live in **Firebase Authentication**, w
 
 | Key | Label |
 |---|---|
+| `triage` | Triage — backlog; every new task lands here (Add Task and n8n) |
 | `todo` | To Do |
 | `inProgress` | In Progress |
 | `awaitFeedback` | Awaiting Feedback |

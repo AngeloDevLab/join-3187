@@ -246,7 +246,7 @@
     .nav-list {
         flex-direction: column;
         justify-content: flex-start;
-        gap: 20px;
+        gap: var(--space-sm);
         align-items: normal;
     }
 
@@ -268,10 +268,10 @@
     .nav-legal {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: var(--space-xs);
         width: 100%;
         margin-top: auto;
-        padding: var(--space-md) 0;
+        padding-bottom: 4rem;
     }
 
       .nav-legal-mobile {
@@ -282,9 +282,10 @@
        .active background below can span edge-to-edge like .nav-link's,
        instead of hugging just the text. */
     .nav-legal a {
-        display: block;
+        display: flex;
+        justify-content: center;
         width: 100%;
-        padding: var(--space-sm) 50px;
+        padding: var(--space-2xs);
         color: var(--color-nav-item);
         font-size: 16px;
         text-decoration: none;

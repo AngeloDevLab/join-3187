@@ -13,7 +13,7 @@ const REDIRECT_DELAY_MS = 1200;
  * @returns {Promise<void>}
  */
 async function createTask(values) {
-    await taskStore.create(values, 'todo');
+    await taskStore.create(values, 'triage');
     setTimeout(() => { window.location.href = pageUrl('board'); }, REDIRECT_DELAY_MS);
 }
 

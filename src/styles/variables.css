@@ -12,17 +12,23 @@
     --color-accent: #29abe2;
     --color-accent-rgb: 41, 171, 226;
     --color-accent-strong: #177da8;
+    --color-ai: #8933fc;
+    --gradient-ai: linear-gradient(to bottom, var(--color-ai), var(--color-accent));
+    --gradient-ai-text: linear-gradient(to right, #9327ff, #2ea1dc); /* same stops as wand_stars.svg */
 
     /* Backgrounds */
     --color-bg: #f6f7f8;
     --color-white: #ffffff;
     --color-empty-task-bg: #e7e7e7;
     --color-warning-bg: rgba(255, 210, 210, 0.52);
+    --color-member-bg: #9eebbc;
+    --color-external-bg: #ebfc88;
 
     /* Text */
     --color-text: #000000;
     --color-text-muted: #a8a8a8;
     --color-column-head: #42526e;
+    --color-tag-text: #0b3681;
 
     /* Navigation */
     --color-nav-item: #cdcdcd;
@@ -44,6 +50,7 @@
     /* Task Categories */
     --category-user-story: #0038ff;
     --category-technical-task: #1fd7c1;
+    --category-bug: #7b3acf;
 
     /* Progress */
     --color-progress: #4589ff;
@@ -68,6 +75,8 @@
     --fs-display: clamp(40px, 31.55px + 2.25vw, 64px); /* fluid(40px, 64px) */
     --fs-lead: clamp(22px, 19.89px + 0.56vw, 28px); /* fluid(22px, 28px) */
     --fs-body: clamp(16px, 14.94px + 0.28vw, 19px); /* fluid(16px, 19px) */
+    --fs-body-md: clamp(16px, 14.59px + 0.38vw, 20px); /* fluid(16px, 20px) */
+    --fs-body-sm: clamp(14px, 13.3px + 0.19vw, 16px); /* fluid(14px, 16px) */
     --fs-title: clamp(24px, 15.9px + 2.16vw, 47px); /* fluid(24px, 47px) */
     --space-card-y: clamp(56px, 66.82px - 0.75vw, 64px); /* fluid(64px, 56px) */
     --space-card-x: clamp(16px, 5.26vw - 3.72px, 72px); /* fluid(16px, 72px) */
@@ -99,6 +108,7 @@
     --auth-content-inset: calc(max(calc(50% - 720px), 0px) + var(--auth-logo-offset));
 
     /* Border Radius */
+    --border-radius-xs: 4px;
     --border-radius-sm: 8px;
     --border-radius-md: 10px;
     /* pixel-named since the scale is already non-monotonic (xl < lg) */

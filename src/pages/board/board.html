@@ -67,7 +67,7 @@
                         <img src="../../../public/icons/search.svg" alt="search" class="search-icon" />
                     </div>
 
-                    <button class="btn btn-primary add-task-trigger" data-status="todo">
+                    <button class="btn btn-primary add-task-trigger" data-status="triage">
                         <span class="add-task-trigger-label">Add task</span> +
                     </button>
                 </div>
@@ -77,16 +77,14 @@
                 <div class="board-columns">
                     <div class="board-column">
                         <div class="column-head">
+                            <h3>Triage</h3>
+                        </div>
+                        <div class="drag-area" id="triage" ondrop="board.moveTo('triage')" ondragover="board.allowDrop(event)" ondragenter="board.highlightColumn('triage')" ondragleave="board.unhighlightColumn(event, 'triage')"></div>
+                    </div>
+
+                    <div class="board-column">
+                        <div class="column-head">
                             <h3>To do</h3>
-                            <button class="plus-sign" data-status="todo">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg" aria-label="Add Task">
-                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#2A3647" stroke-width="2" />
-                                    <path d="M12 8V16" stroke="#2A3647" stroke-width="2" stroke-linecap="round" />
-                                    <path d="M16 12.0754L8 12.0754" stroke="#2A3647" stroke-width="2"
-                                        stroke-linecap="round"/>
-                                </svg>
-                            </button>
                         </div>
                         <div class="drag-area" id="todo" ondrop="board.moveTo('todo')" ondragover="board.allowDrop(event)" ondragenter="board.highlightColumn('todo')" ondragleave="board.unhighlightColumn(event, 'todo')">
                             <div class="empty-task">No tasks To do</div>
@@ -96,15 +94,6 @@
                     <div class="board-column">
                         <div class="column-head">
                             <h3>In progress</h3>
-                            <button class="plus-sign" data-status="inProgress">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg" aria-label="Add Task">
-                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#2A3647" stroke-width="2" />
-                                    <path d="M12 8V16" stroke="#2A3647" stroke-width="2" stroke-linecap="round" />
-                                    <path d="M16 12.0754L8 12.0754" stroke="#2A3647" stroke-width="2"
-                                        stroke-linecap="round" />
-                                </svg>
-                            </button>
                         </div>
                         <div class="drag-area" id="inProgress" ondrop="board.moveTo('inProgress')"
                             ondragover="board.allowDrop(event)" ondragenter="board.highlightColumn('inProgress')" ondragleave="board.unhighlightColumn(event, 'inProgress')"></div>
@@ -113,15 +102,6 @@
                     <div class="board-column">
                         <div class="column-head">
                             <h3>Await feedback</h3>
-                            <button class="plus-sign" data-status="awaitFeedback">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg" aria-label="Add Task">
-                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#2A3647" stroke-width="2" />
-                                    <path d="M12 8V16" stroke="#2A3647" stroke-width="2" stroke-linecap="round" />
-                                    <path d="M16 12.0754L8 12.0754" stroke="#2A3647" stroke-width="2"
-                                        stroke-linecap="round" />
-                                </svg>
-                            </button>
                         </div>
                         <div class="drag-area" id="awaitFeedback" ondrop="board.moveTo('awaitFeedback')"
                             ondragover="board.allowDrop(event)" ondragenter="board.highlightColumn('awaitFeedback')" ondragleave="board.unhighlightColumn(event, 'awaitFeedback')"></div>
@@ -265,6 +245,7 @@
                                         </li>
                                         <li class="dropdown-option" data-value="technicalTask" role="option">Technical
                                             Task</li>
+                                        <li class="dropdown-option" data-value="bug" role="option">Bug Report</li>
                                     </ul>
                                 </div>
                             </div>

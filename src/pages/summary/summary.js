@@ -76,9 +76,10 @@ function getGreetingDate() {
 
 /**
  * Counts tasks per board column and priority from the raw tasks object. The
- * upcoming deadline only considers urgent tasks that are not done yet.
- * @param {Object<string, {column: string, priority: string, dueDate: string}>} tasks
- * @returns {{ todo: number, done: number, inProgress: number, awaitingFeedback: number, total: number, urgent: number, nextUrgentDue: string|null }}
+ * upcoming deadline only considers urgent tasks that are not done yet; email
+ * requests are the tasks an external creator sent in (via n8n).
+ * @param {Object<string, {column: string, priority: string, dueDate: string, creator?: {type: string}}>} tasks
+ * @returns {{ todo: number, done: number, inProgress: number, awaitingFeedback: number, total: number, urgent: number, nextUrgentDue: string|null, emailRequests: number }}
  */
 function computeSummaryCounts(tasks) {
     const list = Object.values(tasks ?? {});
@@ -86,13 +87,10 @@ function computeSummaryCounts(tasks) {
     const urgent = list.filter((t) => t.priority === 'urgent');
     const openDueDates = urgent.filter((t) => t.column !== 'done' && t.dueDate).map((t) => t.dueDate).sort();
     return {
-        todo: byColumn('todo'),
-        done: byColumn('done'),
-        inProgress: byColumn('inProgress'),
-        awaitingFeedback: byColumn('awaitFeedback'),
-        total: list.length,
-        urgent: urgent.length,
-        nextUrgentDue: openDueDates[0] ?? null,
+        todo: byColumn('todo'), done: byColumn('done'),
+        inProgress: byColumn('inProgress'), awaitingFeedback: byColumn('awaitFeedback'),
+        total: list.length, urgent: urgent.length, nextUrgentDue: openDueDates[0] ?? null,
+        emailRequests: list.filter((t) => t.creator?.type === 'external').length,
     };
 }
 
@@ -121,6 +119,7 @@ function renderSummaryCounts(counts) {
     document.getElementById('summaryBoardTotal').textContent = counts.total;
     document.getElementById('summaryInProgress').textContent = counts.inProgress;
     document.getElementById('summaryAwaitFeedback').textContent = counts.awaitingFeedback;
+    document.getElementById('summaryEmailRequests').textContent = counts.emailRequests;
     document.getElementById('summaryUrgentDate').textContent =
         counts.nextUrgentDue ? formatDueDate(counts.nextUrgentDue) : '-';
 }

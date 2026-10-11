@@ -20,6 +20,11 @@
                     "title": "Create style.css",
                     "done": true
                 }
+            },
+            "creator": {
+                "name": "Anton Mayer",
+                "email": "anton@gmail.com",
+                "type": "internal"
             }
         },
         "task2": {
@@ -47,6 +52,11 @@
                     "title": "Form validation",
                     "done": false
                 }
+            },
+            "creator": {
+                "name": "Anton Mayer",
+                "email": "anton@gmail.com",
+                "type": "internal"
             }
         },
         "task3": {
@@ -73,6 +83,11 @@
                     "title": "Drag and drop",
                     "done": false
                 }
+            },
+            "creator": {
+                "name": "Anton Mayer",
+                "email": "anton@gmail.com",
+                "type": "internal"
             }
         },
         "task4": {
@@ -95,6 +110,11 @@
                     "title": "Add contact form",
                     "done": false
                 }
+            },
+            "creator": {
+                "name": "Anton Mayer",
+                "email": "anton@gmail.com",
+                "type": "internal"
             }
         },
         "task5": {
@@ -118,6 +138,11 @@
                     "title": "Assigned-to and category dropdowns",
                     "done": true
                 }
+            },
+            "creator": {
+                "name": "Anton Mayer",
+                "email": "anton@gmail.com",
+                "type": "internal"
             }
         }
     },

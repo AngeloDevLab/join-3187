@@ -15,6 +15,7 @@ import { toTaskView } from '../../utils/task-view.js';
 
 /** Board columns in display order, with the message shown when a column is empty. */
 const COLUMNS = {
+    triage: 'No tasks in triage',
     todo: 'No tasks to do',
     inProgress: 'No tasks in progress',
     awaitFeedback: 'No tasks awaiting feedback',
@@ -36,7 +37,7 @@ class BoardPage {
     #draggedId = null;
 
 
-    /** Subscribes to the stores and wires search, "+" buttons and the columns. */
+    /** Subscribes to the stores and wires search, the "Add task" button and the columns. */
     init() {
         taskStore.subscribe(() => this.#refresh());
         contactStore.subscribe(() => this.#refresh());
