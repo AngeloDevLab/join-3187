@@ -55,15 +55,28 @@
     --space-lg: 32px;
     --space-xl: 64px;
 
+    /* Fluid values — fluid(mobile, desktop) scales linearly from the 375px to
+       the 1440px viewport and is capped outside:
+       slope = (desktop - mobile) / 1065, intercept = mobile - slope * 375,
+       clamp(min, intercept + slope * 100vw, max), rounded to 2 decimals.
+       Same formula as the Sass fluid() mixin of the Poll App. */
+    --fs-title-lg: clamp(32px, 42.82px - 0.75vw, 40px); /* fluid(40px, 32px) */
+    --fs-body-lg: clamp(16px, 13.54px + 0.66vw, 23px); /* fluid(16px, 23px) */
+    --fs-label-lg: clamp(18px, 16.24px + 0.47vw, 23px); /* fluid(18px, 23px) */
+    --space-card-y: clamp(56px, 66.82px - 0.75vw, 64px); /* fluid(64px, 56px) */
+    --space-card-x: clamp(16px, 5.26vw - 3.72px, 72px); /* fluid(16px, 72px) */
+
     /* Shadow */
     --shadow-default: 0 4px 8px rgba(0, 0, 0, 0.1);
     --shadow-btn-hover: 0 4px 4px rgba(0, 0, 0, 0.3);
     --shadow-header: 0 4px 4px rgba(0, 0, 0, 0.1);
     --shadow-card: 0 0 10px 3px rgba(0, 0, 0, 0.04);
+    --shadow-card-strong: 0 0 10px 3px rgba(0, 0, 0, 0.08);
     --shadow-task-card: 0 0 10px rgba(0, 0, 0, 0.08);
     --shadow-fab: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
 
     /* Typography */
+    --font-open-sans: 'Open Sans', sans-serif;
     --font-weight-regular: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
