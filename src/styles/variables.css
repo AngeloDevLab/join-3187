@@ -68,8 +68,10 @@
     --fs-display: clamp(40px, 31.55px + 2.25vw, 64px); /* fluid(40px, 64px) */
     --fs-lead: clamp(22px, 19.89px + 0.56vw, 28px); /* fluid(22px, 28px) */
     --fs-body: clamp(16px, 14.94px + 0.28vw, 19px); /* fluid(16px, 19px) */
+    --fs-title: clamp(24px, 15.9px + 2.16vw, 47px); /* fluid(24px, 47px) */
     --space-card-y: clamp(56px, 66.82px - 0.75vw, 64px); /* fluid(64px, 56px) */
     --space-card-x: clamp(16px, 5.26vw - 3.72px, 72px); /* fluid(16px, 72px) */
+    --space-form-card-x: clamp(16px, 6.76vw - 9.35px, 88px); /* fluid(16px, 88px) */
 
     /* Shadow */
     --shadow-default: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -77,6 +79,7 @@
     --shadow-header: 0 4px 4px rgba(0, 0, 0, 0.1);
     --shadow-card: 0 0 10px 3px rgba(0, 0, 0, 0.04);
     --shadow-card-strong: 0 0 10px 3px rgba(0, 0, 0, 0.08);
+    --shadow-card-lg: 0 0 14px 3px rgba(0, 0, 0, 0.14);
     --shadow-task-card: 0 0 10px rgba(0, 0, 0, 0.08);
     --shadow-fab: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
 

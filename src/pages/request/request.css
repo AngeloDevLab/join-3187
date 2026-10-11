@@ -157,6 +157,79 @@
     color: var(--color-primary);
 }
 
+/* ── Request Form ──────────────────────────────────────── */
+
+.request-card {
+    max-width: 598px;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-lg) var(--space-form-card-x);
+    border-radius: var(--border-radius-lg);
+    background: var(--color-white);
+    box-shadow: var(--shadow-card-lg);
+}
+
+.request-card-head {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+/* sits on the left and is centered on the title text, not on its padding
+   with the line (top/bottom + fixed height + auto margins center it) */
+.request-card-head .close-btn {
+    position: absolute;
+    top: 0;
+    bottom: var(--space-2xs); /* = the title's padding-bottom */
+    left: 0;
+    margin-block: auto;
+}
+
+.request-card-title {
+    position: relative;
+    padding-bottom: var(--space-2xs);
+    font-size: var(--fs-title);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+}
+
+/* same accent line as the auth card titles */
+.request-card-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(4rem, 12vw, 8rem);
+    height: 3px;
+    background: var(--color-accent);
+    border-radius: var(--border-radius-sm);
+}
+
+/* No gap: the error line reserved under each field (4px + one 16px line,
+   ~23px) is the spacing, so nothing shifts when an error appears. */
+.request-form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* the fields fill the card, so the button's right edge lines up with them */
+.request-form .input-field {
+    max-width: none;
+}
+
+.request-send-btn {
+    align-self: flex-end;
+    padding: var(--space-sm) var(--space-md);
+}
+
+/* after .request-info, so it wins over its display: grid */
+.is-hidden {
+    display: none;
+}
+
 /* ── Breakpoints ───────────────────────────────────────── */
 
 @media (min-width: 1024px) {
@@ -216,6 +289,12 @@
     .request-text {
         gap: var(--space-sm);
         margin-top: 40px;
+    }
+
+    /* 32px from the card edge, out in the card's side padding instead of
+       aligned with the fields */
+    .request-card-head .close-btn {
+        left: calc(var(--space-lg) - var(--space-form-card-x));
     }
 
     .request-btn {

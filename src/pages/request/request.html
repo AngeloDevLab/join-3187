@@ -10,7 +10,11 @@
     <link rel="stylesheet" href="../../styles/variables.css">
     <link rel="stylesheet" href="../../styles/base.css">
     <link rel="stylesheet" href="../../styles/buttons.css">
+    <link rel="stylesheet" href="../../styles/inputs.css">
+    <link rel="stylesheet" href="../../styles/modal.css">
     <link rel="stylesheet" href="request.css">
+
+    <script type="module" src="request.js"></script>
 </head>
 
 <body>
@@ -57,6 +61,49 @@
                 </div>
 
                 <button type="button" class="btn btn-primary request-btn" id="openRequestFormBtn">Create request</button>
+            </section>
+
+            <section class="request-card is-hidden" id="requestFormView">
+                <div class="request-card-head">
+                    <button type="button" class="close-btn" id="backToInfoBtn" aria-label="Back to request info">
+                        <img src="../../../public/icons/arrow-left.svg" alt="">
+                    </button>
+                    <h1 class="request-card-title">Your Request</h1>
+                </div>
+
+                <form class="request-form" id="requestForm" novalidate>
+                    <div class="input-field">
+                        <div class="input-wrapper">
+                            <input type="text" id="requestName" name="name" placeholder="Name" autocomplete="name" required>
+                            <img src="../../../public/icons/person.svg" alt="" class="input-icon">
+                        </div>
+                        <p class="input-error-msg" id="requestNameError"></p>
+                    </div>
+
+                    <div class="input-field">
+                        <div class="input-wrapper">
+                            <input type="email" id="requestEmail" name="email" placeholder="Email" autocomplete="email" required>
+                            <img src="../../../public/icons/mail.svg" alt="" class="input-icon">
+                        </div>
+                        <p class="input-error-msg" id="requestEmailError"></p>
+                    </div>
+
+                    <div class="input-field">
+                        <div class="input-wrapper">
+                            <input type="text" id="requestSubject" name="subject" placeholder="Subject" required>
+                        </div>
+                        <p class="input-error-msg" id="requestSubjectError"></p>
+                    </div>
+
+                    <div class="input-field">
+                        <div class="input-wrapper">
+                            <textarea id="requestMessage" name="message" rows="5" placeholder="Your Request" required></textarea>
+                        </div>
+                        <p class="input-error-msg" id="requestMessageError"></p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary request-send-btn">Send request</button>
+                </form>
             </section>
         </main>
 
