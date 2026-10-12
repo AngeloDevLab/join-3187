@@ -18,11 +18,14 @@ Credentials (Gmail IMAP/SMTP, AI API, Firebase) are entered in the n8n UI only â
 Exported workflows live in `workflows/` (mounted into the container at `/workflows`).
 
 ```bash
-# export all workflows (one JSON file each)
-docker compose exec n8n n8n export:workflow --all --separate --output=/workflows
+# export all workflows (one JSON file each), then strip owner data and rename
+docker compose exec n8n n8n export:workflow --all --separate --pretty --output=/workflows/
+node clean-exports.mjs
 
 # import them into a fresh instance
 docker compose exec n8n n8n import:workflow --separate --input=/workflows
 ```
 
-Exports contain credential names and IDs, but no secrets.
+Exports contain credential names and IDs, but no secrets. `clean-exports.mjs` removes the `shared` block, which holds the owner's name and email.
+
+A fresh instance also needs the community node `n8n-nodes-imap` (Settings â†’ Community nodes), which moves processed mails to the `erledigt` / `zu bearbeiten` folders.
