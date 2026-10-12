@@ -12,12 +12,18 @@ const TOAST_VISIBLE_MS = 1200;
 
 
 /**
- * The login/signup page: logo intro, switching between the two cards and the
- * transitions after a successful login (to the summary) or signup (back to login).
+ * The login/signup page: logo intro, switching between the role choice, login
+ * and signup views and the transitions after a successful login (to the
+ * summary) or signup (back to login).
  */
 class AuthPage {
     #loginCard = document.getElementById('loginCard');
     #signupCard = document.getElementById('signupCard');
+    #views = {
+        role: document.getElementById('roleView'),
+        login: document.getElementById('loginView'),
+        signup: this.#signupCard,
+    };
 
 
     /** Plays the intro and wires the card switch, password toggles and both forms. */
@@ -26,17 +32,20 @@ class AuthPage {
         PasswordToggle.initAll();
         document.querySelectorAll('[data-show-auth]').forEach((trigger) =>
             trigger.addEventListener('click', () => this.#show(trigger.dataset.showAuth)));
+        document.getElementById('createRequestBtn').addEventListener('click', () => {
+            window.location.href = pageUrl('request');
+        });
         new LoginForm((message) => this.#enterApp(message));
         new SignupForm(() => this.#returnToLogin('Account created!'));
     }
 
 
-    /** @param {'login'|'signup'} view - shows that card and hides the other */
+    /** @param {'role'|'login'|'signup'} view - shows that view and hides the others */
     #show(view) {
-        const signup = view === 'signup';
-        document.getElementById('loginView').classList.toggle('is-hidden', signup);
-        this.#signupCard.classList.toggle('is-hidden', !signup);
-        document.getElementById('signupHintHeader').classList.toggle('is-hidden', signup);
+        Object.entries(this.#views).forEach(([name, element]) =>
+            element.classList.toggle('is-hidden', name !== view));
+        document.getElementById('signupHintHeader').classList.toggle('is-hidden', view === 'signup');
+        document.body.classList.toggle('is-dark', view === 'role');
     }
 
 

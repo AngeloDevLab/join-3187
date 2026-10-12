@@ -28,6 +28,14 @@ class ContactsPage {
             btn.addEventListener('click', () => this.#openAdd()));
         await this.#addCurrentUser().catch((err) => console.error('Could not add you as a contact:', err));
         contactStore.subscribe((contacts) => this.#render(contacts));
+        this.#selectFromUrl();
+    }
+
+
+    /** Selects the contact a link asked for via ?contact=<id> (e.g. the task creator's profile). */
+    #selectFromUrl() {
+        const id = new URLSearchParams(window.location.search).get('contact');
+        if (id) this.#select(id);
     }
 
 

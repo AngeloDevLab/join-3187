@@ -2,7 +2,7 @@ import { Modal } from '../../components/modal.js';
 import { TaskForm } from '../../components/task-form/task-form.js';
 import { showToast } from '../../components/toast.js';
 import { PRIORITY_META, escapeHtml, getSubtaskProgress } from '../../utils/helpers.js';
-import { iconUrl } from '../../utils/paths.js';
+import { iconUrl, pageUrl } from '../../utils/paths.js';
 
 
 /**
@@ -74,12 +74,28 @@ function subtasksHtml(subtasks) {
 
 
 /**
+ * @param {boolean} aiGenerated
+ * @returns {string} the "AI-generated ticket" hint, or nothing for manual tasks
+ */
+function aiHintHtml(aiGenerated) {
+    if (!aiGenerated) return '';
+    return `<span class="ai-hint">
+            <img src="${iconUrl('wand_stars.svg')}" alt="" width="20" height="20">
+            <span class="ai-hint-text">AI-generated ticket</span>
+        </span>`;
+}
+
+
+/**
  * @param {import('../../utils/task-view.js').TaskView} task
- * @returns {string} category badge, close button, title and description
+ * @returns {string} category badge, AI hint, close button, title and description
  */
 function headerHtml(task) {
     return `<div class="task-header">
-            <span class="task-category ${task.category.cls}">${escapeHtml(task.category.label)}</span>
+            <div class="task-header-tags">
+                <span class="task-category ${task.category.cls}">${escapeHtml(task.category.label)}</span>
+                ${aiHintHtml(task.aiGenerated)}
+            </div>
             <button type="button" class="close-btn" aria-label="Close">✕</button>
         </div>
         <h2 class="task-detail-title">${escapeHtml(task.title)}</h2>
@@ -99,6 +115,60 @@ function metaHtml(task) {
         <div class="task-detail-row">
             <span class="task-detail-label">Priority:</span>
             ${priorityHtml(task.priority)}
+        </div>`;
+}
+
+
+/**
+ * @param {boolean} external
+ * @returns {string} the "External" (stakeholder) or "Member" (team) tag
+ */
+function creatorTagHtml(external) {
+    const tag = external
+        ? { cls: 'external', icon: 'globus_wireframe.svg', label: 'External' }
+        : { cls: 'member', icon: 'group_member.svg', label: 'Member' };
+    return `<span class="creator-tag creator-tag--${tag.cls}">
+            <img src="${iconUrl(tag.icon)}" alt="" height="16">${tag.label}
+        </span>`;
+}
+
+
+/**
+ * @param {string} href
+ * @param {string} icon - file name in public/icons
+ * @param {string} label
+ * @returns {string} a hint link with icon, e.g. "Profile"
+ */
+function creatorLinkHtml(href, icon, label) {
+    return `<a class="creator-link" href="${escapeHtml(href)}">
+            <img src="${iconUrl(icon)}" alt="" height="16">${label}
+        </a>`;
+}
+
+
+/**
+ * @param {import('../../utils/task-view.js').TaskCreator} creator
+ * @returns {string} "E-mail" (mailto) for stakeholders, "Profile" (contacts page) for
+ *   members with a contact, nothing otherwise (e.g. guests)
+ */
+function creatorHintHtml(creator) {
+    if (creator.external && creator.email) return creatorLinkHtml(`mailto:${creator.email}`, 'attach_email.svg', 'E-mail');
+    if (creator.contactId) return creatorLinkHtml(`${pageUrl('contacts')}?contact=${encodeURIComponent(creator.contactId)}`, 'person_profile.svg', 'Profile');
+    return '';
+}
+
+
+/**
+ * @param {import('../../utils/task-view.js').TaskCreator|null} creator
+ * @returns {string} the creator row, or nothing for old tasks saved without a creator
+ */
+function creatorHtml(creator) {
+    if (!creator) return '';
+    return `<div class="task-detail-creator">
+            <span class="task-detail-label">Creator:</span>
+            <div class="creator-tag-wrap">${creatorTagHtml(creator.external)}</div>
+            <span class="creator-name" title="${escapeHtml(creator.name)}">${escapeHtml(creator.name)}</span>
+            ${creatorHintHtml(creator)}
         </div>`;
 }
 
@@ -157,7 +227,8 @@ export class TaskDetailModal {
     open() {
         const template = document.createElement('template');
         template.innerHTML = `<div class="task-detail">
-            ${headerHtml(this.#task)}${metaHtml(this.#task)}${sectionsHtml(this.#task)}${actionsHtml()}
+            ${headerHtml(this.#task)}${creatorHtml(this.#task.creator)}${metaHtml(this.#task)}
+            ${sectionsHtml(this.#task)}${actionsHtml()}
         </div>`;
         this.#modal = new Modal(template.content, { animation: 'center' }).open();
         const dialog = this.#modal.element;

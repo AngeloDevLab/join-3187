@@ -1,0 +1,305 @@
+/* ── Page ──────────────────────────────────────────────── */
+
+.page {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-logo {
+    display: block;
+    width: var(--auth-logo-size);
+    aspect-ratio: 101 / 122;
+    margin-top: var(--auth-logo-offset);
+    object-fit: contain;
+}
+
+.page-footer {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+    padding: var(--space-sm);
+}
+
+.page-footer a {
+    color: var(--color-text-muted);
+}
+
+.page-footer a:hover {
+    color: var(--color-link);
+}
+
+/* ── Request Info ──────────────────────────────────────── */
+
+.request {
+    flex: 1;
+    padding-block: var(--space-md);
+}
+
+/* One grid for both layouts: stacked on mobile, two columns on desktop
+   (text left, image right) without changing the HTML order. */
+.request-info {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+        "title back"
+        "usage usage"
+        "lead  lead"
+        "image image"
+        "text  text"
+        "btn   btn";
+    align-items: center;
+}
+
+.request-title {
+    grid-area: title;
+    font-family: var(--font-open-sans);
+    font-size: var(--fs-display);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+}
+
+.request-back {
+    grid-area: back;
+}
+
+/* blue arrow on mobile, dark arrow on desktop */
+.request-back-desktop {
+    display: none;
+}
+
+.request-usage {
+    grid-area: usage;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2xs);
+    margin-top: var(--space-2xs);
+    color: var(--color-accent-strong);
+}
+
+/* every element needs the font itself, since base.css sets Inter on * */
+.request-usage,
+.request-usage * {
+    font-family: var(--font-open-sans);
+    font-size: var(--fs-body);
+}
+
+.request-usage strong {
+    font-size: 19px;
+    font-weight: var(--font-weight-bold);
+}
+
+.request-usage-today {
+    display: none;
+}
+
+.request-lead {
+    grid-area: lead;
+    margin-top: var(--space-md);
+    font-size: var(--fs-lead);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-column-head);
+}
+
+.request-image {
+    grid-area: image;
+    justify-self: center;
+    width: 290px;
+    max-width: 100%;
+    height: auto;
+    margin-top: var(--space-md);
+}
+
+.request-text {
+    grid-area: text;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    margin-top: var(--space-md);
+}
+
+.request-text p {
+    font-family: var(--font-open-sans);
+    font-size: var(--fs-body);
+    color: var(--color-column-head);
+}
+
+.request-btn {
+    grid-area: btn;
+    justify-self: center;
+    margin-top: 48px;
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--fs-body-lg);
+    font-weight: var(--font-weight-regular);
+}
+
+/* ── Limit Reached ─────────────────────────────────────── */
+
+/* .is-limit-reached on .request-info swaps the default content for the
+   limit content; the hidden variant never needs its display restored. */
+.request-info:not(.is-limit-reached) .request-limit-only,
+.is-limit-reached .request-default-only {
+    display: none;
+}
+
+.is-limit-reached .request-usage {
+    color: var(--priority-urgent);
+}
+
+/* doubled class beats .request-lead, also in the desktop media query */
+.request-lead.request-lead-limit {
+    padding: var(--space-sm) 20px;
+    border-radius: var(--border-radius-sm);
+    background: var(--color-warning-bg);
+    font-family: var(--font-open-sans);
+    font-size: 16px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+}
+
+/* ── Request Form ──────────────────────────────────────── */
+
+.request-card {
+    max-width: 598px;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-lg) var(--space-form-card-x);
+    border-radius: var(--border-radius-lg);
+    background: var(--color-white);
+    box-shadow: var(--shadow-card-lg);
+}
+
+.request-card-head {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+/* sits on the left and is centered on the title text, not on its padding
+   with the line (top/bottom + fixed height + auto margins center it) */
+.request-card-head .close-btn {
+    position: absolute;
+    top: 0;
+    bottom: var(--space-2xs); /* = the title's padding-bottom */
+    left: 0;
+    margin-block: auto;
+}
+
+.request-card-title {
+    position: relative;
+    padding-bottom: var(--space-2xs);
+    font-size: var(--fs-title);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+}
+
+/* same accent line as the auth card titles */
+.request-card-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(4rem, 12vw, 8rem);
+    height: 3px;
+    background: var(--color-accent);
+    border-radius: var(--border-radius-sm);
+}
+
+/* No gap: the error line reserved under each field (4px + one 16px line,
+   ~23px) is the spacing, so nothing shifts when an error appears. */
+.request-form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* the fields fill the card, so the button's right edge lines up with them */
+.request-form .input-field {
+    max-width: none;
+}
+
+.request-send-btn {
+    align-self: flex-end;
+    padding: var(--space-sm) var(--space-md);
+}
+
+/* after .request-info, so it wins over its display: grid */
+.is-hidden {
+    display: none;
+}
+
+/* ── Breakpoints ───────────────────────────────────────── */
+
+@media (min-width: 1024px) {
+
+    /* The header row (back + usage) spans the full width; the content
+       below is inset by the 78px outer columns. */
+    .request-info {
+        max-width: 1121px;
+        margin-inline: auto;
+        grid-template-columns: 78px 1fr var(--space-xl) 1fr 78px;
+        grid-template-areas:
+            "back  back  back  usage usage"
+            "title title title title title"
+            ".     lead  .     image ."
+            ".     text  .     image ."
+            ".     btn   .     image .";
+    }
+
+    .request-back {
+        justify-self: start;
+    }
+
+    .request-back-mobile {
+        display: none;
+    }
+
+    .request-back-desktop {
+        display: block;
+    }
+
+    .request-usage {
+        justify-self: end;
+        margin-top: 0;
+    }
+
+    .request-usage-today {
+        display: inline;
+    }
+
+    .request-title {
+        justify-self: center;
+        margin-top: 56px;
+    }
+
+    .request-lead {
+        margin-top: 48px;
+        font-family: var(--font-open-sans);
+        font-weight: var(--font-weight-regular);
+    }
+
+    .request-image {
+        width: 100%;
+        margin-top: 48px;
+        align-self: baseline;
+    }
+
+    .request-text {
+        gap: var(--space-sm);
+        margin-top: 40px;
+    }
+
+    /* 32px from the card edge, out in the card's side padding instead of
+       aligned with the fields */
+    .request-card-head .close-btn {
+        left: calc(var(--space-lg) - var(--space-form-card-x));
+    }
+
+    .request-btn {
+        justify-self: start;
+        margin-top: 40px;
+        font-family: var(--font-open-sans);
+    }
+}

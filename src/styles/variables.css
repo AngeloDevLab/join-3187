@@ -11,16 +11,24 @@
     --color-primary-dark: #091931;
     --color-accent: #29abe2;
     --color-accent-rgb: 41, 171, 226;
+    --color-accent-strong: #177da8;
+    --color-ai: #8933fc;
+    --gradient-ai: linear-gradient(to bottom, var(--color-ai), var(--color-accent));
+    --gradient-ai-text: linear-gradient(to right, #9327ff, #2ea1dc); /* same stops as wand_stars.svg */
 
     /* Backgrounds */
     --color-bg: #f6f7f8;
     --color-white: #ffffff;
     --color-empty-task-bg: #e7e7e7;
+    --color-warning-bg: rgba(255, 210, 210, 0.52);
+    --color-member-bg: #9eebbc;
+    --color-external-bg: #ebfc88;
 
     /* Text */
     --color-text: #000000;
     --color-text-muted: #a8a8a8;
     --color-column-head: #42526e;
+    --color-tag-text: #0b3681;
 
     /* Navigation */
     --color-nav-item: #cdcdcd;
@@ -42,6 +50,7 @@
     /* Task Categories */
     --category-user-story: #0038ff;
     --category-technical-task: #1fd7c1;
+    --category-bug: #7b3acf;
 
     /* Progress */
     --color-progress: #4589ff;
@@ -55,15 +64,36 @@
     --space-lg: 32px;
     --space-xl: 64px;
 
+    /* Fluid values — fluid(mobile, desktop) scales linearly from the 375px to
+       the 1440px viewport and is capped outside:
+       slope = (desktop - mobile) / 1065, intercept = mobile - slope * 375,
+       clamp(min, intercept + slope * 100vw, max), rounded to 2 decimals.
+       Same formula as the Sass fluid() mixin of the Poll App. */
+    --fs-title-lg: clamp(32px, 42.82px - 0.75vw, 40px); /* fluid(40px, 32px) */
+    --fs-body-lg: clamp(16px, 13.54px + 0.66vw, 23px); /* fluid(16px, 23px) */
+    --fs-label-lg: clamp(18px, 16.24px + 0.47vw, 23px); /* fluid(18px, 23px) */
+    --fs-display: clamp(40px, 31.55px + 2.25vw, 64px); /* fluid(40px, 64px) */
+    --fs-lead: clamp(22px, 19.89px + 0.56vw, 28px); /* fluid(22px, 28px) */
+    --fs-body: clamp(16px, 14.94px + 0.28vw, 19px); /* fluid(16px, 19px) */
+    --fs-body-md: clamp(16px, 14.59px + 0.38vw, 20px); /* fluid(16px, 20px) */
+    --fs-body-sm: clamp(14px, 13.3px + 0.19vw, 16px); /* fluid(14px, 16px) */
+    --fs-title: clamp(24px, 15.9px + 2.16vw, 47px); /* fluid(24px, 47px) */
+    --space-card-y: clamp(56px, 66.82px - 0.75vw, 64px); /* fluid(64px, 56px) */
+    --space-card-x: clamp(16px, 5.26vw - 3.72px, 72px); /* fluid(16px, 72px) */
+    --space-form-card-x: clamp(16px, 6.76vw - 9.35px, 88px); /* fluid(16px, 88px) */
+
     /* Shadow */
     --shadow-default: 0 4px 8px rgba(0, 0, 0, 0.1);
     --shadow-btn-hover: 0 4px 4px rgba(0, 0, 0, 0.3);
     --shadow-header: 0 4px 4px rgba(0, 0, 0, 0.1);
     --shadow-card: 0 0 10px 3px rgba(0, 0, 0, 0.04);
+    --shadow-card-strong: 0 0 10px 3px rgba(0, 0, 0, 0.08);
+    --shadow-card-lg: 0 0 14px 3px rgba(0, 0, 0, 0.14);
     --shadow-task-card: 0 0 10px rgba(0, 0, 0, 0.08);
     --shadow-fab: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
 
     /* Typography */
+    --font-open-sans: 'Open Sans', sans-serif;
     --font-weight-regular: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
@@ -78,6 +108,7 @@
     --auth-content-inset: calc(max(calc(50% - 720px), 0px) + var(--auth-logo-offset));
 
     /* Border Radius */
+    --border-radius-xs: 4px;
     --border-radius-sm: 8px;
     --border-radius-md: 10px;
     /* pixel-named since the scale is already non-monotonic (xl < lg) */

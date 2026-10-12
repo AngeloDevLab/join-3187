@@ -102,19 +102,6 @@
     background-color: var(--color-border);
 }
 
-.plus-sign {
-    background: transparent;
-    border: none;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-}
-
-.plus-sign:hover rect,
-.plus-sign:hover path {
-    stroke: var(--color-accent);
-}
-
 .empty-task {
     border: 1px dashed var(--color-text-muted);
     background-color: var(--color-empty-task-bg);
@@ -193,7 +180,6 @@
     padding: 5px 16px;
     border-radius: var(--border-radius-sm);
     font-size: 16px;
-    margin-bottom: 16px;
 }
 
 .user-story {
@@ -202,6 +188,10 @@
 
 .technical {
     background-color: var(--category-technical-task);
+}
+
+.bug {
+    background-color: var(--category-bug);
 }
 
 .task-card h4 {
@@ -457,7 +447,7 @@
 
 /* 1366px is intentional here (not the usual 1024px tier) — the board keeps its
    mobile/tablet layout (stacked columns, horizontally-scrolling cards) all the
-   way through the most common laptop width, only switching to the 4-column
+   way through the most common laptop width, only switching to the 5-column
    desktop grid once there's genuinely enough room for it. */
 @media (min-width: 1366px) {
     .board-top {
@@ -496,7 +486,7 @@
 
     .board-columns {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
     }
 
     .drag-area {
@@ -564,6 +554,26 @@
     justify-content: space-between;
 }
 
+.task-header-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+}
+
+.ai-hint {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+}
+
+/* the text is cut out of the gradient background */
+.ai-hint-text {
+    background: var(--gradient-ai-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
 
 
 .task-detail-title {
@@ -592,6 +602,66 @@
 
 .task-detail-row .task-detail-label {
     min-width: 100px;
+}
+
+/* Creator row: on mobile the tag wrapper is moved first and takes a full
+   line (the tag inside keeps its own width); on desktop it's all one row. */
+.task-detail-creator {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+}
+
+/* Basis 0 keeps label, name and hint on one line even at 320px: the name
+   takes the space left between them and is cut with "…" if it's too long. */
+.creator-name {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.creator-tag-wrap {
+    order: -1;
+    flex-basis: 100%;
+}
+
+.creator-tag,
+.creator-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 2px var(--space-xs);
+    border-radius: var(--border-radius-xs);
+    font-size: 16px;
+}
+
+.creator-tag {
+    color: var(--color-tag-text);
+}
+
+.creator-tag--member {
+    background: var(--color-member-bg);
+}
+
+.creator-tag--external {
+    background: var(--color-external-bg);
+}
+
+/* pushed to the right end; label, tag and name stay together on the left */
+.creator-link {
+    margin-left: auto;
+    color: var(--color-column-head);
+}
+
+/* beats base.css a:hover (blue, underline, scale); the icon keeps its color */
+.creator-link:hover {
+    background: var(--color-primary);
+    color: var(--color-white);
+    text-decoration: none;
+    transform: none;
 }
 
 .task-detail-section {
@@ -643,6 +713,21 @@
     .task-detail-assigned-list,
     .task-detail-subtask-list {
         --visible-rows: 3;
+    }
+
+    /* Creator row: everything in one row, spread out by space-between */
+    .creator-tag-wrap {
+        order: 0;
+        flex-basis: auto;
+    }
+
+    .task-detail-creator .task-detail-label {
+        /* 8px gap + 16px = the 24px label gap of the rows above */
+        margin-right: var(--space-sm);
+    }
+
+    .creator-name {
+        flex: 0 1 auto;
     }
 }
 

@@ -25,8 +25,9 @@
 .check-icon,
 .edit-icon,
 .urgent-icon {
-    width: 50px;
-    height: 50px;
+    width: clamp(40px, 6vw, 60px);
+    height: clamp(40px, 6vw, 60px);
+    flex-shrink: 0; /* keeps the circle round when the flex card gets narrow */
     padding: 10px;
     border-radius: 50%;
 }
@@ -65,7 +66,7 @@ hr {
     height: 100%;
     background-color: var(--color-border);
     width: 2px;
-    margin: 0;
+    margin: 0 6px;
 }
 
 .summary-card:hover .check-icon {
@@ -95,22 +96,32 @@ hr {
     margin-top: 40px;
 }
 
-/* Zeile 1: 2 Karten */
+/* Row 1: to-do, done */
 .summary-card:nth-child(1),
 .summary-card:nth-child(2) {
     grid-column: span 3;
 }
 
-/* Zeile 2: 1 Karte über volle Breite */
-.summary-card:nth-child(3) {
+/* Rows 2 + 3 on mobile: deadline and email requests each get a full row,
+   since the deadline card doesn't fit into 4/6 of a 320px screen */
+.summary-card:nth-child(3),
+.summary-card:nth-child(4) {
     grid-column: span 6;
 }
 
-/* Zeile 3: 3 Karten */
-.summary-card:nth-child(4),
+/* Row 3: tasks in board, in progress, awaiting feedback */
 .summary-card:nth-child(5),
-.summary-card:nth-child(6) {
+.summary-card:nth-child(6),
+.summary-card:nth-child(7) {
     grid-column: span 2;
+}
+
+/* Purple-to-blue number; the text is cut out of the gradient background */
+.card-number-gradient {
+    background: var(--gradient-ai);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .summary-card_flex {
@@ -120,7 +131,7 @@ hr {
 }
 
 .card-number {
-    font-size: 47px;
+    font-size: clamp(3rem, 6vw, 4rem);
     font-weight: bold;
 }
 
@@ -142,6 +153,11 @@ hr {
 
 .date {
     text-align: left !important;
+    font-size: var(--fs-body-sm);
+}
+
+.date strong {
+    font-size: var(--fs-body-md);
 }
 
 @keyframes fadeOut {
@@ -212,6 +228,15 @@ hr {
         margin: 0;
         border: none;
         display: inherit;
+    }
+
+    /* Row 2: deadline and email requests side by side */
+    .summary-card:nth-child(3) {
+        grid-column: span 4;
+    }
+
+    .summary-card:nth-child(4) {
+        grid-column: span 2;
     }
 }
 

@@ -17,7 +17,7 @@
     <script type="module" src="src/pages/auth/auth.js"></script>
 </head>
 
-<body>
+<body class="is-dark">
     <div class="intro" id="intro" aria-hidden="true">
         <div class="intro-logo">
             <img src="./public/icons/join_logo.svg" alt="" class="intro-logo-img intro-logo-img-light">
@@ -27,7 +27,8 @@
 
     <div class="page max-content">
         <header class="page-header">
-            <img src="./public/icons/favicon.svg" alt="Join" class="page-logo">
+            <img src="./public/icons/favicon.svg" alt="Join" class="page-logo page-logo-dark">
+            <img src="./public/icons/join_logo.svg" alt="Join" class="page-logo page-logo-light">
 
             <p class="signup-hint signup-hint-header" id="signupHintHeader">
                 Not a Join user? <button type="button" class="btn btn-primary" data-show-auth="signup">Sign up</button>
@@ -35,7 +36,38 @@
         </header>
 
         <main class="auth">
-            <div class="auth-view" id="loginView">
+            <div class="auth-view role-view" id="roleView">
+                <p class="signup-hint signup-hint-light">
+                    Not a Join user? <button type="button" class="signup-link" data-show-auth="signup">Sign up</button>
+                </p>
+
+                <section class="auth-card role-card">
+                    <h1 class="auth-title role-title">Welcome</h1>
+                    <p class="role-intro">
+                        Pick the option that suits your role:
+                        create a request as a stakeholder or log in if you’re part of the team.
+                    </p>
+
+                    <div class="role-options">
+                        <div class="role-option">
+                            <p class="role-option-label">
+                                <img src="./public/icons/work.svg" alt="" class="role-icon">
+                                Are you a stakeholder?
+                            </p>
+                            <button type="button" class="btn btn-primary" id="createRequestBtn">Create request</button>
+                        </div>
+                        <div class="role-option">
+                            <p class="role-option-label">
+                                <img src="./public/icons/group.svg" alt="" class="role-icon role-icon-group">
+                                Are you a team member?
+                            </p>
+                            <button type="button" class="btn btn-secondary" data-show-auth="login">Member log in</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="auth-view is-hidden" id="loginView">
                 <section class="auth-card auth-card-login" id="loginCard">
                     <h1 class="auth-title">Log in</h1>
 

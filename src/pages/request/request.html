@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" type="image/svg+xml" href="../../../public/icons/favicon.svg">
+    <title>Join | Create request</title>
+    <link rel="stylesheet" href="../../styles/variables.css">
+    <link rel="stylesheet" href="../../styles/base.css">
+    <link rel="stylesheet" href="../../styles/buttons.css">
+    <link rel="stylesheet" href="../../styles/inputs.css">
+    <link rel="stylesheet" href="../../styles/modal.css">
+    <link rel="stylesheet" href="request.css">
+
+    <script type="module" src="request.js"></script>
+</head>
+
+<body>
+    <div class="page max-content">
+        <header class="page-header">
+            <img src="../../../public/icons/favicon.svg" alt="Join" class="page-logo">
+        </header>
+
+        <main class="request">
+            <section class="request-info" id="requestInfo">
+                <h1 class="request-title">Welcome</h1>
+                <a href="../../../index.html" class="close-btn request-back" aria-label="Back to role choice">
+                    <img src="../../../public/icons/arrow-left.svg" alt="" class="request-back-mobile">
+                    <img src="../../../public/icons/arrow-left-dark.svg" alt="" class="request-back-desktop">
+                </a>
+
+                <p class="request-usage">
+                    <span><strong id="requestsUsed">0</strong> of <strong id="requestsLimit">10</strong></span>
+                    <span>requests used<span class="request-usage-today"> today</span></span>
+                </p>
+
+                <p class="request-lead request-default-only">Easily create a ticket by sending a request — no extra steps needed.</p>
+                <p class="request-lead request-lead-limit request-limit-only">The daily 10-request limit has been reached!</p>
+
+                <img src="../../../public/images/create_request_image.svg" alt="" class="request-image request-default-only" width="416" height="280">
+                <img src="../../../public/images/limit_reached_image.svg" alt="" class="request-image request-limit-only" width="416" height="283">
+
+                <div class="request-text request-limit-only">
+                    <p>
+                        Need more? No worries — you can still send requests, but our team will review them
+                        manually instead of using AI to create tickets.
+                    </p>
+                </div>
+
+                <div class="request-text request-default-only">
+                    <p>
+                        On this platform, you can submit your feature requests via a request form. Our AI system
+                        will automatically generate a ticket with a deadline and priority level.
+                    </p>
+                    <p>
+                        A total of 10 requests can be created per day. After this limit, requests can still be
+                        sent, but they will be manually reviewed by our team instead of generating AI tickets.
+                    </p>
+                </div>
+
+                <button type="button" class="btn btn-primary request-btn" id="openRequestFormBtn">Create request</button>
+            </section>
+
+            <section class="request-card is-hidden" id="requestFormView">
+                <div class="request-card-head">
+                    <button type="button" class="close-btn" id="backToInfoBtn" aria-label="Back to request info">
+                        <img src="../../../public/icons/arrow-left.svg" alt="">
+                    </button>
+                    <h1 class="request-card-title">Your Request</h1>
+                </div>
+
+                <form class="request-form" id="requestForm" novalidate>
+                    <div class="input-field">
+                        <div class="input-wrapper">
+                            <input type="text" id="requestName" name="name" placeholder="Name" autocomplete="name" required>
+                            <img src="../../../public/icons/person.svg" alt="" class="input-icon">
+                        </div>
+                        <p class="input-error-msg" id="requestNameError"></p>
+                    </div>
+
+                    <div class="input-field">
+                        <div class="input-wrapper">
+                            <input type="email" id="requestEmail" name="email" placeholder="Email" autocomplete="email" required>
+                            <img src="../../../public/icons/mail.svg" alt="" class="input-icon">
+                        </div>
+                        <p class="input-error-msg" id="requestEmailError"></p>
+                    </div>
+
+                    <div class="input-field">
+                        <div class="input-wrapper">
+                            <input type="text" id="requestSubject" name="subject" placeholder="Subject" required>
+                        </div>
+                        <p class="input-error-msg" id="requestSubjectError"></p>
+                    </div>
+
+                    <div class="input-field">
+                        <div class="input-wrapper">
+                            <textarea id="requestMessage" name="message" rows="5" placeholder="Your Request" required></textarea>
+                        </div>
+                        <p class="input-error-msg" id="requestMessageError"></p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary request-send-btn">Send request</button>
+                </form>
+            </section>
+        </main>
+
+        <footer class="page-footer">
+            <a href="../legal/privacy.html">Privacy Policy</a>
+            <a href="../legal/imprint.html">Legal notice</a>
+        </footer>
+    </div>
+</body>
+
+</html>
