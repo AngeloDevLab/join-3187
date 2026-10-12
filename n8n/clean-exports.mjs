@@ -17,11 +17,14 @@ function fileNameFor(name) {
 
 /**
  * Rewrites one raw export without the `shared` block under a readable name.
- * @param {string} file - raw export file name inside workflows/
+ * Already cleaned files (no `shared`) are skipped, so an old copy never
+ * overwrites a fresh export.
+ * @param {string} file - export file name inside workflows/
  */
 function cleanExport(file) {
     const path = join(DIR, file);
     const workflow = JSON.parse(readFileSync(path, 'utf8'));
+    if (!workflow.shared) return;
     delete workflow.shared;
     const target = fileNameFor(workflow.name);
     writeFileSync(join(DIR, target), JSON.stringify(workflow, null, 2) + '\n');

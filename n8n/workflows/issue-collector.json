@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-12T20:44:41.695Z",
+  "updatedAt": "2026-10-12T20:58:09.347Z",
   "createdAt": "2026-10-12T19:00:06.806Z",
   "id": "w0TXftQKLPrpJNeg",
   "name": "Issue Collector",
@@ -15,8 +15,8 @@
       "type": "n8n-nodes-base.emailReadImap",
       "typeVersion": 2.2,
       "position": [
-        0,
-        352
+        -240,
+        -112
       ],
       "id": "97f6e638-5a3b-405f-9e70-aa6cd565f0ff",
       "name": "Email Trigger (IMAP)",
@@ -123,13 +123,13 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "/**\n * Reduces a resolved IMAP email to the fields the pipeline needs.\n * Requests sent through the Join form arrive from the Join inbox itself,\n * with the stakeholder in Reply-To — so Reply-To wins over From.\n * @param {Object} mail - item from the Email Trigger (format \"Resolved\")\n * @returns {{ uid: number, messageId: string, name: string, email: string, subject: string, body: string }}\n */\nfunction extractEmail(mail) {\n    const sender = mail.replyTo?.value?.[0] ?? mail.from.value[0];\n    return {\n        uid: mail.attributes.uid,\n        messageId: mail.messageId,\n        name: sender.name || sender.address,\n        email: sender.address.toLowerCase(),\n        subject: (mail.subject ?? '').trim(),\n        body: (mail.text ?? '').trim().slice(0, 5000),\n    };\n}\n\n\nreturn { json: extractEmail($json) };"
+        "jsCode": "const JOIN_INBOX = 'join.issuecollector3187@gmail.com';\nconst AUTOMATED_SENDER = /^(mailer-daemon|postmaster|no-?reply|do-?not-?reply)@/i;\n\n\n/**\n * Reads a header value; the trigger stores each header as a full line (\"Name: value\").\n * @param {Object} headers - mail.headers from the Email Trigger\n * @param {string} name - lowercase header name\n * @returns {string} the lowercase value, or '' when the header is missing\n */\nfunction headerValue(headers, name) {\n    const line = headers?.[name] ?? '';\n    return line.slice(line.indexOf(':') + 1).trim().toLowerCase();\n}\n\n\n/**\n * Detects auto-replies, bounces and mails from the Join inbox itself. These never get\n * an answer, otherwise two mailboxes could keep replying to each other forever.\n * @param {Object} headers - mail.headers from the Email Trigger\n * @param {string} address - sender address, lowercase\n * @returns {boolean}\n */\nfunction isAutomated(headers, address) {\n    const autoSubmitted = headerValue(headers, 'auto-submitted');\n    if (autoSubmitted && autoSubmitted !== 'no') return true;\n    if (['bulk', 'junk', 'auto_reply'].includes(headerValue(headers, 'precedence'))) return true;\n    if (headerValue(headers, 'x-autoreply') || headerValue(headers, 'x-autorespond')) return true;\n    return AUTOMATED_SENDER.test(address) || address === JOIN_INBOX;\n}\n\n\n/**\n * Reduces a resolved IMAP email to the fields the pipeline needs.\n * Requests sent through the Join form arrive from the Join inbox itself,\n * with the stakeholder in Reply-To — so Reply-To wins over From.\n * @param {Object} mail - item from the Email Trigger (format \"Resolved\")\n * @returns {{ uid: number, messageId: string, name: string, email: string, subject: string, body: string, isAutomated: boolean }}\n */\nfunction extractEmail(mail) {\n    const sender = mail.replyTo?.value?.[0] ?? mail.from.value[0];\n    const email = sender.address.toLowerCase();\n    return {\n        uid: mail.attributes.uid,\n        messageId: mail.messageId,\n        name: sender.name || sender.address,\n        email,\n        subject: (mail.subject ?? '').trim(),\n        body: (mail.text ?? '').trim().slice(0, 5000),\n        isAutomated: isAutomated(mail.headers, email),\n    };\n}\n\n\nreturn { json: extractEmail($json) };\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        352
+        -16,
+        -112
       ],
       "id": "0c4c1697-382a-42a7-8f2c-cf5598ee19ba",
       "name": "Extract email"
@@ -249,7 +249,7 @@
       "typeVersion": 2.1,
       "position": [
         960,
-        -128
+        -48
       ],
       "id": "2dd0b119-e3a9-4724-9296-634559f4714f",
       "name": "Send limit notice",
@@ -378,6 +378,40 @@
           "name": "SMTP account"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ddd547f0-8cc3-45a9-9b11-4aa16a216f7c",
+              "leftValue": "={{ $json.isAutomated }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        -112
+      ],
+      "id": "a615137e-64d1-4bfe-8012-dba76ba1cd5d",
+      "name": "Automated mail?"
     }
   ],
   "connections": {
@@ -443,7 +477,7 @@
       "main": [
         [
           {
-            "node": "Get request count",
+            "node": "Automated mail?",
             "type": "main",
             "index": 0
           }
@@ -540,6 +574,24 @@
           }
         ]
       ]
+    },
+    "Automated mail?": {
+      "main": [
+        [
+          {
+            "node": "Move to review",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get request count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -552,9 +604,9 @@
   },
   "nodeGroups": [],
   "pinData": {},
-  "versionId": "8f957607-1085-4386-9d90-7bca1ee30928",
+  "versionId": "e24aa360-0da1-49b0-b5de-788d21afac3f",
   "activeVersionId": null,
-  "versionCounter": 141,
+  "versionCounter": 154,
   "triggerCount": 0,
   "sourceWorkflowId": null,
   "tags": [],
