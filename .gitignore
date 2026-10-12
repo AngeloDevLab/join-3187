@@ -2,6 +2,9 @@
 out/
 node_modules/
 
+# n8n secrets
+n8n/.env
+
 # Local planning docs
 docs/refactor-plan.md
 Join - Issue Collector.md
