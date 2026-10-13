@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-12T20:58:09.347Z",
+  "updatedAt": "2026-10-13T19:02:23.505Z",
   "createdAt": "2026-10-12T19:00:06.806Z",
   "id": "w0TXftQKLPrpJNeg",
   "name": "Issue Collector",
@@ -54,7 +54,7 @@
       "parameters": {
         "text": "=Today: {{ $now.toFormat('yyyy-MM-dd') }}\nSubject: {{ $('Extract email').item.json.subject }}\n\n{{ $('Extract email').item.json.body }}\n",
         "schemaType": "manual",
-        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"title\": { \"type\": \"string\", \"description\": \"Short, precise ticket title, max. 60 characters, in the language of the email\" },\n    \"description\": { \"type\": \"string\", \"description\": \"Clear summary of the request in 1-3 sentences, in the language of the email\" },\n    \"category\": { \"type\": \"string\", \"enum\": [\"userStory\", \"technicalTask\", \"bug\"], \"description\": \"bug: something is broken or behaves wrongly. userStory: a new feature or change visible to users. technicalTask: internal technical work without new user-facing features (refactoring, setup, performance, security).\" },\n    \"priority\": { \"type\": \"string\", \"enum\": [\"urgent\", \"medium\", \"low\"], \"description\": \"urgent: words like dringend, urgent, asap, sofort, kritisch, blockiert, or a deadline within 7 days. low: words like irgendwann, nice to have, kein Stress, low priority. Otherwise medium.\" },\n    \"dueDate\": { \"type\": \"string\", \"description\": \"Deadline as YYYY-MM-DD if the email mentions one (resolve relative dates like 'Ende November' using Today), otherwise an empty string\" }\n  },\n  \"required\": [\"title\", \"description\", \"category\", \"priority\", \"dueDate\"]\n}\n",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"title\": { \"type\": \"string\", \"description\": \"Short, precise ticket title, max. 60 characters, in the language of the email\" },\n    \"description\": { \"type\": \"string\", \"description\": \"Clear summary of the request in 1-3 sentences, in the language of the email. Do not mention the deadline or the urgency, they are stored in separate fields.\" },\n    \"category\": { \"type\": \"string\", \"enum\": [\"userStory\", \"technicalTask\", \"bug\"], \"description\": \"bug: something is broken or behaves wrongly. userStory: a new feature or change visible to users. technicalTask: internal technical work without new user-facing features (refactoring, setup, performance, security).\" },\n    \"priority\": { \"type\": \"string\", \"enum\": [\"urgent\", \"medium\", \"low\"], \"description\": \"urgent: words like dringend, urgent, asap, sofort, kritisch, blockiert, or a deadline within 7 days. low: words like irgendwann, nice to have, kein Stress, low priority. Otherwise medium.\" },\n    \"dueDate\": { \"type\": \"string\", \"description\": \"Deadline as YYYY-MM-DD if the email mentions one (resolve relative dates like 'Ende November' using Today), otherwise an empty string\" }\n  },\n  \"required\": [\"title\", \"description\", \"category\", \"priority\", \"dueDate\"]\n}\n",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.informationExtractor",
@@ -65,11 +65,13 @@
       ],
       "id": "d3cceb4f-be22-46e2-9fe2-1faae24cca84",
       "name": "Analyze email",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
       "onError": "continueErrorOutput"
     },
     {
       "parameters": {
-        "modelName": "models/gemini-3.8-flash",
+        "modelName": "models/gemini-3.5-flash-lite",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
@@ -604,9 +606,9 @@
   },
   "nodeGroups": [],
   "pinData": {},
-  "versionId": "e24aa360-0da1-49b0-b5de-788d21afac3f",
+  "versionId": "93278bc9-d679-4c14-a576-33f6f1496ba7",
   "activeVersionId": null,
-  "versionCounter": 154,
+  "versionCounter": 162,
   "triggerCount": 0,
   "sourceWorkflowId": null,
   "tags": [],

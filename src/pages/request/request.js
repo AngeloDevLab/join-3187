@@ -1,4 +1,5 @@
 import { showToast } from '../../components/toast.js';
+import { sendRequest } from '../../services/request-service.js';
 import { RequestForm } from './request-form.js';
 
 
@@ -15,7 +16,7 @@ class RequestPage {
     init() {
         document.getElementById('openRequestFormBtn').addEventListener('click', () => this.#show('form'));
         document.getElementById('backToInfoBtn').addEventListener('click', () => this.#show('info'));
-        new RequestForm(() => this.#send());
+        new RequestForm((values) => this.#send(values));
     }
 
 
@@ -27,9 +28,21 @@ class RequestPage {
     }
 
 
-    /** Placeholder until the n8n webhook exists: the form is valid, but nothing is sent yet. */
-    #send() {
-        showToast('Sending requests is not connected yet.');
+    /**
+     * Sends the request to n8n and returns to the info view on success.
+     * @param {{ name: string, email: string, subject: string, message: string }} values
+     * @returns {Promise<boolean>} true once n8n accepted it, so the form clears itself
+     */
+    async #send(values) {
+        try {
+            await sendRequest(values);
+            this.#show('info');
+            showToast('Your request has been sent');
+            return true;
+        } catch {
+            showToast('Your request could not be sent. Please try again.', 2500);
+            return false;
+        }
     }
 }
 

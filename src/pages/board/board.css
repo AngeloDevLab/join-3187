@@ -121,6 +121,7 @@
     align-items: flex-start;
     justify-content: space-between;
     position: relative;
+    margin-bottom: 1.5rem;
 }
 
 .task-card {
