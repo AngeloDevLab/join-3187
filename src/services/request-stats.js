@@ -17,11 +17,12 @@ function todayInBerlin() {
 /**
  * Calls `callback` with the number of tickets n8n created from requests today,
  * once and again after every change. Readable without login (see database.rules.json).
+ * If the count can't be loaded, it falls back to 0 so the page still shows up.
  * @param {(count: number) => void} callback
  * @returns {() => void} unsubscribe function
  */
 export function subscribeTodayCount(callback) {
     return onValue(ref(db, `requestStats/${todayInBerlin()}/count`),
         (snapshot) => callback(snapshot.val() ?? 0),
-        (err) => console.error('Could not load the request count:', err));
+        (err) => { console.error('Could not load the request count:', err); callback(0); });
 }

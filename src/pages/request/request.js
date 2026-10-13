@@ -27,6 +27,7 @@ class RequestPage {
         document.getElementById('requestsUsed').textContent = Math.min(count, DAILY_REQUEST_LIMIT);
         document.getElementById('requestsLimit').textContent = DAILY_REQUEST_LIMIT;
         this.#info.classList.toggle('is-limit-reached', count >= DAILY_REQUEST_LIMIT);
+        this.#info.classList.remove('is-loading');
     }
 
 

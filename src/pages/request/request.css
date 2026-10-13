@@ -124,6 +124,16 @@
     color: var(--color-column-head);
 }
 
+/* the address has no spaces, so let it wrap on narrow phones instead of overflowing */
+.request-text a {
+    color: var(--color-link);
+    overflow-wrap: anywhere;
+}
+
+.request-text a:hover {
+    text-decoration: underline;
+}
+
 .request-btn {
     grid-area: btn;
     justify-self: center;
@@ -134,6 +144,11 @@
 }
 
 /* ── Limit Reached ─────────────────────────────────────── */
+
+/* hidden until the first count arrives (request.js), so neither state flashes */
+.request-info.is-loading {
+    visibility: hidden;
+}
 
 /* .is-limit-reached on .request-info swaps the default content for the
    limit content; the hidden variant never needs its display restored. */
