@@ -2,6 +2,14 @@
 
 Turns stakeholder emails into tickets in Join's Triage column.
 
+| Workflow | Trigger | What it does |
+|---|---|---|
+| `issue-collector.json` | new mail in the inbox (IMAP) | skips auto-replies, checks the daily limit, lets Gemini analyse the mail, creates the ticket, replies and moves the mail to `erledigt` / `zu bearbeiten` |
+| `request-form.json` | `POST /webhook/join-request` | validates the stakeholder form and mails it to the inbox (Reply-To = stakeholder) |
+| `column-change.json` | `POST /webhook/join-column-change` | waits 5 minutes, re-reads the task and mails the external creator if it now sits in a new column |
+
+The two webhook workflows must be active (published); the IMAP workflow too, once n8n runs permanently.
+
 ## Run locally
 
 ```bash
