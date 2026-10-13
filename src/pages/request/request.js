@@ -1,5 +1,5 @@
 import { showToast } from '../../components/toast.js';
-import { sendRequest } from '../../services/request-service.js';
+import { sendRequest } from '../../services/n8n-service.js';
 import { subscribeTodayCount, DAILY_REQUEST_LIMIT } from '../../services/request-stats.js';
 import { RequestForm } from './request-form.js';
 

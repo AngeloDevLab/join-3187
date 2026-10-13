@@ -1,0 +1,251 @@
+{
+  "updatedAt": "2026-10-13T19:53:50.052Z",
+  "createdAt": "2026-10-13T19:32:44.159Z",
+  "id": "kYbWZZmdQFvPE5ID",
+  "name": "Column Change",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "join-column-change",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f3a3f14f-35d8-40ca-9f42-af6a40a44be2",
+      "name": "Webhook",
+      "webhookId": "c13c6cfd-339b-40a4-8648-bb903367f330"
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "55150287-ac35-4ea6-a04c-5f18958b1ad7",
+      "name": "Wait for moves to settle",
+      "webhookId": "2d58dbff-6644-4b95-b38c-8e4abdd9c2f9"
+    },
+    {
+      "parameters": {
+        "url": "=https://join-3187-default-rtdb.europe-west1.firebasedatabase.app/tasks/{{ encodeURIComponent($('Webhook').item.json.body.taskId) }}.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "10544ce3-ffc2-4c96-a091-65d241c4dfe0",
+      "name": "Get task",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleApi": {
+          "id": "i0HsKyTgytc4eZs2",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const COLUMN_LABELS = { triage: 'Triage', todo: 'To Do', inProgress: 'In Progress', awaitFeedback: 'Awaiting Feedback', done: 'Done' };\n\n\n/**\n * Decides whether the creator gets a mail: only external creators with an email,\n * and only if the task now sits in a different column than the one they were\n * last told about. Tickets start in Triage, so that is the default.\n * @param {Object} task - the task as stored in Firebase ({} if it was deleted)\n * @returns {{ notify: boolean, column: string, columnLabel: string, title: string, name: string, email: string }}\n */\nfunction decide(task) {\n    const creator = task.creator ?? {};\n    const lastNotified = task.lastNotifiedColumn ?? 'triage';\n    return {\n        notify: creator.type === 'external' && !!creator.email && !!COLUMN_LABELS[task.column] && task.column !== lastNotified,\n        column: task.column,\n        columnLabel: COLUMN_LABELS[task.column] ?? '',\n        title: task.title ?? '',\n        name: creator.name ?? '',\n        email: creator.email ?? '',\n    };\n}\n\n\nreturn { json: decide($json) };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "5323ee34-6f66-4e63-9a6d-a2f03d9700a8",
+      "name": "Decide notification"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "360c151a-7a8e-45fa-837c-53ac6016a774",
+              "leftValue": "={{ $json.notify }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        0
+      ],
+      "id": "6d3c46f3-dd95-4f58-b464-1aa4e93aefcf",
+      "name": "Notify?"
+    },
+    {
+      "parameters": {
+        "fromEmail": "Join Issue Collector <join.issuecollector3187@gmail.com>",
+        "toEmail": "={{ $json.email }}",
+        "subject": "=Update on your request: {{ $json.title }}",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.name }},\n\nthere is news on your request \"{{ $json.title }}\": our team has moved it to {{ $json.columnLabel }}.\n\nBest regards\nYour Join team\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        -96
+      ],
+      "id": "8441aeb6-0959-478c-b93e-dba666449f4f",
+      "name": "Send status update",
+      "webhookId": "c244ff6d-6d84-464c-97ee-25358f6857eb",
+      "credentials": {
+        "smtp": {
+          "id": "cLouz5Sl8w59ZZw6",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://join-3187-default-rtdb.europe-west1.firebasedatabase.app/tasks/{{ encodeURIComponent($('Webhook').item.json.body.taskId) }}.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ lastNotifiedColumn: $('Decide notification').item.json.column }) }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1344,
+        -96
+      ],
+      "id": "31ddafe3-5537-4430-8a7d-45fa76f547a5",
+      "name": "Remember notified column",
+      "credentials": {
+        "googleApi": {
+          "id": "i0HsKyTgytc4eZs2",
+          "name": "Google Service Account account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Wait for moves to settle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for moves to settle": {
+      "main": [
+        [
+          {
+            "node": "Get task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get task": {
+      "main": [
+        [
+          {
+            "node": "Decide notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide notification": {
+      "main": [
+        [
+          {
+            "node": "Notify?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify?": {
+      "main": [
+        [
+          {
+            "node": "Send status update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send status update": {
+      "main": [
+        [
+          {
+            "node": "Remember notified column",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "36137fd5-77ef-4078-8351-36551899b540",
+  "activeVersionId": "36137fd5-77ef-4078-8351-36551899b540",
+  "versionCounter": 38,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "versionMetadata": {
+    "name": "Version 36137fd5",
+    "description": ""
+  }
+}

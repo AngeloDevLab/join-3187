@@ -15,6 +15,7 @@ tasks/
     dueDate: "2026-11-30"       # YYYY-MM-DD (date input format)
     createdAt: "2026-10-10"     # YYYY-MM-DD, set once on creation
     aiGenerated: true           # optional — set by n8n on tickets created from emails
+    lastNotifiedColumn: "todo"  # optional — set by n8n; the column the external creator was last mailed about (missing = triage)
     creator/                    # who created the task (missing on tasks from before 2026-10)
       name: ""
       email: ""                 # omitted for guests
