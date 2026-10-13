@@ -1,5 +1,6 @@
 import { showToast } from '../../components/toast.js';
 import { sendRequest } from '../../services/request-service.js';
+import { subscribeTodayCount, DAILY_REQUEST_LIMIT } from '../../services/request-stats.js';
 import { RequestForm } from './request-form.js';
 
 
@@ -12,11 +13,20 @@ class RequestPage {
     #formView = document.getElementById('requestFormView');
 
 
-    /** Wires the buttons that switch between the info view and the form. */
+    /** Wires the view buttons and the form, and shows today's request count live. */
     init() {
         document.getElementById('openRequestFormBtn').addEventListener('click', () => this.#show('form'));
         document.getElementById('backToInfoBtn').addEventListener('click', () => this.#show('info'));
         new RequestForm((values) => this.#send(values));
+        subscribeTodayCount((count) => this.#renderUsage(count));
+    }
+
+
+    /** @param {number} count - tickets n8n created today; at the limit the info view switches to its limit state */
+    #renderUsage(count) {
+        document.getElementById('requestsUsed').textContent = Math.min(count, DAILY_REQUEST_LIMIT);
+        document.getElementById('requestsLimit').textContent = DAILY_REQUEST_LIMIT;
+        this.#info.classList.toggle('is-limit-reached', count >= DAILY_REQUEST_LIMIT);
     }
 
 

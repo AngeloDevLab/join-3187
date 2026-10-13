@@ -9,6 +9,9 @@
     "contacts": {
       ".read": "auth != null",
       ".write": "auth != null"
+    },
+    "requestStats": {
+      ".read": true
     }
   }
 }
