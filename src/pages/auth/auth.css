@@ -1,9 +1,10 @@
 /* ── Intro Animation ───────────────────────────────────── */
 
+/* above .auth-view (z-index 1), which itself sits above the fixed .page-logo */
 .intro {
     position: fixed;
     inset: 0;
-    z-index: 1;
+    z-index: 2;
     background-color: var(--color-primary);
     transition: opacity 400ms ease-in-out, visibility 0s linear 400ms;
 }
@@ -120,6 +121,7 @@
     flex-direction: column;
     align-items: center;
     gap: var(--space-md);
+    z-index: 1;
 }
 
 .auth-card {
@@ -395,6 +397,7 @@ body.is-dark {
 }
 
 @media (min-width: 1024px) {
+
     .is-dark .page-logo-light,
     .signup-hint-light {
         display: none;

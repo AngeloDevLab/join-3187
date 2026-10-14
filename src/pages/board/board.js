@@ -10,6 +10,7 @@ import { startDragGhost, stopDragGhost } from './drag-ghost.js';
 import { updateDropIndicator, clearDropIndicator, getDropNeighbors } from './drop-indicator.js';
 import { taskStore } from '../../services/task-store.js';
 import { contactStore } from '../../services/contact-store.js';
+import { notifyColumnChange } from '../../services/n8n-service.js';
 import { computeOrderBetween } from '../../utils/helpers.js';
 import { toTaskView } from '../../utils/task-view.js';
 
@@ -106,8 +107,9 @@ class BoardPage {
         clearDropIndicator();
         if (!neighbors) return;
         const order = computeOrderBetween(this.#orderOf(neighbors.beforeId), this.#orderOf(neighbors.afterId));
+        const from = this.#taskById(this.#draggedId)?.column;
         this.#moveLocally(this.#draggedId, column, order);
-        await this.#persist(taskStore.update(this.#draggedId, { column, order }));
+        await this.#saveMove(this.#draggedId, from, column, order);
     }
 
 
@@ -181,7 +183,7 @@ class BoardPage {
         const moveButton = e.target.closest('.move-button');
         if (moveButton) return this.#toggleMoveMenu(moveButton);
         const entry = e.target.closest('.category-nav li');
-        if (entry) return this.#persist(taskStore.update(entry.dataset.id, { column: entry.dataset.category, order: Date.now() }));
+        if (entry) return this.#saveMove(entry.dataset.id, this.#taskById(entry.dataset.id)?.column, entry.dataset.category, Date.now());
         if (e.target.closest('.category-nav')) return;
         const card = e.target.closest('.task-card');
         if (card) this.#openDetail(card.dataset.id);
@@ -225,10 +227,19 @@ class BoardPage {
 
     /**
      * @param {string|null} id
+     * @returns {import('../../utils/task-view.js').TaskView|undefined}
+     */
+    #taskById(id) {
+        return this.#tasks.find((t) => t.id === id);
+    }
+
+
+    /**
+     * @param {string|null} id
      * @returns {number|undefined}
      */
     #orderOf(id) {
-        return this.#tasks.find((t) => t.id === id)?.order;
+        return this.#taskById(id)?.order;
     }
 
 
@@ -247,16 +258,33 @@ class BoardPage {
 
 
     /**
+     * Saves a task's column and order. If it really changed columns and a
+     * stakeholder created it, n8n is told so it can mail them.
+     * @param {string} id
+     * @param {string|undefined} from - the column before the move
+     * @param {string} column
+     * @param {number} order
+     */
+    async #saveMove(id, from, column, order) {
+        const saved = await this.#persist(taskStore.update(id, { column, order }));
+        if (saved && from !== column && this.#taskById(id)?.creator?.external) notifyColumnChange(id);
+    }
+
+
+    /**
      * Awaits a write and shows an error toast if it fails. Firebase then rolls
      * back its local change, so the live listener re-renders the previous state.
      * @param {Promise<void>} write
+     * @returns {Promise<boolean>} true if the write succeeded
      */
     async #persist(write) {
         try {
             await write;
+            return true;
         } catch (err) {
             console.error('Saving the board change failed:', err);
             showToast(SAVE_ERROR);
+            return false;
         }
     }
 }

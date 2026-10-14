@@ -95,4 +95,4 @@ sequenceDiagram
     end
 ```
 
-External writers — such as the planned n8n issue collector — write to the database directly with a service account. Every open page picks the change up through the same listener, without any extra code.
+External writers — such as the n8n Issue Collector — write to the database directly with a service account. Every open page picks the change up through the same listener, without any extra code: a ticket created from an email simply appears in Triage. The pipeline itself is described in the [README](../README.md#issue-collector) and in [n8n/README.md](../n8n/README.md).

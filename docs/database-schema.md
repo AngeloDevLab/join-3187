@@ -15,6 +15,7 @@ tasks/
     dueDate: "2026-11-30"       # YYYY-MM-DD (date input format)
     createdAt: "2026-10-10"     # YYYY-MM-DD, set once on creation
     aiGenerated: true           # optional — set by n8n on tickets created from emails
+    lastNotifiedColumn: "todo"  # optional — set by n8n; the column the external creator was last mailed about (missing = triage)
     creator/                    # who created the task (missing on tasks from before 2026-10)
       name: ""
       email: ""                 # omitted for guests
@@ -29,6 +30,10 @@ contacts/
     name: ""
     email: ""
     phone: ""                   # digits, optional leading "+"; may be empty for self-added users
+
+requestStats/
+  {date}/                       # YYYY-MM-DD in Berlin time, e.g. "2026-10-13"
+    count: 3                    # tickets the n8n Issue Collector created from emails that day
 ```
 
 There is no `users/` collection: accounts live in **Firebase Authentication**, which stores the email, the password hash and the display name. Registering also creates a matching entry in `contacts/`.
@@ -52,7 +57,8 @@ There is no `users/` collection: accounts live in **Firebase Authentication**, w
 | Contacts | Global — no owner field |
 | Accounts | Firebase Authentication; no user data duplicated in the database except the self-contact created on signup |
 | Guest login | Anonymous Firebase account — same read/write access as a registered user, so reviewers can test every feature without signing up |
-| Access | Only authenticated requests (incl. guests); see [database.rules.json](../database.rules.json) |
+| Access | `tasks` and `contacts` only for authenticated requests (incl. guests); `requestStats` is publicly readable for the stakeholder page, and only n8n writes it (service account, bypasses the rules); see [database.rules.json](../database.rules.json) |
+| Request limit | n8n reads `requestStats/<today>` before calling the AI and increments it after creating a ticket; at 10 the mail goes to "zu bearbeiten" instead. The request page shows the same counter live |
 | Contact deletion | One multi-path update removes the contact and strips its id from every task's `assignedTo` (`ContactStore.remove()`) |
 | Subtasks | Nested under the task — read and written together with it |
 | Initials / avatar colors | Never stored — derived from the name and the contact id when rendering |

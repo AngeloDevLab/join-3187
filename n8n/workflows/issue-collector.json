@@ -1,0 +1,619 @@
+{
+  "updatedAt": "2026-10-13T19:02:23.505Z",
+  "createdAt": "2026-10-12T19:00:06.806Z",
+  "id": "w0TXftQKLPrpJNeg",
+  "name": "Issue Collector",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "format": "resolved",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        -112
+      ],
+      "id": "97f6e638-5a3b-405f-9e70-aa6cd565f0ff",
+      "name": "Email Trigger (IMAP)",
+      "credentials": {
+        "imap": {
+          "id": "rOFOjxXFXlww0qUw",
+          "name": "IMAP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://join-3187-default-rtdb.europe-west1.firebasedatabase.app/requestStats/{{ $now.toFormat('yyyy-MM-dd') }}.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        448,
+        352
+      ],
+      "id": "d0861c15-559b-4c7d-8736-a3b136ec98af",
+      "name": "Get request count",
+      "credentials": {
+        "googleApi": {
+          "id": "i0HsKyTgytc4eZs2",
+          "name": "Google Service Account account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "text": "=Today: {{ $now.toFormat('yyyy-MM-dd') }}\nSubject: {{ $('Extract email').item.json.subject }}\n\n{{ $('Extract email').item.json.body }}\n",
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"title\": { \"type\": \"string\", \"description\": \"Short, precise ticket title, max. 60 characters, in the language of the email\" },\n    \"description\": { \"type\": \"string\", \"description\": \"Clear summary of the request in 1-3 sentences, in the language of the email. Do not mention the deadline or the urgency, they are stored in separate fields.\" },\n    \"category\": { \"type\": \"string\", \"enum\": [\"userStory\", \"technicalTask\", \"bug\"], \"description\": \"bug: something is broken or behaves wrongly. userStory: a new feature or change visible to users. technicalTask: internal technical work without new user-facing features (refactoring, setup, performance, security).\" },\n    \"priority\": { \"type\": \"string\", \"enum\": [\"urgent\", \"medium\", \"low\"], \"description\": \"urgent: words like dringend, urgent, asap, sofort, kritisch, blockiert, or a deadline within 7 days. low: words like irgendwann, nice to have, kein Stress, low priority. Otherwise medium.\" },\n    \"dueDate\": { \"type\": \"string\", \"description\": \"Deadline as YYYY-MM-DD if the email mentions one (resolve relative dates like 'Ende November' using Today), otherwise an empty string\" }\n  },\n  \"required\": [\"title\", \"description\", \"category\", \"priority\", \"dueDate\"]\n}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        96
+      ],
+      "id": "d3cceb4f-be22-46e2-9fe2-1faae24cca84",
+      "name": "Analyze email",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        272
+      ],
+      "id": "fa497787-229b-491f-986a-72f20bc907f1",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "1A7X6oUSM5OLhJia",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b098943e-44bc-4239-a67e-785426e0d168",
+              "leftValue": "={{ $json.count ?? 0 }}",
+              "rightValue": 10,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        688,
+        80
+      ],
+      "id": "67ded73d-7325-4402-9e6e-e1584af326fe",
+      "name": "Limit reached?"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const JOIN_INBOX = 'join.issuecollector3187@gmail.com';\nconst AUTOMATED_SENDER = /^(mailer-daemon|postmaster|no-?reply|do-?not-?reply)@/i;\n\n\n/**\n * Reads a header value; the trigger stores each header as a full line (\"Name: value\").\n * @param {Object} headers - mail.headers from the Email Trigger\n * @param {string} name - lowercase header name\n * @returns {string} the lowercase value, or '' when the header is missing\n */\nfunction headerValue(headers, name) {\n    const line = headers?.[name] ?? '';\n    return line.slice(line.indexOf(':') + 1).trim().toLowerCase();\n}\n\n\n/**\n * Detects auto-replies, bounces and mails from the Join inbox itself. These never get\n * an answer, otherwise two mailboxes could keep replying to each other forever.\n * @param {Object} headers - mail.headers from the Email Trigger\n * @param {string} address - sender address, lowercase\n * @returns {boolean}\n */\nfunction isAutomated(headers, address) {\n    const autoSubmitted = headerValue(headers, 'auto-submitted');\n    if (autoSubmitted && autoSubmitted !== 'no') return true;\n    if (['bulk', 'junk', 'auto_reply'].includes(headerValue(headers, 'precedence'))) return true;\n    if (headerValue(headers, 'x-autoreply') || headerValue(headers, 'x-autorespond')) return true;\n    return AUTOMATED_SENDER.test(address) || address === JOIN_INBOX;\n}\n\n\n/**\n * Reduces a resolved IMAP email to the fields the pipeline needs.\n * Requests sent through the Join form arrive from the Join inbox itself,\n * with the stakeholder in Reply-To — so Reply-To wins over From.\n * @param {Object} mail - item from the Email Trigger (format \"Resolved\")\n * @returns {{ uid: number, messageId: string, name: string, email: string, subject: string, body: string, isAutomated: boolean }}\n */\nfunction extractEmail(mail) {\n    const sender = mail.replyTo?.value?.[0] ?? mail.from.value[0];\n    const email = sender.address.toLowerCase();\n    return {\n        uid: mail.attributes.uid,\n        messageId: mail.messageId,\n        name: sender.name || sender.address,\n        email,\n        subject: (mail.subject ?? '').trim(),\n        body: (mail.text ?? '').trim().slice(0, 5000),\n        isAutomated: isAutomated(mail.headers, email),\n    };\n}\n\n\nreturn { json: extractEmail($json) };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        -112
+      ],
+      "id": "0c4c1697-382a-42a7-8f2c-cf5598ee19ba",
+      "name": "Extract email"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "/**\n * Builds a Join task from the AI analysis and the email sender.\n * It lands at the end of the Triage column, with the sender as external creator.\n * @param {{ title: string, description: string, category: string, priority: string, dueDate: string }} ai\n * @param {{ name: string, email: string }} sender\n * @returns {Object} the task as stored under tasks/ in Firebase\n */\nfunction buildTask(ai, sender) {\n    const task = {\n        title: ai.title, description: ai.description,\n        category: ai.category, priority: ai.priority,\n        column: 'triage', order: Date.now(),\n        createdAt: $now.toFormat('yyyy-MM-dd'), aiGenerated: true,\n        creator: { name: sender.name, email: sender.email, type: 'external' },\n    };\n    if (/^\\d{4}-\\d{2}-\\d{2}$/.test(ai.dueDate)) task.dueDate = ai.dueDate;\n    return task;\n}\n\n\nreturn { json: buildTask($json.output, $('Extract email').item.json) };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        48
+      ],
+      "id": "1150f899-95ed-4cb5-82ba-bf8db874c211",
+      "name": "Build task"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://join-3187-default-rtdb.europe-west1.firebasedatabase.app/tasks.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\t{{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1488,
+        48
+      ],
+      "id": "994041f2-bc2f-4b7c-a84a-cc5346bf80a5",
+      "name": "Create task",
+      "credentials": {
+        "googleApi": {
+          "id": "i0HsKyTgytc4eZs2",
+          "name": "Google Service Account account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "fromEmail": "Join Issue Collector <join.issuecollector3187@gmail.com>",
+        "toEmail": "={{ $('Extract email').item.json.email }}",
+        "subject": "=Re: {{ $('Extract email').item.json.subject }}",
+        "emailFormat": "text",
+        "text": "=Hi {{ $('Extract email').item.json.name }},\n\nthank you for your request. We have created a ticket on our Join board:\n\n{{ $('Build task').item.json.title }}\nPriority: {{ $('Build task').item.json.priority }}\nDeadline: {{ $('Build task').item.json.dueDate ?? 'none' }}\n\nThe ticket was created automatically by AI and will be reviewed by our team.\nYou will get an email whenever it moves to another column.\n\nBest regards\nYour Join team",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1936,
+        32
+      ],
+      "id": "fc8c28d1-20a5-424a-b6ef-db1adbfe245f",
+      "name": "Send confirmation",
+      "webhookId": "fb925837-4210-4cc4-95f8-5e67d5e966fa",
+      "credentials": {
+        "smtp": {
+          "id": "cLouz5Sl8w59ZZw6",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "email",
+        "operation": "moveEmail",
+        "sourceMailbox": {
+          "__rl": true,
+          "mode": "list",
+          "value": "INBOX"
+        },
+        "emailUid": "={{ $('Extract email').item.json.uid }}",
+        "destinationMailbox": {
+          "__rl": true,
+          "value": "erledigt",
+          "mode": "list",
+          "cachedResultName": "erledigt"
+        }
+      },
+      "type": "n8n-nodes-imap.imap",
+      "typeVersion": 1,
+      "position": [
+        2160,
+        32
+      ],
+      "id": "fc04a717-2205-47cc-9e36-3bb43113e4e0",
+      "name": "Move to done",
+      "credentials": {
+        "imapApi": {
+          "id": "TTIq7xeqzJiqcAEg",
+          "name": "IMAP Credentials account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "Join Issue Collector <join.issuecollector3187@gmail.com>",
+        "toEmail": "={{ $('Extract email').item.json.email }}",
+        "subject": "=Re: {{ $('Extract email').item.json.subject }}",
+        "emailFormat": "text",
+        "text": "=Hi {{ $('Extract email').item.json.name }},\n\nthank you for your request. Our daily limit of 10 automatically created tickets has been reached for today.\n\nYour request has arrived safely and will be reviewed by our team manually, so there is no need to send it again.\n\nBest regards\nYour Join team\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        -48
+      ],
+      "id": "2dd0b119-e3a9-4724-9296-634559f4714f",
+      "name": "Send limit notice",
+      "webhookId": "fb925837-4210-4cc4-95f8-5e67d5e966fa",
+      "credentials": {
+        "smtp": {
+          "id": "cLouz5Sl8w59ZZw6",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "email",
+        "operation": "moveEmail",
+        "sourceMailbox": {
+          "__rl": true,
+          "mode": "list",
+          "value": "INBOX"
+        },
+        "emailUid": "={{ $('Extract email').item.json.uid }}",
+        "destinationMailbox": {
+          "__rl": true,
+          "value": "zu bearbeiten",
+          "mode": "list",
+          "cachedResultName": "zu bearbeiten"
+        }
+      },
+      "type": "n8n-nodes-imap.imap",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        -128
+      ],
+      "id": "035dac86-368e-45ac-bbb2-3734937f4ac6",
+      "name": "Move to review",
+      "credentials": {
+        "imapApi": {
+          "id": "TTIq7xeqzJiqcAEg",
+          "name": "IMAP Credentials account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://join-3187-default-rtdb.europe-west1.firebasedatabase.app/requestStats/{{ $now.toFormat('yyyy-MM-dd') }}.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ count: ($('Get request count').item.json.count ?? 0) + 1 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1712,
+        32
+      ],
+      "id": "45a24f3a-2fac-4841-9b5f-30d2ba2e6709",
+      "name": "Increase request count",
+      "credentials": {
+        "googleApi": {
+          "id": "i0HsKyTgytc4eZs2",
+          "name": "Google Service Account account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "email",
+        "operation": "moveEmail",
+        "sourceMailbox": {
+          "__rl": true,
+          "mode": "list",
+          "value": "INBOX"
+        },
+        "emailUid": "={{ $('Extract email').item.json.uid }}",
+        "destinationMailbox": {
+          "__rl": true,
+          "value": "zu bearbeiten",
+          "mode": "list",
+          "cachedResultName": "zu bearbeiten"
+        }
+      },
+      "type": "n8n-nodes-imap.imap",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        368
+      ],
+      "id": "9f844fdf-6e99-4078-bc18-775d51c68d95",
+      "name": "Move to review (error)",
+      "credentials": {
+        "imapApi": {
+          "id": "TTIq7xeqzJiqcAEg",
+          "name": "IMAP Credentials account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "Join Issue Collector <join.issuecollector3187@gmail.com>",
+        "toEmail": "={{ $('Extract email').item.json.email }}",
+        "subject": "=Re: {{ $('Extract email').item.json.subject }}",
+        "emailFormat": "text",
+        "text": "=Hi {{ $('Extract email').item.json.name }},\n\nthank you for your email. We have received it, but could not create a ticket automatically.\n\nOur team will look into your request and get back to you shortly.\n\nBest regards\nYour Join team",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1936,
+        368
+      ],
+      "id": "b466a9e3-b2d3-4a3d-ac08-42a09ee4d9f6",
+      "name": "Send received notice",
+      "webhookId": "fb925837-4210-4cc4-95f8-5e67d5e966fa",
+      "credentials": {
+        "smtp": {
+          "id": "cLouz5Sl8w59ZZw6",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ddd547f0-8cc3-45a9-9b11-4aa16a216f7c",
+              "leftValue": "={{ $json.isAutomated }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        -112
+      ],
+      "id": "a615137e-64d1-4bfe-8012-dba76ba1cd5d",
+      "name": "Automated mail?"
+    }
+  ],
+  "connections": {
+    "Email Trigger (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "Extract email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get request count": {
+      "main": [
+        [
+          {
+            "node": "Limit reached?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Move to review (error)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analyze email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit reached?": {
+      "main": [
+        [
+          {
+            "node": "Send limit notice",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Analyze email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract email": {
+      "main": [
+        [
+          {
+            "node": "Automated mail?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze email": {
+      "main": [
+        [
+          {
+            "node": "Build task",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Move to review (error)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build task": {
+      "main": [
+        [
+          {
+            "node": "Create task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create task": {
+      "main": [
+        [
+          {
+            "node": "Increase request count",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Move to review (error)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send confirmation": {
+      "main": [
+        [
+          {
+            "node": "Move to done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send limit notice": {
+      "main": [
+        [
+          {
+            "node": "Move to review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Increase request count": {
+      "main": [
+        [
+          {
+            "node": "Send confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move to review (error)": {
+      "main": [
+        [
+          {
+            "node": "Send received notice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Automated mail?": {
+      "main": [
+        [
+          {
+            "node": "Move to review",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get request count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "93278bc9-d679-4c14-a576-33f6f1496ba7",
+  "activeVersionId": null,
+  "versionCounter": 162,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

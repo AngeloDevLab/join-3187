@@ -1,0 +1,234 @@
+{
+  "updatedAt": "2026-10-13T18:41:33.789Z",
+  "createdAt": "2026-10-13T18:26:50.930Z",
+  "id": "6ChEpJSGn9QDLqHO",
+  "name": "Request Form",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "join-request",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "aa06a993-eede-4adb-ae94-1992a8b5feee",
+      "name": "Webhook",
+      "webhookId": "46b809f1-9eb1-4f3e-bcde-2882c1624c6a"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const EMAIL = /^[^\\s@<>\"]+@[^\\s@<>\"]+\\.[^\\s@<>\"]+$/;\n\n\n/**\n * Trims a single-line value, replaces characters that could break mail headers\n * (line breaks, <, >, \") and caps its length.\n * @param {unknown} value - raw value from the request body\n * @param {number} max - maximum length\n * @returns {string}\n */\nfunction cleanLine(value, max) {\n    return String(value ?? '').replace(/[\\r\\n<>\"]/g, ' ').trim().slice(0, max);\n}\n\n\n/**\n * Validates the stakeholder form again on the server, since the browser check can be bypassed.\n * @param {{ name?: string, email?: string, subject?: string, message?: string }} body - JSON body of the webhook\n * @returns {{ valid: boolean, name: string, email: string, subject: string, message: string }}\n */\nfunction validateRequest(body) {\n    const request = {\n        name: cleanLine(body.name, 100),\n        email: cleanLine(body.email, 254).toLowerCase(),\n        subject: cleanLine(body.subject, 150),\n        message: String(body.message ?? '').trim().slice(0, 5000),\n    };\n    const valid = !!request.name && EMAIL.test(request.email) && !!request.subject && !!request.message;\n    return { valid, ...request };\n}\n\n\nreturn { json: validateRequest($json.body ?? {}) };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "6cf06ec5-cbba-4f56-abf4-d6f15700e4b9",
+      "name": "Validate request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8397f392-cf05-4e71-bc39-e08ec9e7cab9",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "fd067727-7050-49fb-beca-08f3667debb4",
+      "name": "Valid?"
+    },
+    {
+      "parameters": {
+        "fromEmail": "Join Request Form <join.issuecollector3187@gmail.com>",
+        "toEmail": "join.issuecollector3187@gmail.com",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.message }}",
+        "options": {
+          "appendAttribution": false,
+          "replyTo": "={{ $json.name }} <{{ $json.email }}>"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        -80
+      ],
+      "id": "d3551c14-5188-48df-88c8-1353d7323f5c",
+      "name": "Forward to inbox",
+      "webhookId": "380b6e36-6c54-4056-8374-9b5104d6da70",
+      "credentials": {
+        "smtp": {
+          "id": "cLouz5Sl8w59ZZw6",
+          "name": "SMTP account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"ok\": true }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        896,
+        -176
+      ],
+      "id": "a5db0e5d-6d39-461f-8e9a-2090cf0719a4",
+      "name": "Respond ok"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"ok\": false }",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        672,
+        128
+      ],
+      "id": "afb2eba6-e473-4d3b-9335-897a50dca6d3",
+      "name": "Respond invalid"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"ok\": false }",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        896,
+        16
+      ],
+      "id": "48afcb0c-9164-4eea-8096-615255cece69",
+      "name": "Respond error"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate request": {
+      "main": [
+        [
+          {
+            "node": "Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid?": {
+      "main": [
+        [
+          {
+            "node": "Forward to inbox",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond invalid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Forward to inbox": {
+      "main": [
+        [
+          {
+            "node": "Respond ok",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "f2408d9e-646a-4445-b78a-1a7cf6102d1f",
+  "activeVersionId": "f2408d9e-646a-4445-b78a-1a7cf6102d1f",
+  "versionCounter": 42,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "versionMetadata": {
+    "name": "Version f2408d9e",
+    "description": ""
+  }
+}

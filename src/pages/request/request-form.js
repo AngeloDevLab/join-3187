@@ -20,7 +20,7 @@ export class RequestForm {
     #onSubmit;
 
 
-    /** @param {(values: {name: string, email: string, subject: string, message: string}) => void} onSubmit - gets the trimmed values once all fields are valid */
+    /** @param {(values: {name: string, email: string, subject: string, message: string}) => Promise<boolean>} onSubmit - gets the trimmed values once all fields are valid; resolves true to clear the form */
     constructor(onSubmit) {
         this.#onSubmit = onSubmit;
         RULES.forEach((rule) => this.#wireField(rule));
@@ -52,11 +52,23 @@ export class RequestForm {
     }
 
 
-    /** @param {SubmitEvent} e - validates every field, then hands the values to onSubmit */
-    #submit(e) {
+    /** @param {SubmitEvent} e - validates every field, then awaits onSubmit with the button disabled */
+    async #submit(e) {
         e.preventDefault();
-        if (!RULES.map((rule) => this.#check(rule)).every(Boolean)) return;
+        if (this.#submitButton.disabled || !RULES.map((rule) => this.#check(rule)).every(Boolean)) return;
         const values = Object.fromEntries(RULES.map((rule) => [rule.key, this.#inputs[rule.key].value.trim()]));
-        this.#onSubmit(values);
+        this.#submitButton.disabled = true;
+        try {
+            if (await this.#onSubmit(values)) this.#reset();
+        } finally {
+            this.#submitButton.disabled = false;
+        }
+    }
+
+
+    /** Empties every field and dims the button again. */
+    #reset() {
+        this.#form.reset();
+        this.#updateSubmitState();
     }
 }
