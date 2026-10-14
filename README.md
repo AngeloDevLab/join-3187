@@ -41,6 +41,8 @@ flowchart LR
 
 ## Demo
 
+**Live:** [join.angelodevelopment.de](https://join.angelodevelopment.de)
+
 **As a stakeholder**
 1. Open the app and choose **"Are you a stakeholder?" → Create request**. The page shows how many of today's 10 AI tickets are left.
 2. Send a request through the form — or write an email to the address shown on the page. Try something like: *"We need a PDF export of all tasks by the end of next month, it's quite urgent."*
@@ -51,7 +53,7 @@ flowchart LR
 2. Open the **Board**: the new ticket is in Triage, marked "AI-generated ticket". Open it to see the stakeholder as its external creator.
 3. Drag the ticket to **To Do** and leave it there. About 5 minutes later, the stakeholder gets an email that it was moved.
 
-> The pipeline needs a running n8n instance. Until it is deployed, run it locally as described in [n8n/README.md](n8n/README.md).
+> n8n runs on a Hetzner server behind Caddy (HTTPS). To run the pipeline yourself, see [n8n/README.md](n8n/README.md).
 
 ## Tech Stack
 

@@ -21,6 +21,21 @@ docker compose up -d
 Open http://localhost:5678 and create the owner account on first start.
 Credentials (Gmail IMAP/SMTP, AI API, Firebase) are entered in the n8n UI only — they live in the Docker volume, never in this repo.
 
+## Server
+
+In production n8n runs on a Hetzner Cloud server (Ubuntu, Docker) at `https://n8n.angelodevelopment.de`:
+
+- **Caddy** (`/opt/caddy`) is the only container with open ports (80/443). It gets the HTTPS certificate automatically and forwards the subdomain to `n8n:5678` over the shared Docker network `web`.
+- **n8n** (`/opt/n8n`) uses the same compose file as above, but without `ports:`, joined to the `web` network, plus:
+  ```yaml
+  - N8N_HOST=n8n.angelodevelopment.de
+  - N8N_PROTOCOL=https
+  - WEBHOOK_URL=https://n8n.angelodevelopment.de/
+  - N8N_PROXY_HOPS=1
+  ```
+- The data was moved from the local instance by copying the Docker volume and `.env` — the same `N8N_ENCRYPTION_KEY` keeps the saved credentials readable.
+- Hetzner blocks outgoing SMTP on ports 25 and 465 for new accounts, so the SMTP credential uses `smtp.gmail.com:587` (STARTTLS).
+
 ## Workflows
 
 Exported workflows live in `workflows/` (mounted into the container at `/workflows`).

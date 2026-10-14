@@ -1,5 +1,5 @@
-/** Base URL of the n8n webhooks — local n8n until it runs on the server. */
-const N8N_WEBHOOK_URL = 'http://localhost:5678/webhook';
+/** Base URL of the n8n webhooks on the Hetzner server. */
+const N8N_WEBHOOK_URL = 'https://n8n.angelodevelopment.de/webhook';
 
 
 /**
