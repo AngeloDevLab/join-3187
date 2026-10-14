@@ -10,6 +10,9 @@ services:
       - GENERIC_TIMEZONE=Europe/Berlin
       - TZ=Europe/Berlin
       - N8N_DIAGNOSTICS_ENABLED=false
+      # Execution data contains request emails — the privacy policy promises deletion after 14 days
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=336
     volumes:
       - n8n_data:/home/node/.n8n
       - ./workflows:/workflows

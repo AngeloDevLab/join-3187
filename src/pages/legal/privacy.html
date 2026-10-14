@@ -65,63 +65,86 @@
 
                 <h2>1. Data Controller</h2>
                 <p>
-                    Angelo Pietsch, Louis Juchem, Mahad Yussuf Nur, Christian Mulugeta<br>
+                    Angelo Pietsch<br>
                     Haydnstraße 45<br>
                     02708 Löbau<br>
+                    Germany<br>
                     Email: apietsch94@gmail.com
                 </p>
 
                 <h2>2. Overview of Processing</h2>
-                <p>This app processes personal data to provide a Kanban board (JOIN). No cookies, tracking, or analytics
-                    tools are used.</p>
+                <p>Join is a Kanban board created as a learning and portfolio project. Personal data is processed to
+                    provide accounts, the shared board and contacts, and to turn stakeholder requests into tickets
+                    (Issue Collector). No cookies, tracking or analytics tools are used.</p>
 
-                <h2>3. Registration</h2>
-                <p>During registration we collect:</p>
-                <ul>
-                    <li>Name</li>
-                    <li>Email address</li>
-                </ul>
-                <p>This data is permanently stored in the Firebase Realtime Database (collection <code>users</code>).
-                    The entered password is checked client-side only and is never transmitted to or stored on the
-                    backend.</p>
-                <p><strong>Legal basis:</strong> Art. 6(1)(b) GDPR (performance of a contract / pre-contractual
-                    measures).</p>
+                <h2>3. Hosting of the Website</h2>
+                <p>The website is hosted on <strong>GitHub Pages</strong>. When you open a page, GitHub processes
+                    technically necessary data, in particular your IP address, the time of access and the requested
+                    page, to deliver the website and protect it against attacks.</p>
+                <p>Provider: GitHub, Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA. GitHub is certified
+                    under the EU-U.S. Data Privacy Framework.</p>
+                <p><strong>Legal basis:</strong> Art. 6(1)(f) GDPR (legitimate interest in a secure, working website).
+                </p>
 
-                <h2>4. Login</h2>
-                <p>The email address is used for identification during login. After a successful login, the following
-                    data is stored in the browser's <code>sessionStorage</code>:</p>
-                <ul>
-                    <li>ID, name, initials, email address</li>
-                </ul>
-                <p>This data is automatically deleted when the browser tab is closed. This is not a cookie.</p>
-                <p><strong>Guest login:</strong> No data is stored in the database; all information remains local in
-                    <code>sessionStorage</code>.</p>
-                <p><strong>Legal basis:</strong> Art. 6(1)(b) GDPR.</p>
+                <h2>4. Firebase (Login and Database)</h2>
+                <p>Login and data storage use <strong>Firebase Authentication</strong> and the <strong>Firebase Realtime
+                    Database</strong> by Google. The Firebase program code is loaded from Google's server
+                    <code>gstatic.com</code>, which transmits your IP address to Google.</p>
+                <p>Provider: Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland. Database location:
+                    Belgium (europe-west1). It cannot be ruled out that data is also processed outside the EU; Google
+                    uses EU Standard Contractual Clauses as a safeguard.</p>
 
-                <h2>5. Use of the App (Contacts and Tasks)</h2>
+                <h2>5. Registration and Login</h2>
+                <p>When you register, your name, email address and password are processed by Firebase Authentication.
+                    The password is stored only as a cryptographic hash by Google, never in plain text. Your name and
+                    email address are also added to the shared contact list.</p>
+                <p>After login, Firebase keeps a login token in the browser's <code>sessionStorage</code>. It is deleted
+                    when you close the tab. This is not a cookie.</p>
+                <p><strong>Guest login:</strong> Firebase creates an anonymous account without name or email address.
+                </p>
+                <p><strong>Legal basis:</strong> Art. 6(1)(b) GDPR (providing the service you signed up for).</p>
+
+                <h2>6. Use of the App (Contacts and Tasks)</h2>
                 <p>While using the app, the following data is stored in the Firebase Realtime Database:</p>
-                <p><strong>Contacts</strong> (collection <code>contacts</code>): Name, email address, phone number</p>
-                <p><strong>Tasks</strong> (collection <code>tasks</code>): Title, description, due date, priority,
-                    category, subtasks, assigned contacts</p>
-                <p>This data is visible to all users of the app (no per-user data separation).</p>
+                <p><strong>Contacts:</strong> name, email address, phone number</p>
+                <p><strong>Tasks:</strong> title, description, due date, priority, category, subtasks, assigned contacts
+                    and the creator (name, email address, whether they are a team member or an external stakeholder)</p>
+                <p>All of this data is visible to every logged-in user, including guests (one shared board).</p>
                 <p><strong>Legal basis:</strong> Art. 6(1)(b) GDPR.</p>
 
-                <h2>6. Hosting and Processing by Third Parties</h2>
-                <p>We use <strong>Firebase Realtime Database</strong> by Google to store all data mentioned above.</p>
-                <p>Provider: Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland</p>
-                <p>It cannot be ruled out that data is also processed on servers outside the EU. Google uses EU Standard
-                    Contractual Clauses as a safeguard for an adequate level of data protection.</p>
-                <p>Database location: Belgium (europe-west1).</p>
-                <p>More information: Firebase Privacy Policy by Google.</p>
+                <h2>7. Stakeholder Requests (Issue Collector)</h2>
+                <p>Stakeholders can send a request through the request form or by email to the Join inbox. We process
+                    your name, email address, subject and message, and the content of any email you send.</p>
+                <p>The form sends your data to our automation server (n8n), which forwards it as an email to the Join
+                    inbox. An automated workflow then reads the email, has it analysed by an AI service (Google Gemini)
+                    to determine category, title, summary, priority and deadline, and creates a ticket on the board with
+                    your name and email address as its creator. You receive a confirmation email, and later an email
+                    whenever the team moves your ticket to another column.</p>
+                <p>Only the number of requests per day is stored publicly (for the daily limit shown on the request
+                    page), without any personal data.</p>
+                <p><strong>Legal basis:</strong> Art. 6(1)(f) GDPR (legitimate interest in handling your request).</p>
 
-                <h2>7. No Cookies, No Tracking</h2>
+                <h2>8. Service Providers for the Issue Collector</h2>
+                <ul>
+                    <li><strong>Hetzner Online GmbH</strong>, Industriestr. 25, 91710 Gunzenhausen, Germany — server for
+                        the automation software n8n, located in Germany</li>
+                    <li><strong>Google Gmail</strong> (Google Ireland Limited) — Join inbox; sending confirmation and
+                        status emails</li>
+                    <li><strong>Google Gemini API</strong> (Google Ireland Limited) — AI analysis of the request. Under
+                        Google's terms for the free tier, Google may use submitted content to improve its services, and
+                        human reviewers may read it. Please do not include sensitive information in your request.</li>
+                </ul>
+
+                <h2>9. No Cookies, No Tracking</h2>
                 <p>This app does not use cookies, analytics tools (e.g. Google Analytics), or tracking. Fonts and icons
-                    are loaded locally; there is no connection to external CDNs (e.g. Google Fonts).</p>
+                    are hosted with the website; there is no connection to Google Fonts or similar services.</p>
 
-                <h2>8. Storage Duration</h2>
-                <p>Data in the Firebase Realtime Database (users, contacts, tasks) is stored until manually deleted. There is no automatic deletion or retention period.</p>
+                <h2>10. Storage Duration</h2>
+                <p>Accounts, contacts and tasks are stored until they are deleted in the app or on request. Request
+                    emails remain in the Join inbox until they are deleted manually. The automation server keeps the
+                    data of each workflow run for at most 14 days for troubleshooting and deletes it automatically.</p>
 
-                <h2>9. Rights of Data Subjects</h2>
+                <h2>11. Rights of Data Subjects</h2>
                 <p>You have the right to:</p>
                 <ul>
                     <li>Access (Art. 15 GDPR)</li>
@@ -134,17 +157,16 @@
                 </ul>
                 <p>To exercise these rights, contact: apietsch94@gmail.com</p>
 
-                <h2>10. Data Security</h2>
-                <p>Data transmission is encrypted via HTTPS.</p>
-                <p>The Firebase Realtime Database is not secured by Firebase Security Rules based on user identity.
-                    All app data (contacts, tasks) is readable and writable by any user of the app, including guests,
-                    without server-side access control differentiating between individual accounts. This is a deliberate
-                    design decision for this shared project management environment.</p>
+                <h2>12. Data Security</h2>
+                <p>All data is transmitted encrypted via HTTPS.</p>
+                <p>Firebase Security Rules only allow logged-in users (including guests) to read and write contacts and
+                    tasks. Within the app there is no separation between users: everyone works on the same shared
+                    board. This is a deliberate design decision for this demo project.</p>
 
-                <h2>11. Changes to this Privacy Policy</h2>
-                <p>We reserve the right to update this privacy policy as the app's functionality changes.</p>
+                <h2>13. Changes to this Privacy Policy</h2>
+                <p>I reserve the right to update this privacy policy as the app's functionality changes.</p>
 
-                <p><em>Last updated: 30.06.2026</em></p>
+                <p><em>Last updated: 14.10.2026</em></p>
 
             </section>
         </main>
