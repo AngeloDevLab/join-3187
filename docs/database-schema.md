@@ -68,7 +68,7 @@ There is no `users/` collection: accounts live in **Firebase Authentication**, w
 | Key | Label |
 |---|---|
 | `triage` | Triage — backlog; every new task lands here (Add Task and n8n) |
-| `todo` | To Do |
-| `inProgress` | In Progress |
-| `awaitFeedback` | Awaiting Feedback |
+| `todo` | To do |
+| `inProgress` | In progress |
+| `awaitFeedback` | Await feedback |
 | `done` | Done |
