@@ -261,6 +261,18 @@ body.is-dark {
     font-weight: var(--font-weight-regular);
 }
 
+/* Figma: accent as the resting color, like the request page's "Create request";
+   Figma has no hover, so it swaps to the usual primary, plus the shared shadow. */
+.role-request-btn {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+.role-request-btn:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
 .auth-title {
     position: relative;
     align-self: center;

@@ -73,7 +73,8 @@
                 <p>
                     <span class="accent">Join</span> is a kanban-based project management tool designed and built by
                     a group of dedicated students as part of their web development bootcamp at the Developer
-                    Akademie.
+                    Akademie, and later extended with the AI Issue Collector, which turns stakeholder requests into
+                    tickets automatically.
                 </p>
                 <p>
                     Kanban, a Japanese term meaning "billboard", is a highly effective method to visualize
@@ -100,8 +101,9 @@
                             <h3>Exploring the Board</h3>
                             <p>
                                 When you log in to <span class="accent">Join</span>, you'll find a default board.
-                                This board represents your project and contains four default lists: "To Do", "In
-                                Progress", "Await feedback" and "Done".
+                                This board represents your project and contains five lists: "Triage", "To do", "In
+                                progress", "Await feedback" and "Done". "Triage" is the backlog: every new task
+                                lands there first, so the team can review and prioritise it.
                             </p>
                         </div>
                     </li>
@@ -125,9 +127,9 @@
                             <h3>Adding Cards</h3>
                             <p>
                                 Now that you've added your contacts, you can start adding cards. Cards represent
-                                individual tasks. Click the "+" button under the appropriate list to create a new
-                                card. Fill in the task details in the card, like task name, description, due date,
-                                assignees, etc.
+                                individual tasks. Open "Add Task" in the menu or click "Add task" (or "+") on the board, then
+                                fill in the task details, like title, description, due date, priority, category,
+                                assignees and subtasks. New cards appear in "Triage", with you as their creator.
                             </p>
                         </div>
                     </li>
@@ -135,16 +137,32 @@
                     <li class="help-step">
                         <span class="help-step-number">4.</span>
                         <div class="help-step-body">
-                            <h3>Moving Cards</h3>
+                            <h3>Tickets from Stakeholders</h3>
                             <p>
-                                As the task moves from one stage to another, you can reflect that on the board by
-                                dragging and dropping the card from one list to another.
+                                Stakeholders don't need an account: they send a request through the request page or
+                                by email. An AI reads it and creates a ticket in "Triage" with title, category,
+                                priority, deadline and, if the request names them, subtasks. These tickets are marked
+                                "AI-generated ticket" and show the stakeholder as their external creator. At most 10
+                                AI tickets are created per day; later requests are handled by the team manually.
                             </p>
                         </div>
                     </li>
 
                     <li class="help-step">
                         <span class="help-step-number">5.</span>
+                        <div class="help-step-body">
+                            <h3>Moving Cards</h3>
+                            <p>
+                                As the task moves from one stage to another, you can reflect that on the board by
+                                dragging and dropping the card from one list to another, or with the "Move To" menu
+                                on mobile. If a stakeholder created the ticket, they get an email about the new
+                                status a few minutes later.
+                            </p>
+                        </div>
+                    </li>
+
+                    <li class="help-step">
+                        <span class="help-step-number">6.</span>
                         <div class="help-step-body">
                             <h3>Deleting Cards</h3>
                             <p>
@@ -154,7 +172,7 @@
                                 <span class="accent">Join</span> effectively requires consistent updates from you and
                                 your team to ensure the board reflects the current state of your project. Have more
                                 questions about <span class="accent">Join</span>? Feel free to contact us at
-                                [Your Contact Email]. We're here to help you!
+                                <a href="mailto:apietsch94@gmail.com">apietsch94@gmail.com</a>. We're here to help you!
                             </p>
                         </div>
                     </li>

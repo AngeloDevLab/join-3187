@@ -2,7 +2,7 @@ import { PRIORITY_META, escapeHtml, getSubtaskProgress } from '../../utils/helpe
 import { iconUrl } from '../../utils/paths.js';
 
 const MAX_VISIBLE_AVATARS = 3;
-const MOVE_TARGETS = { triage: 'Triage', todo: 'Todo', inProgress: 'In Progress', awaitFeedback: 'Await Feedback', done: 'Done' };
+const MOVE_TARGETS = { triage: 'Triage', todo: 'To do', inProgress: 'In progress', awaitFeedback: 'Await feedback', done: 'Done' };
 
 
 /**

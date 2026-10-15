@@ -1,7 +1,7 @@
 /* ── Main Content ─────────────────────────────────────────── */
 
 .add-task-main {
-    padding: clamp(var(--space-sm), 4vw, var(--space-xl)) clamp(var(--space-sm), 4vw, var(--space-xl)) 0;
+    padding: clamp(var(--space-sm), 4vw, var(--space-xl)) clamp(var(--space-sm), 4vw, var(--space-xl));
     overflow-y: auto;
 }
 

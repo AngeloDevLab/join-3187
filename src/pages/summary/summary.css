@@ -66,6 +66,7 @@ hr {
     height: 100%;
     background-color: var(--color-border);
     width: 2px;
+    flex-shrink: 0; /* like the icons: a narrow card would squeeze the line to 0px */
     margin: 0 6px;
 }
 
@@ -102,11 +103,14 @@ hr {
     grid-column: span 3;
 }
 
-/* Rows 2 + 3 on mobile: deadline and email requests each get a full row,
-   since the deadline card doesn't fit into 4/6 of a 320px screen */
-.summary-card:nth-child(3),
+/* Row 2: deadline and email requests side by side; on mobile the deadline
+   card fits thanks to the short month and "Upcoming Deadline" wrapping */
+.summary-card:nth-child(3) {
+    grid-column: span 4;
+}
+
 .summary-card:nth-child(4) {
-    grid-column: span 6;
+    grid-column: span 2;
 }
 
 /* Row 3: tasks in board, in progress, awaiting feedback */
@@ -156,8 +160,15 @@ hr {
     font-size: var(--fs-body-sm);
 }
 
+/* date and "Upcoming Deadline" wrap on their own when the card gets narrow;
+   the date only before the year (non-breaking space in summary.js) */
 .date strong {
     font-size: var(--fs-body-md);
+}
+
+/* Mobile: short month ("Oct 30, 2026"); the long one takes over from 768px */
+.date-long {
+    display: none;
 }
 
 @keyframes fadeOut {
@@ -191,6 +202,12 @@ hr {
     animation: fadeOut 1.5s ease-in forwards;
     animation-delay: 1s;
     text-align: center;
+}
+
+/* hides the placeholder until summary.js has set the time of day and name;
+   visibility keeps the space, so nothing shifts when the text appears */
+.greeting-overlay.is-loading p {
+    visibility: hidden;
 }
 
 .username {
@@ -230,13 +247,12 @@ hr {
         display: inherit;
     }
 
-    /* Row 2: deadline and email requests side by side */
-    .summary-card:nth-child(3) {
-        grid-column: span 4;
+    .date-long {
+        display: inline;
     }
 
-    .summary-card:nth-child(4) {
-        grid-column: span 2;
+    .date-short {
+        display: none;
     }
 }
 

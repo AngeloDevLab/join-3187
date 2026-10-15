@@ -45,18 +45,17 @@ function playMobileGreeting(overlay) {
 
 
 /**
- * Fills the greeting overlay with a time-of-day greeting and the user's name.
+ * Fills the greeting overlay with a time-of-day greeting and the user's name,
+ * then reveals it (the static placeholder stays hidden until then).
  * @param {HTMLElement} overlay
  */
 function setGreetingName(overlay) {
     const user = authService.currentUser;
     const greeting = getGreetingDate();
     const text = overlay.querySelector('p');
-    if (user.isGuest) {
-        text.textContent = `${greeting}!`;
-        return;
-    }
-    text.innerHTML = `${greeting}, <span class="username">${escapeHtml(user.name)}</span>`;
+    if (user.isGuest) text.textContent = `${greeting}!`;
+    else text.innerHTML = `${greeting}, <span class="username">${escapeHtml(user.name)}</span>`;
+    overlay.classList.remove('is-loading');
 }
 
 
@@ -96,15 +95,28 @@ function computeSummaryCounts(tasks) {
 
 
 /**
- * Formats an ISO date string (YYYY-MM-DD) as "Month D, YYYY". Parsed as a
- * local date — `new Date('YYYY-MM-DD')` alone would be UTC and show the
- * previous day in time zones west of UTC.
+ * Formats an ISO date string (YYYY-MM-DD) as "October 30, 2026" or "Oct 30, 2026".
+ * Parsed as a local date — `new Date('YYYY-MM-DD')` alone would be UTC and show
+ * the previous day in time zones west of UTC. Month and day are joined by a
+ * non-breaking space, so a narrow card can only wrap before the year.
  * @param {string} isoDate
+ * @param {'long'|'short'} monthStyle
  * @returns {string}
  */
-function formatDueDate(isoDate) {
+function formatDueDate(isoDate, monthStyle) {
     const [year, month, day] = isoDate.split('-').map(Number);
-    return new Date(year, month - 1, day).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString('en-US', { month: monthStyle, day: 'numeric', year: 'numeric' }).replace(' ', ' ');
+}
+
+
+/**
+ * Writes the next urgent due date in both lengths; CSS shows the short one on mobile.
+ * @param {string|null} isoDate
+ */
+function renderUrgentDate(isoDate) {
+    document.getElementById('summaryUrgentDate').textContent = isoDate ? formatDueDate(isoDate, 'long') : '-';
+    document.getElementById('summaryUrgentDateShort').textContent = isoDate ? formatDueDate(isoDate, 'short') : '-';
 }
 
 
@@ -120,8 +132,7 @@ function renderSummaryCounts(counts) {
     document.getElementById('summaryInProgress').textContent = counts.inProgress;
     document.getElementById('summaryAwaitFeedback').textContent = counts.awaitingFeedback;
     document.getElementById('summaryEmailRequests').textContent = counts.emailRequests;
-    document.getElementById('summaryUrgentDate').textContent =
-        counts.nextUrgentDue ? formatDueDate(counts.nextUrgentDue) : '-';
+    renderUrgentDate(counts.nextUrgentDue);
 }
 
 

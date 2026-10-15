@@ -134,13 +134,25 @@
     text-decoration: underline;
 }
 
+/* Figma: accent as the resting color; Figma has no hover, so it swaps to the
+   usual primary (the reverse of .btn-primary), plus the shared hover shadow. */
 .request-btn {
     grid-area: btn;
     justify-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
     margin-top: 48px;
     padding: var(--space-sm) var(--space-md);
     font-size: var(--fs-body-lg);
     font-weight: var(--font-weight-regular);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+.request-btn:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 /* ── Limit Reached ─────────────────────────────────────── */
