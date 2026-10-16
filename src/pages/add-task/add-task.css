@@ -224,15 +224,18 @@
     padding: 0;
     display: flex;
     flex-direction: column;
+    gap: var(--space-xs);
     /* Fixed to 3 rows so the layout never jumps - once a 4th subtask is
        added, the list scrolls instead of growing the modal/page. */
-    height: calc(var(--subtask-item-height) * 3);
+    height: calc(var(--subtask-item-height) * 3 + var(--space-xs) * 2);
     overflow-y: auto;
 }
 
+/* Long subtasks wrap onto several lines, so bullet and buttons sit on the first line */
 .subtask-item {
     display: flex;
-    align-items: center;
+    flex-shrink: 0;
+    align-items: flex-start;
     gap: var(--space-xs);
     min-height: var(--subtask-item-height);
     box-sizing: border-box;
@@ -247,6 +250,7 @@
 }
 
 .subtask-item.is-editing {
+    align-items: center;
     background: var(--color-white);
     border-radius: 0;
 }
@@ -261,15 +265,32 @@
 
 .subtask-text {
     flex: 1;
+    min-width: 0;
     font-size: 16px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
     color: var(--color-text);
 }
 
 .subtask-item-actions {
     display: flex;
+    flex-shrink: 0;
     gap: 2px;
+    margin-top: -3px;
     opacity: 0;
     transition: opacity var(--transition-fast);
+}
+
+.subtask-item.is-editing .subtask-item-actions {
+    margin-top: 0;
+}
+
+/* Touch screens have no hover, so the hidden buttons would only take space from
+   the text; tapping a row starts editing, which shows them. */
+@media (hover: none) {
+    .subtask-item:not(.is-editing) .subtask-item-actions {
+        display: none;
+    }
 }
 
 .subtask-item:hover .subtask-item-actions,
@@ -319,6 +340,7 @@
 
 .subtask-edit-input {
     flex: 1;
+    min-width: 0;
     border: none;
     border-bottom: 1px solid var(--color-accent);
     outline: none;
