@@ -4,7 +4,7 @@ Turns stakeholder emails into tickets in Join's Triage column.
 
 | Workflow | Trigger | What it does |
 |---|---|---|
-| `issue-collector.json` | new mail in the inbox (IMAP) | skips auto-replies, checks the daily limit, lets Gemini analyse the mail (category, title, priority, deadline, subtasks), creates the ticket, replies and moves the mail to `erledigt` / `zu bearbeiten` |
+| `issue-collector.json` | new mail in the inbox (IMAP) | skips auto-replies, checks the daily limit, lets an AI Agent (Gemini, Structured Output Parser) analyse the mail (category, title, priority, deadline, subtasks), creates the ticket, replies and moves the mail to `erledigt` / `zu bearbeiten` |
 | `request-form.json` | `POST /webhook/join-request` | validates the stakeholder form and mails it to the inbox (Reply-To = stakeholder) |
 | `column-change.json` | `POST /webhook/join-column-change` | waits 5 minutes, re-reads the task and mails the external creator if it now sits in a new column |
 
@@ -48,6 +48,8 @@ node clean-exports.mjs
 # import them into a fresh instance
 docker compose exec n8n n8n import:workflow --separate --input=/workflows
 ```
+
+Alternatively, download a single workflow in the n8n UI (⋯ → Download) and save it as `workflows/<workflow-name>.json`; UI downloads have no `shared` block, so they need no cleaning.
 
 Exports contain credential names and IDs, but no secrets. `clean-exports.mjs` removes the `shared` block, which holds the owner's name and email.
 
