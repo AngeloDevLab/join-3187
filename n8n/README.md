@@ -25,13 +25,33 @@ Credentials (Gmail IMAP/SMTP, AI API, Firebase) are entered in the n8n UI only â
 
 In production n8n runs on a Hetzner Cloud server (Ubuntu, Docker) at `https://n8n.angelodevelopment.de`:
 
-- **Caddy** (`/opt/caddy`) is the only container with open ports (80/443). It gets the HTTPS certificate automatically and forwards the subdomain to `n8n:5678` over the shared Docker network `web`.
+- **Caddy** (`/opt/caddy`) is the only container with open ports (80/443). It gets the HTTPS certificate automatically and forwards the subdomain to `n8n:5678` over the shared Docker network `web`. It runs a custom image (`caddy-ratelimit:2.10`, built from a two-line Dockerfile with `xcaddy build --with github.com/mholt/caddy-ratelimit`) that limits `/webhook/*` to 20 requests per minute per IP; anything above gets `429` and never reaches n8n:
+  ```caddyfile
+  {
+  	order rate_limit before reverse_proxy
+  }
+
+  n8n.angelodevelopment.de {
+  	rate_limit {
+  		zone webhooks {
+  			match {
+  				path /webhook/*
+  			}
+  			key {remote_host}
+  			events 20
+  			window 1m
+  		}
+  	}
+  	reverse_proxy n8n:5678
+  }
+  ```
 - **n8n** (`/opt/n8n`) uses the same compose file as above, but without `ports:`, joined to the `web` network, plus:
   ```yaml
   - N8N_HOST=n8n.angelodevelopment.de
   - N8N_PROTOCOL=https
-  - WEBHOOK_URL=https://n8n.angelodevelopment.de/
+  - N8N_WEBHOOK_URL=https://n8n.angelodevelopment.de/
   - N8N_PROXY_HOPS=1
+  - N8N_UNVERIFIED_PACKAGES_ENABLED=true  # keeps the community IMAP node installable after the default changes
   ```
 - The data was moved from the local instance by copying the Docker volume and `.env` â€” the same `N8N_ENCRYPTION_KEY` keeps the saved credentials readable.
 - Hetzner blocks outgoing SMTP on ports 25 and 465 for new accounts, so the SMTP credential uses `smtp.gmail.com:587` (STARTTLS).

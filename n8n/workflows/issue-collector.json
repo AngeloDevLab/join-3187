@@ -31,7 +31,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        448,
+        384,
         352
       ],
       "id": "d0861c15-559b-4c7d-8736-a3b136ec98af",
@@ -91,7 +91,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        688,
+        560,
         80
       ],
       "id": "67ded73d-7325-4402-9e6e-e1584af326fe",
@@ -258,8 +258,8 @@
       "type": "n8n-nodes-imap.imap",
       "typeVersion": 1,
       "position": [
-        1264,
-        -128
+        1376,
+        -256
       ],
       "id": "035dac86-368e-45ac-bbb2-3734937f4ac6",
       "name": "Move to review",
@@ -272,7 +272,7 @@
     },
     {
       "parameters": {
-        "method": "PUT",
+        "method": "PATCH",
         "url": "=https://join-3187-default-rtdb.europe-west1.firebasedatabase.app/requestStats/{{ $now.toFormat('yyyy-MM-dd') }}.json",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "googleApi",
@@ -423,6 +423,67 @@
       ],
       "id": "f8b547a7-17f7-44cf-98d3-edc5380a6e8d",
       "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7010eebf-de77-4f35-a44f-8e3732828b46",
+              "leftValue": "={{ ($('Get request count').item.json.limitMails ?? 0) < 20 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        736,
+        -16
+      ],
+      "id": "4e6d8106-db7d-491e-875a-8bec48c91961",
+      "name": "Limit notices left?"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://join-3187-default-rtdb.europe-west1.firebasedatabase.app/requestStats/{{ $now.toFormat('yyyy-MM-dd') }}.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ limitMails: ($('Get request count').item.json.limitMails ?? 0) + 1 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1120,
+        -48
+      ],
+      "id": "8b16b808-23fe-4630-9af3-131854723bdf",
+      "name": "Count limit notice",
+      "credentials": {
+        "googleApi": {
+          "id": "i0HsKyTgytc4eZs2",
+          "name": "Google Service Account account"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {},
@@ -471,7 +532,7 @@
       "main": [
         [
           {
-            "node": "Send limit notice",
+            "node": "Limit notices left?",
             "type": "main",
             "index": 0
           }
@@ -540,7 +601,7 @@
       "main": [
         [
           {
-            "node": "Move to review",
+            "node": "Count limit notice",
             "type": "main",
             "index": 0
           }
@@ -620,6 +681,35 @@
           }
         ]
       ]
+    },
+    "Limit notices left?": {
+      "main": [
+        [
+          {
+            "node": "Send limit notice",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Move to review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Count limit notice": {
+      "main": [
+        [
+          {
+            "node": "Move to review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -627,7 +717,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "17824c1d-054e-468c-a001-6dbdaeac12b4",
+  "versionId": "07a6256e-40d2-4071-a841-f2a0a0695fa5",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "fc5ff6d2fc2e3dcd37d9d77516aeec79a3c8b50b4868c9098c1ff757801e1ed9"
