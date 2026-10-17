@@ -258,16 +258,20 @@ class BoardPage {
 
 
     /**
-     * Saves a task's column and order. If it really changed columns and a
-     * stakeholder created it, n8n is told so it can mail them.
+     * Saves a task's column and order. A real column change also stamps
+     * `movedAt`, so n8n can tell whether a move is still the latest one. If a
+     * stakeholder created the task, n8n is told so it can mail them.
      * @param {string} id
      * @param {string|undefined} from - the column before the move
      * @param {string} column
      * @param {number} order
      */
     async #saveMove(id, from, column, order) {
-        const saved = await this.#persist(taskStore.update(id, { column, order }));
-        if (saved && from !== column && this.#taskById(id)?.creator?.external) notifyColumnChange(id);
+        const changed = from !== column;
+        const movedAt = Date.now();
+        const values = changed ? { column, order, movedAt } : { column, order };
+        const saved = await this.#persist(taskStore.update(id, values));
+        if (saved && changed && this.#taskById(id)?.creator?.external) notifyColumnChange(id, movedAt);
     }
 
 

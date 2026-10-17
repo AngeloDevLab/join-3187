@@ -32,12 +32,13 @@ export function sendRequest(values) {
 
 /**
  * Tells n8n that a stakeholder's task changed columns. n8n waits a few minutes,
- * re-reads the task and mails the creator only if it still sits in a new column,
- * so dragging back and forth sends no flood of mails. Failures are only logged,
- * since the move itself is already saved.
+ * re-reads the task and only goes on if `movedAt` still matches, i.e. no later
+ * move happened, so dragging back and forth sends at most one mail. Failures
+ * are only logged, since the move itself is already saved.
  * @param {string} taskId
+ * @param {number} movedAt - the timestamp written with this move
  */
-export function notifyColumnChange(taskId) {
-    postToWebhook('join-column-change', { taskId })
+export function notifyColumnChange(taskId, movedAt) {
+    postToWebhook('join-column-change', { taskId, movedAt })
         .catch((err) => console.error('Could not notify n8n about the column change:', err));
 }

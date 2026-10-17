@@ -1,11 +1,5 @@
 {
-  "updatedAt": "2026-10-13T19:53:50.052Z",
-  "createdAt": "2026-10-13T19:32:44.159Z",
-  "id": "kYbWZZmdQFvPE5ID",
   "name": "Column Change",
-  "description": null,
-  "active": true,
-  "isArchived": false,
   "nodes": [
     {
       "parameters": {
@@ -16,8 +10,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.2,
       "position": [
-        0,
-        0
+        -432,
+        16
       ],
       "id": "f3a3f14f-35d8-40ca-9f42-af6a40a44be2",
       "name": "Webhook",
@@ -63,7 +57,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const COLUMN_LABELS = { triage: 'Triage', todo: 'To Do', inProgress: 'In Progress', awaitFeedback: 'Awaiting Feedback', done: 'Done' };\n\n\n/**\n * Decides whether the creator gets a mail: only external creators with an email,\n * and only if the task now sits in a different column than the one they were\n * last told about. Tickets start in Triage, so that is the default.\n * @param {Object} task - the task as stored in Firebase ({} if it was deleted)\n * @returns {{ notify: boolean, column: string, columnLabel: string, title: string, name: string, email: string }}\n */\nfunction decide(task) {\n    const creator = task.creator ?? {};\n    const lastNotified = task.lastNotifiedColumn ?? 'triage';\n    return {\n        notify: creator.type === 'external' && !!creator.email && !!COLUMN_LABELS[task.column] && task.column !== lastNotified,\n        column: task.column,\n        columnLabel: COLUMN_LABELS[task.column] ?? '',\n        title: task.title ?? '',\n        name: creator.name ?? '',\n        email: creator.email ?? '',\n    };\n}\n\n\nreturn { json: decide($json) };\n"
+        "jsCode": "const COLUMN_LABELS = { triage: 'Triage', todo: 'To Do', inProgress: 'In Progress', awaitFeedback: 'Awaiting Feedback', done: 'Done' };\n\n\n/**\n * Decides whether the creator gets a mail: only external creators with an email,\n * only if this move is still the latest one (movedAt unchanged after the wait),\n * and only if the task sits in a different column than the one they were last\n * told about. Tickets start in Triage, so that is the default.\n * @param {Object} task - the task as stored in Firebase ({} if it was deleted)\n * @param {number} movedAt - the timestamp the board sent with this move\n * @returns {{ notify: boolean, column: string, columnLabel: string, title: string, name: string, email: string }}\n */\nfunction decide(task, movedAt) {\n    const creator = task.creator ?? {};\n    const isLatest = !!task.movedAt && task.movedAt === movedAt;\n    const isNew = !!COLUMN_LABELS[task.column] && task.column !== (task.lastNotifiedColumn ?? 'triage');\n    return {\n        notify: isLatest && isNew && creator.type === 'external' && !!creator.email,\n        column: task.column,\n        columnLabel: COLUMN_LABELS[task.column] ?? '',\n        title: task.title ?? '',\n        name: creator.name ?? '',\n        email: creator.email ?? '',\n    };\n}\n\n\nreturn { json: decide($json, $('Webhook').item.json.body.movedAt) };\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -158,14 +152,72 @@
           "name": "Google Service Account account"
         }
       }
+    },
+    {
+      "parameters": {
+        "url": "=https://join-3187-default-rtdb.europe-west1.firebasedatabase.app/tasks/{{ encodeURIComponent($('Webhook').item.json.body.taskId) }}.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -208,
+        16
+      ],
+      "id": "560e959c-5a0e-4634-95a2-898e77ee390d",
+      "name": "Check task",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleApi": {
+          "id": "i0HsKyTgytc4eZs2",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2abd0f0c-9ca0-439a-928b-dd94e0ef582f",
+              "leftValue": "={{ !!$json.movedAt && $json.movedAt === $('Webhook').item.json.body.movedAt && $json.creator?.type === 'external' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        16
+      ],
+      "id": "7300f535-eb76-4005-97bc-a710dbee3c54",
+      "name": "Latest move?"
     }
   ],
+  "pinData": {},
   "connections": {
     "Webhook": {
       "main": [
         [
           {
-            "node": "Wait for moves to settle",
+            "node": "Check task",
             "type": "main",
             "index": 0
           }
@@ -226,26 +278,45 @@
           }
         ]
       ]
+    },
+    "Check task": {
+      "main": [
+        [
+          {
+            "node": "Latest move?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Latest move?": {
+      "main": [
+        [
+          {
+            "node": "Wait for moves to settle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
+  "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "saveDataSuccessExecution": "none",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
-  "staticData": null,
+  "versionId": "23c1e41e-3443-41f8-8f8f-d463ecc81593",
   "meta": {
-    "templateCredsSetupCompleted": true
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fc5ff6d2fc2e3dcd37d9d77516aeec79a3c8b50b4868c9098c1ff757801e1ed9"
   },
   "nodeGroups": [],
-  "pinData": {},
-  "versionId": "36137fd5-77ef-4078-8351-36551899b540",
-  "activeVersionId": "36137fd5-77ef-4078-8351-36551899b540",
-  "versionCounter": 38,
-  "triggerCount": 1,
-  "sourceWorkflowId": null,
-  "tags": [],
-  "versionMetadata": {
-    "name": "Version 36137fd5",
-    "description": ""
-  }
+  "id": "kYbWZZmdQFvPE5ID",
+  "tags": []
 }
